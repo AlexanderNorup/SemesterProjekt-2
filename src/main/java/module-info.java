@@ -5,6 +5,7 @@ module semesterprojekt.main {
     requires javafx.media;
     requires java.sql;
     requires postgresql;
+    requires json;
 
     opens dk.sdu.seb05.semesterprojekt;
 }

@@ -9,12 +9,6 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.graphics', 'javafx.fxml', 'javafx.media']
 }
 
-dependencies {
-    // https://mvnrepository.com/artifact/org.json/json
-    // Udkommentér næste linje for JSON funktionalitet
-    // compile group: 'org.json', name: 'json', version: '20090211'
-}
-
 sourceSets {
     main {
         java {
@@ -57,6 +51,7 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.2.19.jre7'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    compile group: 'org.json', name: 'json', version: '20090211'
 }
 
 test {
