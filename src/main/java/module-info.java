@@ -8,4 +8,5 @@ module semesterprojekt.main {
     requires json;
 
     opens dk.sdu.seb05.semesterprojekt;
+    opens dk.sdu.seb05.semesterprojekt.PresentationLayer;
 }
