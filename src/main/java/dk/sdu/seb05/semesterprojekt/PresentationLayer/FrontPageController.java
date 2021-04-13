@@ -92,7 +92,8 @@ public class FrontPageController {
 
     public void searchHandler() throws IOException {
         String searchText = searchTextField.getText();
-        System.out.println(searchText);
+        System.out.println("Du søgte efter: " + searchText);
+        fulcrum.setSearch(searchText);
 
         Parent searchPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/searchpage.fxml"));
         fulcrum.getPrimaryStage().setScene(new Scene(searchPage));
