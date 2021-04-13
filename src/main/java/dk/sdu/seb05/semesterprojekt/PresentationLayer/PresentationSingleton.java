@@ -1,11 +1,13 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
+import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 
 public class PresentationSingleton {
 
     private Stage primaryStage;
     private String name;
+    private String search;
     private static PresentationSingleton instance;
 
     private PresentationSingleton(){
@@ -37,8 +39,8 @@ public class PresentationSingleton {
         return search;
     }
 
-    public void setSearch(String name){
-
+    public void setSearch(String search){
+        this.search = search;
     }
 
 }
