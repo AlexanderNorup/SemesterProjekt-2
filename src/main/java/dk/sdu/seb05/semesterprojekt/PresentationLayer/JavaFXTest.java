@@ -1,4 +1,4 @@
-package dk.sdu.seb05.semesterprojekt;
+package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
