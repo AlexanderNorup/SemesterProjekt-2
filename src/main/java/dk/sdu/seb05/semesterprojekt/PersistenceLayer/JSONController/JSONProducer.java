@@ -7,6 +7,11 @@ import java.util.List;
 
 public class JSONProducer implements IProducer {
     @Override
+    public int getId() {
+        return 0;
+    }
+
+    @Override
     public String getCompany() {
         return null;
     }

@@ -6,6 +6,11 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
 
 public class JSONCredit implements ICredit {
     @Override
+    public int getId() {
+        return 0;
+    }
+
+    @Override
     public IPerson getPerson() {
         return null;
     }
