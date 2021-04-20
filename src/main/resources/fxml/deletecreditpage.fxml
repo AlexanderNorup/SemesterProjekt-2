@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.DeleteCreditController">
+   <children>
+      <Button fx:id="deleteButton" layoutX="464.0" layoutY="53.0" mnemonicParsing="false" onAction="#deleteHandler" text="yeet the shit">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
+      <ListView fx:id="creditListView" layoutX="143.0" layoutY="53.0" prefHeight="295.0" prefWidth="314.0" />
+      <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
+   </children>
+</AnchorPane>
