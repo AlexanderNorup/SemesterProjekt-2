@@ -9,4 +9,6 @@ public interface IProducer {
     void setCompany(String newCompany);
 
     List<IProgramme> getProgrammes();
+    void addProgramme(IProgramme programme);
+    void removeProgramme(IProgramme programme);
 }

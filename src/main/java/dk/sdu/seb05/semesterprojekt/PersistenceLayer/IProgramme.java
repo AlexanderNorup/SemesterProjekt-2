@@ -19,8 +19,8 @@ public interface IProgramme {
     void setAiredDate(Date newDate);
 
     List<ICredit> getCredits();
-    void addCredit(IPerson person, FunctionType role);
-    void removeCredit(IPerson person);
+    void addCredit(ICredit credit);
+    void removeCredit(ICredit credit);
 
     List<IProducer> getProducers();
     void addProducer(IProducer producer);
