@@ -10,4 +10,5 @@ module semesterprojekt.main {
     opens dk.sdu.seb05.semesterprojekt.PresentationLayer;
     opens dk.sdu.seb05.semesterprojekt.DomainLayer; //Probably not needed
     opens dk.sdu.seb05.semesterprojekt.PersistenceLayer;
+    opens dk.sdu.seb05.semesterprojekt.PersistenceLayer.JSONController;
 }
