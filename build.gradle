@@ -36,7 +36,7 @@ repositories {
 }
 
 mainClassName = 'dk.sdu.seb05.semesterprojekt.Main'
-
+compileJava.options.encoding = 'UTF-8'
 
 jar {
     manifest {

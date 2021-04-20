@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.FrontPageController">
+   <children>
+      <RadioButton fx:id="adminButton" layoutX="521.0" layoutY="8.0" mnemonicParsing="false" onAction="#radioHandler" text="Admin">
+         <toggleGroup>
+            <ToggleGroup fx:id="sessionGroup" />
+         </toggleGroup></RadioButton>
+      <RadioButton fx:id="producerButton" layoutX="448.0" layoutY="8.0" mnemonicParsing="false" onAction="#radioHandler" text="Producer" toggleGroup="$sessionGroup" />
+      <RadioButton fx:id="userButton" layoutX="395.0" layoutY="8.0" mnemonicParsing="false" onAction="#radioHandler" selected="true" text="User" toggleGroup="$sessionGroup" />
+      <ListView fx:id="programListView" layoutX="124.0" layoutY="152.0" prefHeight="234.0" prefWidth="350.0" />
+      <TextField fx:id="searchTextField" layoutX="193.0" layoutY="70.0" prefHeight="25.0" prefWidth="215.0" promptText="Person, program eller producent" />
+      <Button fx:id="searchButtonTextField" layoutX="411.0" layoutY="70.0" mnemonicParsing="false" onAction="#searchHandler" text="Søg" />
+      <Button fx:id="searchButtonListView" layoutX="475.0" layoutY="152.0" mnemonicParsing="false" onAction="#searchRecentHandler" text="Søg" />
+      <Label fx:id="programLabel" layoutX="206.0" layoutY="120.0" text="Nyligt sendte programmer">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <ToggleButton fx:id="notificationButton" layoutX="20.0" layoutY="21.0" mnemonicParsing="false" onAction="#showNotifications" text="Se notifikationer" />
+      <ListView fx:id="notificationListView" layoutX="20.0" layoutY="47.0" prefHeight="343.0" prefWidth="557.0" visible="false" />
+      <Button fx:id="editButton" layoutX="136.0" layoutY="21.0" mnemonicParsing="false" onAction="#editHandler" text="Rediger" />
+
+   </children>
+</AnchorPane>
