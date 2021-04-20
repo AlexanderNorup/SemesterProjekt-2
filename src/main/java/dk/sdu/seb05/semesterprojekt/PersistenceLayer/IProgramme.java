@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface IProgramme {
+    int getId();
+
     String getName();
     void setName(String newName);
 

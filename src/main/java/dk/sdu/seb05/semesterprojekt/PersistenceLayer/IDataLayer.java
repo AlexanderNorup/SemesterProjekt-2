@@ -7,9 +7,13 @@ public interface IDataLayer {
     List<IProgramme> getProgrammes();
     List<IProducer> getProducers();
 
+    IProgramme getProgram(int programId);
+    IProducer getProducer(int programId);
+    IPerson getPerson(int programId);
+
     boolean updateProgramme(IProgramme iProgramme);
-    boolean updatePersons(IPerson iPerson);
-    boolean updateProducers(IProducer iProducer);
+    boolean updatePerson(IPerson iPerson);
+    boolean updateProducer(IProducer iProducer);
 
     boolean createProgramme(IProgramme iProgramme);
     boolean createPerson(IPerson iPerson);
