@@ -62,17 +62,32 @@ public class JSONController implements IDataLayer {
     }
 
     @Override
+    public IProgramme getProgram(int programId) {
+        return null;
+    }
+
+    @Override
+    public IProducer getProducer(int programId) {
+        return null;
+    }
+
+    @Override
+    public IPerson getPerson(int programId) {
+        return null;
+    }
+
+    @Override
     public boolean updateProgramme(IProgramme iProgramme) {
         return false;
     }
 
     @Override
-    public boolean updatePersons(IPerson iPerson) {
+    public boolean updatePerson(IPerson iPerson) {
         return false;
     }
 
     @Override
-    public boolean updateProducers(IProducer iProducer) {
+    public boolean updateProducer(IProducer iProducer) {
         return false;
     }
 
