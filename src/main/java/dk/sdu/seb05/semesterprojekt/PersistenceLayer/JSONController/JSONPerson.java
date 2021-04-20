@@ -1,6 +1,9 @@
 package dk.sdu.seb05.semesterprojekt.PersistenceLayer.JSONController;
 
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IDataLayer;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -33,7 +36,7 @@ public class JSONPerson implements IPerson {
 
     @Override
     public String getDescription() {
-        return null;
+        return this.description;
     }
 
     @Override

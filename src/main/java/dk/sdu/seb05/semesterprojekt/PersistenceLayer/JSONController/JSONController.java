@@ -5,10 +5,10 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -158,7 +158,11 @@ public class JSONController implements IDataLayer {
 
     @Override
     public List<IProgramme> getLatestProgrammes() {
-        return null;
+        List<IProgramme> latestProgrammes = new ArrayList<>(programmes);
+
+        Collections.sort(latestProgrammes, new ProgrammeDateComparator());
+
+        return latestProgrammes;
     }
 
     @Override
