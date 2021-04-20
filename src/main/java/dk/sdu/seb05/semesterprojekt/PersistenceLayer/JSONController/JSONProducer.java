@@ -59,4 +59,14 @@ public class JSONProducer implements IProducer {
     public List<IProgramme> getProgrammes() {
         return this.programmeList;
     }
+
+    @Override
+    public void addProgramme(IProgramme program){
+        this.programmeList.add(program);
+    }
+
+    @Override
+    public void removeProgramme(IProgramme program){
+        this.programmeList.remove(program);
+    }
 }

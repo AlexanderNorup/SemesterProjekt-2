@@ -1,7 +1,10 @@
 package dk.sdu.seb05.semesterprojekt.PersistenceLayer;
 
+import java.util.List;
+import java.util.Arrays;
 public enum FunctionType {
 
+    UNKNOWN("Ukendt rolle"),
     CAMERAGUY("Kamera mand"),
     ACTOR("Skuespiller");
 
@@ -16,6 +19,10 @@ public enum FunctionType {
     @Override
     public String toString(){
         return this.description;
+    }
+
+    public static List<FunctionType> getAllFunctionTypes(){
+        return Arrays.asList(FunctionType.class.getEnumConstants());
     }
 
 }

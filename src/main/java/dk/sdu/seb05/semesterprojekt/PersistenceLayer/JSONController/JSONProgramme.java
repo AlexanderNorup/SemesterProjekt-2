@@ -138,17 +138,17 @@ public class JSONProgramme implements IProgramme {
 
     @Override
     public List<ICredit> getCredits() {
-        return null;
+        return this.credits;
     }
 
     @Override
-    public void addCredit(IPerson person, FunctionType role) {
-
+    public void addCredit(ICredit credit) {
+        this.credits.add(credit);
     }
 
     @Override
-    public void removeCredit(IPerson person) {
-
+    public void removeCredit(ICredit credit) {
+        this.credits.remove(credit);
     }
 
     @Override
@@ -163,6 +163,6 @@ public class JSONProgramme implements IProgramme {
 
     @Override
     public void removeProducer(IProducer producer) {
-
+        this.producers.remove(producer);
     }
 }

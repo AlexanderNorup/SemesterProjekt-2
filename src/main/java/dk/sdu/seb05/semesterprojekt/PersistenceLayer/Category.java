@@ -2,6 +2,7 @@ package dk.sdu.seb05.semesterprojekt.PersistenceLayer;
 
 public enum Category {
 
+    UNKNOWN("Ukendt kategory"),
     DOCUMENTARY("Dokumentar"),
     NEWS("Nyhederne.");
 
