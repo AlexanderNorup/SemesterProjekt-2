@@ -21,7 +21,7 @@ public class DeleteCreditController {
         ObservableList<String> persons = FXCollections.observableArrayList(
                 "Mikael Nielsen - 17 år - Skuespiller ",
                 "Lars Andersson - 26 år - Kattemand",
-                "Alexander Matzen - ? år - Professional database manager",
+                "Bjarne Hansen - ? år - Professional database manager",
                 "Alexander Nørup - 20 år - Vandmand");
         creditListView.setItems(persons);
     }
