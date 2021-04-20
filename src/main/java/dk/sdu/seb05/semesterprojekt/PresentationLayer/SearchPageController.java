@@ -55,9 +55,7 @@ public class SearchPageController {
     }
 
     public void returnHandler() throws IOException {
-        Parent searchPage = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(searchPage));
-        fulcrum.getPrimaryStage().setTitle("Forside");
+        fulcrum.goToFrontPage();
 
     }
 }

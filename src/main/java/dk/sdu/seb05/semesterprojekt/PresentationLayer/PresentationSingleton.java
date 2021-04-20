@@ -1,7 +1,13 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.ButtonBar;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class PresentationSingleton {
 
@@ -41,6 +47,12 @@ public class PresentationSingleton {
 
     public void setSearch(String search){
         this.search = search;
+    }
+
+    public void goToFrontPage() throws IOException {
+        Parent searchPage = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
+        instance.getPrimaryStage().setScene(new Scene(searchPage));
+        instance.getPrimaryStage().setTitle("Forside");
     }
 
 }

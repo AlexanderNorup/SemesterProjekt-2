@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreatePageController">
+   <children>
+       <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
+      <TextField fx:id="programTitleTextField" layoutX="157.0" layoutY="86.0" prefHeight="25.0" prefWidth="287.0" />
+      <Label layoutX="157.0" layoutY="66.0" text="Progamtitel" />
+      <Label layoutX="157.0" layoutY="125.0" text="Kategori" />
+      <TextField fx:id="channelTextField" layoutX="157.0" layoutY="200.0" prefHeight="25.0" prefWidth="287.0" />
+      <Label layoutX="157.0" layoutY="183.0" text="Kanal" />
+      <Label layoutX="158.0" layoutY="243.0" text="Sendedato" />
+      <DatePicker fx:id="sendDate" accessibleHelp="vælg dato noob" layoutX="157.0" layoutY="260.0" onAction="#datePicker" prefHeight="25.0" prefWidth="202.0" promptText="Dato for udsendelsen" />
+      <Label fx:id="chosenLabel" layoutX="158.0" layoutY="301.0" text="Du har valgt følgende dato:" visible="false" />
+      <Label fx:id="dateLabel" layoutX="310.0" layoutY="302.0" />
+      <Button fx:id="createProgramButton" layoutX="204.0" layoutY="333.0" mnemonicParsing="false" onAction="#createProgramHandler" text="OPRET PROGRAM">
+         <font>
+            <Font name="Calibri Bold" size="22.0" />
+         </font>
+      </Button>
+      <ChoiceBox fx:id="categoryChoiceBox" layoutX="157.0" layoutY="145.0" prefHeight="25.0" prefWidth="287.0" />
+      <DialogPane fx:id="popupDialogPane" disable="true" layoutX="61.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="480.0" visible="false">
+          <header>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
+          </header>
+          <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
+          </content>
+          <expandableContent>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
+          </expandableContent>
+         <buttonTypes>
+            <ButtonType fx:constant="CLOSE" />
+         </buttonTypes>
+         <graphic>
+            <Label fx:id="popupLabel" alignment="CENTER" text="syg" />
+         </graphic>
+      </DialogPane>
+   </children>
+</AnchorPane>
