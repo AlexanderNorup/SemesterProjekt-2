@@ -19,7 +19,6 @@ public class CreateCreditsController {
     public Label nameLabel;
     public Label descriptionLabel;
     public Button returnButton;
-    IDomainController iDomainController = new DomainController();
 
     @FXML
     private ChoiceBox<String> functionTypeExistChoiceBox;
@@ -86,7 +85,7 @@ public class CreateCreditsController {
         if (functionTypeExistChoiceBox.getSelectionModel() == null || functionTypeExistChoiceBox.getSelectionModel().isEmpty()) {
             System.out.println("Du skal vælge en funktion!");
         } else {
-            System.out.println("Du har tilføjet: " + iDomainController.getCreditsForPerson(0) + "med funktion typen: "
+            System.out.println("Du har tilføjet: " + fulcrum.getDomainLayer().getCreditsForPerson(0) + "med funktion typen: "
                     + functionTypeExistChoiceBox.getValue()
             );
         }
