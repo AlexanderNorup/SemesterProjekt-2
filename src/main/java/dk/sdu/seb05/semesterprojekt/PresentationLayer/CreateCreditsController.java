@@ -41,7 +41,7 @@ public class CreateCreditsController {
 
     public void initialize() {
         fulcrum = PresentationSingleton.getInstance();
-        fulcrum.changeView("Tilføj credits");
+        fulcrum.setTitle("Tilføj credits");
         FunctionType[] functionTypes = FunctionType.values();
         for (int i = 0; i < functionTypes.length; i++) {
             functionTypeExistChoiceBox.getItems().add(functionTypes[i].toString());
