@@ -1,8 +1,10 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,10 +12,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
+import java.util.List;
 
-public class SearchPageController {
+public class SearchPageController implements ViewArgumentAdapter {
 
     @FXML
     private TextField searchTextField;
@@ -22,40 +28,65 @@ public class SearchPageController {
     @FXML
     private Button backButton;
     @FXML
-    private ListView<String> programListView;
+    private ListView<Object> programListView;
     @FXML
     private Button creditButton;
 
     public static PresentationSingleton fulcrum;
 
 
-    public void initialize(){
+    @Override
+    public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
-        ObservableList<String> thing = FXCollections.observableArrayList(fulcrum.getSearch());
+        fulcrum.setTitle("Søgeresultater");
+        searchTextField.setText(fulcrum.getSearch());
+
+        List<Object> objects = (List<Object>) o;
+        ObservableList<Object> thing = FXCollections.observableArrayList(objects);
         programListView.setItems(thing);
+
+        programListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getClickCount() == 2){
+                    chooseHandler();
+                }
+            }
+        });
+
+        searchTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.ENTER){
+                    searchHandler();
+                }
+            }
+        });
+
     }
 
-    public void chooseHandler() throws IOException {
-        System.out.println("Du har valgt følgende program: " + programListView.getSelectionModel().getSelectedItem());
-        fulcrum.setName(programListView.getSelectionModel().getSelectedItem());
-        Parent creditPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/creditpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(creditPage));
-        fulcrum.getPrimaryStage().setTitle("Credits til " + programListView.getSelectionModel().getSelectedItem());
+
+    public void chooseHandler() {
+        Object chosen =  programListView.getSelectionModel().getSelectedItem();
+        if(chosen == null){
+            return;
+        }
+        System.out.println("Du har valgt følgende element: " + chosen);
+        fulcrum.changeView("creditpage", chosen);
     }
 
-    public void searchHandler() throws IOException {
+    public void searchHandler() {
         String searchText = searchTextField.getText();
-        System.out.println(searchText);
+        System.out.println("Du søgte efter: " + searchText);
         fulcrum.setSearch(searchText);
+        //TODO: Change chosen search type here.
+        List results = fulcrum.getDomainLayer().search(2, searchText);
 
-
-        Parent searchPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/searchpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(searchPage));
-        fulcrum.getPrimaryStage().setTitle("Søge resultater");
+        fulcrum.changeView("searchpage", results);
     }
 
     public void returnHandler() throws IOException {
         fulcrum.goToFrontPage();
-
     }
+
 }
