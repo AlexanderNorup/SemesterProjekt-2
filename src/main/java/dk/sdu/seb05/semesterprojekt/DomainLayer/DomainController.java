@@ -182,6 +182,11 @@ public class DomainController implements IDomainController {
         return dataLayer.getCreditsForPerson(personID);
     }
 
+    @Override
+    public List<IProgramme> getProgrammesForPerson(int personID) {
+        return dataLayer.getProgrammesForPerson(personID);
+    }
+
 
     @Override
     public IProgramme chooseProgramme(int programmeID) {

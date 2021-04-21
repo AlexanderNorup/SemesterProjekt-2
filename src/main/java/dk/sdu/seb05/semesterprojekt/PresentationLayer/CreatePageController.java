@@ -18,9 +18,12 @@ import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Optional;
 
 public class CreatePageController {
@@ -28,7 +31,7 @@ public class CreatePageController {
     public static PresentationSingleton fulcrum;
 
     @FXML
-    private ChoiceBox<String> categoryChoiceBox;
+    private ChoiceBox<Category> categoryChoiceBox;
     @FXML
     private Button createProgramButton;
     @FXML
@@ -48,7 +51,7 @@ public class CreatePageController {
         fulcrum = PresentationSingleton.getInstance();
         Category[] cats = Category.values(); //Domain.Category når domain kommer
         for (int i = 0; i < cats.length; i++) {
-            categoryChoiceBox.getItems().add(cats[i].toString());
+            categoryChoiceBox.getItems().add(cats[i]);
         }
     }
 
@@ -132,6 +135,13 @@ public class CreatePageController {
             System.out.println("Something needs filling in!");
         }
         else if (!errorHandler()) {
+            LocalDate localDate = sendDate.getValue();
+            Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+            Date date = Date.from(instant);
+            fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
+                    categoryChoiceBox.getValue(),
+                    channelTextField.getText(),
+                    date);
             System.out.println("Du har oprettet følgende program: \n" +
                     "Program navn: " + programTitleTextField.getText() + "\n" +
                     "Kategori: " + categoryChoiceBox.getValue() + "\n" +

@@ -30,6 +30,7 @@ public interface IDomainController {
 
     IPerson choosePerson(int personID);
     List<ICredit> getCreditsForPerson(int personID);
+    List<IProgramme> getProgrammesForPerson(int personID);
     IProgramme chooseProgramme(int programmeID);
     List search(int chosen, String query); // Person (), Producer(*), Film()
 

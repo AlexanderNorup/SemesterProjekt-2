@@ -1,13 +1,19 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
+import java.util.List;
 
 public class FrontPageController {
 
@@ -34,7 +40,7 @@ public class FrontPageController {
     @FXML
     private ListView<String> notificationListView;
     @FXML
-    private ListView<String> programListView;
+    private ListView<IProgramme> programListView;
     @FXML
     private ToggleButton notificationButton;
     @FXML
@@ -50,21 +56,11 @@ public class FrontPageController {
     @FXML
     private Button searchButtonListView;
 
-    private int id;
+    private int searchTypeId = 2;
 
     public void initialize(){
         fulcrum = PresentationSingleton.getInstance();
-        System.out.println("initialize(); kører i JavaFXTestController");
-        ObservableList<String> programs = FXCollections.observableArrayList(
-                "(2019) Badehotellet - TV 2",
-                "(1978) Matador - DR 2",
-                "(1953) Far til fire - DR 1",
-                "(2021) Stormester - TV 2 Zulu",
-                "(2010) Natholdet - TV 2",
-                "(2008) Bonderøven - TV 2 ",
-                "(2018) Hvem vil være millionær? - TV 2 Charlie",
-                "(2005) Klovn - TV 2 Zulu",
-                "(2000) Blinkende Lygter - DR 1");
+        ObservableList<IProgramme> programs = FXCollections.observableArrayList(fulcrum.getDomainLayer().getLatestProgrammes());
         programListView.setItems(programs);
         searchTextField.setText("");
         producerDropdown.setVisible(false);
@@ -77,17 +73,39 @@ public class FrontPageController {
         producerDropdown.getItems().addAll(producers);
         radioHandler();
 
+
+        programListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getClickCount() == 2){
+                    try {
+                        searchRecentHandler();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        searchTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.ENTER){
+                    searchHandler();
+                }
+            }
+        });
+
     }
 
     public void searchRecentHandler() throws IOException {
-        String selected = programListView.getSelectionModel().getSelectedItem();
-        System.out.println("Du har valgt følgende program: " + selected);
-        fulcrum.setName(selected);
-        Parent creditPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/creditpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(creditPage));
-        fulcrum.getPrimaryStage().setTitle("Credits til " + selected);
+        IProgramme programme = programListView.getSelectionModel().getSelectedItem();
+        if(programme == null){
+            return;
+        }
+        System.out.println("Du har valgt følgende program: " + programme.getName());
+        fulcrum.changeView("creditpage", programListView.getSelectionModel().getSelectedItem());
     }
-
     public void showNotifications(){
         notificationListView.setVisible(!notificationListView.isVisible());
     }
@@ -134,28 +152,25 @@ public class FrontPageController {
     public void searchRadioHandler() {
         if(programButton.isSelected()){
             searchTextField.setPromptText("Indtast navn på programmet");
-            id = 2;
+            searchTypeId = 2;
         }
         if(personButton.isSelected()){
             searchTextField.setPromptText("Indtast navn på en person");
-            id = 0;
+            searchTypeId = 0;
         }
         if(producentButton.isSelected()){
             searchTextField.setPromptText("Indtast navnet på producenten");
-            id = 1;
+            searchTypeId = 1;
         }
     }
 
-    public void searchHandler() throws IOException {
-
+    public void searchHandler() {
         String searchText = searchTextField.getText();
         System.out.println("Du søgte efter: " + searchText);
         fulcrum.setSearch(searchText);
+        List results = fulcrum.getDomainLayer().search(searchTypeId, searchText);
 
-        Parent searchPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/searchpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(searchPage));
-        fulcrum.getPrimaryStage().setTitle("Søge resultater");
-
+        fulcrum.changeView("searchpage", results);
     }
 
     public void editHandler() throws IOException {

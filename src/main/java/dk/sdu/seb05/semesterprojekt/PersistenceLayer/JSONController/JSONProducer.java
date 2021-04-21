@@ -7,7 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class JSONProducer implements IProducer {
 
@@ -39,6 +41,11 @@ public class JSONProducer implements IProducer {
     }
 
     //TODO: ID
+
+    @Override
+    public String toString() {
+            return company;
+    }
 
     @Override
     public int getId() {

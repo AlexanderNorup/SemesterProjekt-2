@@ -1,6 +1,7 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.FunctionType;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -69,7 +70,7 @@ public class CreateCreditsController {
         dialogPane.getStyleClass().add("myDialog");
         alert.setTitle("Irriterende popup");
         alert.setHeaderText("Mathias for helvete");
-        alert.setContentText("ctrl a + ctrl c -> ctrl v");
+        alert.setContentText("ctrl a + ctrl c -> ctrl v, bedste måde at kode på");
         alert.showAndWait();
     }
 
@@ -86,4 +87,6 @@ public class CreateCreditsController {
         alert.setContentText(" ");
         alert.showAndWait();
     }
+
+
 }
