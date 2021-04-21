@@ -1,10 +1,13 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
+import dk.sdu.seb05.semesterprojekt.DomainLayer.DomainController;
+import dk.sdu.seb05.semesterprojekt.DomainLayer.IDomainController;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.FunctionType;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.JSONController.JSONPerson;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 
 import java.io.IOException;
@@ -16,6 +19,7 @@ public class CreateCreditsController {
     public Label nameLabel;
     public Label descriptionLabel;
     public Button returnButton;
+    IDomainController iDomainController = new DomainController();
 
     @FXML
     private ChoiceBox<String> functionTypeExistChoiceBox;
@@ -53,37 +57,41 @@ public class CreateCreditsController {
         fulcrum.goToFrontPage();
     }
 
-    public void datePicker() {
-        LocalDate date = birthdayPicker.getValue();
-        int day = date.getDayOfMonth();
-        int month = date.getMonthValue();
-        int year = date.getYear();
+
+    public void addCredits() {
+        System.out.println("\n");
+        if (nameField.getText() == null || nameField.getText().trim().isEmpty()) {
+            System.out.println("Du skal udfylde et navn!");
+        }
+        if (descriptionField.getText() == null || descriptionField.getText().trim().isEmpty()) {
+            System.out.println("Du skal udfylde detaljer!");
+        }
+        if (functionTypeNewChoiceBox.getSelectionModel() == null || functionTypeNewChoiceBox.getSelectionModel().isEmpty()) {
+            System.out.println("Du skal vælge en funktion!");
+        } else {
+            System.out.println("Dine credits er blevet tilføjet \n" +
+                    "Person navn: " + nameField.getText()+ "\n" +
+                    "Deskription navn: " + descriptionField.getText() + "\n" +
+                    "funktion typen er: " + functionTypeNewChoiceBox.getValue() + " \n"
+            );
+        }
     }
 
-    private void errorAlert() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(
-                getClass().getResource("/css/dialog-pane-styles.css")
-                        .toExternalForm());
-        dialogPane.getStyleClass().add("myDialog");
-        alert.setTitle("Irriterende popup");
-        alert.setHeaderText("Mathias for helvete");
-        alert.setContentText("ctrl a + ctrl c -> ctrl v");
-        alert.showAndWait();
+    public void addExistingCredit() {
+        System.out.println("\n");
+        if (personChoiceBox.getSelectionModel() == null || personChoiceBox.getSelectionModel().isEmpty()) {
+            System.out.println("Du skal vælge en person!");
+        }
+        if (functionTypeExistChoiceBox.getSelectionModel() == null || functionTypeExistChoiceBox.getSelectionModel().isEmpty()) {
+            System.out.println("Du skal vælge en funktion!");
+        } else {
+            System.out.println("Du har tilføjet: " + iDomainController.getCreditsForPerson(0) + "med funktion typen: "
+                    + functionTypeExistChoiceBox.getValue()
+            );
+        }
     }
+    public void seeCredits() {
 
-    private void succesAlert() throws IOException {
-        Alert alert = new Alert(Alert.AlertType.NONE);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(
-                getClass().getResource("/css/dialog-pane-styles-success.css")
-                        .toExternalForm());
-        dialogPane.getStyleClass().add("myDialog");
-        ButtonType backButton = new ButtonType("Tilbage til forside");
-        alert.getDialogPane().getButtonTypes().add(backButton);
-        alert.setHeaderText("Du har nu oprettet et ny credit!");
-        alert.setContentText(" ");
-        alert.showAndWait();
     }
 }
+

@@ -5,7 +5,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreateCreditsController">
    <children>
-      <Button fx:id="seeCreditButton" layoutX="389.0" layoutY="241.0" mnemonicParsing="false" prefHeight="121.0" prefWidth="177.0" text="Se Credit" />
+      <Button fx:id="seeCreditButton" layoutX="389.0" layoutY="241.0" mnemonicParsing="false" onAction="#seeCredits" prefHeight="121.0" prefWidth="177.0" text="Se Credit" />
       <TextField fx:id="nameField" layoutX="15.0" layoutY="70.0" prefHeight="25.0" prefWidth="129.0" />
       <Label fx:id="nameLabel" layoutX="23.0" layoutY="50.0" text="Navn" />
       <TextField fx:id="descriptionField" layoutX="164.0" layoutY="70.0" prefHeight="25.0" prefWidth="116.0" />
@@ -16,8 +16,8 @@
       <Label layoutX="389.0" layoutY="50.0" text="Funktions Type" />
       <Label layoutX="15.0" layoutY="180.0" text="Person" />
       <Label layoutX="182.0" layoutY="180.0" text="Funktions Type" />
-      <Button fx:id="addExistButton" layoutX="178.0" layoutY="241.0" mnemonicParsing="false" text="Tilføj eksisterende" />
-      <Button fx:id="addNewButton" layoutX="196.0" layoutY="103.0" mnemonicParsing="false" text="Tilføj ny" />
+      <Button fx:id="addExistButton" layoutX="178.0" layoutY="241.0" mnemonicParsing="false" onAction="#addExistingCredit" text="Tilføj eksisterende" />
+      <Button fx:id="addNewButton" layoutX="196.0" layoutY="103.0" mnemonicParsing="false" onAction="#addCredits" text="Tilføj ny" />
       <ChoiceBox fx:id="personChoiceBox" layoutX="14.0" layoutY="200.0" prefWidth="150.0" />
       <ChoiceBox fx:id="functionTypeExistChoiceBox" layoutX="170.0" layoutY="200.0" prefWidth="150.0" />
       <Button fx:id="returnButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
