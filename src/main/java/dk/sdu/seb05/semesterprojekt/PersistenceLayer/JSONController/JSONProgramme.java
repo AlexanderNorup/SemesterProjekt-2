@@ -5,9 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class JSONProgramme implements IProgramme {
 
@@ -78,17 +76,33 @@ public class JSONProgramme implements IProgramme {
         List<IProducer> producers = new ArrayList<>();
         for(int i = 0; i < producerArray.length(); i++){
             int producerId = producerArray.getInt(i);
-            producers.add(context.getProducer(producerId));
+            IProducer producer = context.getProducer(producerId);
+            if(producer == null){
+                continue;
+            }
+            producers.add(producer);
         }
 
         JSONArray creditArray = jsonObject.getJSONArray("credits");
         List<ICredit> credits = new ArrayList<>();
         for(int i = 0; i < creditArray.length(); i++){
             int creditId = creditArray.getInt(i);
-            credits.add(context.getCredit(creditId));
+            ICredit credit = context.getCredit(creditId);
+            if(credit == null){
+                continue;
+            }
+            credits.add(credit);
         }
 
         return new JSONProgramme(id, name, category, channel, sendDate, producers, credits);
+    }
+
+    @Override
+    public String toString() {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+        cal.setTime(airedDate);//cal.get(Calendar.YEAR)
+        String date = cal.get(Calendar.DAY_OF_MONTH) + "/" + (cal.get(Calendar.MONTH)+1) + "-" + cal.get(Calendar.YEAR);
+        return "(" + date + ") " + getName() + " - " + getChannel();
     }
 
     @Override

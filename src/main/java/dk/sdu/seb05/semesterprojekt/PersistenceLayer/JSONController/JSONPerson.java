@@ -55,7 +55,15 @@ public class JSONPerson implements IPerson {
         return new JSONPerson(id, name, birthDate, description);
     }
 
-    // TODO: ID
+    @Override
+    public String toString() {
+        Date today = new Date();
+        today.setTime(today.getTime()+(60*60*24*365*30));
+        long ageDiff = today.getTime() - getBirthdate().getTime();
+        int age = (int) ageDiff / (60*60*24*365);
+        return name + " ("+age+" år)";
+    }
+
     @Override
     public int getId() {
         return this.id;
