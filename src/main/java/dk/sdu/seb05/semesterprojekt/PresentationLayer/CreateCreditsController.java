@@ -77,6 +77,7 @@ public class CreateCreditsController {
         }
     }
 
+
     public void addExistingCredit() {
         System.out.println("\n");
         if (personChoiceBox.getSelectionModel() == null || personChoiceBox.getSelectionModel().isEmpty()) {
@@ -90,8 +91,21 @@ public class CreateCreditsController {
             );
         }
     }
+
+    private void errorAlert() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(
+                getClass().getResource("/css/dialog-pane-styles.css")
+                        .toExternalForm());
+        dialogPane.getStyleClass().add("myDialog");
+        alert.setTitle("Irriterende popup");
+        alert.setHeaderText("Mathias for helvete");
+        alert.setContentText("ctrl a + ctrl c -> ctrl v, bedste måde at kode på");
+        alert.showAndWait();
+    }
+  
     public void seeCredits() {
 
     }
 }
-

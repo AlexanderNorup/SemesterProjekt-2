@@ -7,6 +7,10 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IDataLayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 
 public class JSONCredit implements ICredit {
 
@@ -51,6 +55,11 @@ public class JSONCredit implements ICredit {
         jsonObject.put("functionType", this.functionType.name());
 
         return jsonObject;
+    }
+
+    @Override
+    public String toString() {
+        return getPerson().toString() + " - " + functionType;
     }
 
     @Override
