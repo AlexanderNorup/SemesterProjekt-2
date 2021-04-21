@@ -49,7 +49,8 @@ public class CreatePageController {
 
     public void initialize() {
         fulcrum = PresentationSingleton.getInstance();
-        Category[] cats = Category.values(); //Domain.Category når domain kommer
+        fulcrum.setTitle("Opret nyt program");
+        Category[] cats = Category.values();
         for (int i = 0; i < cats.length; i++) {
             categoryChoiceBox.getItems().add(cats[i]);
         }
@@ -59,13 +60,13 @@ public class CreatePageController {
         fulcrum.goToFrontPage();
     }
 
-    public void datePicker() {
-        LocalDate date = sendDate.getValue();
-        int day = date.getDayOfMonth();
-        int month = date.getMonthValue();
-        int year = date.getYear();
+    public Date datePicker() {
+        LocalDate localDate = sendDate.getValue();
+        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+        Date date = Date.from(instant);
         chosenLabel.setVisible(true);
-        dateLabel.setText(day + ". " + monthToString(month) + " " + year );
+        dateLabel.setText(date.toString());
+        return date;
     }
 
     private void errorAlert(String text){
@@ -100,9 +101,7 @@ public class CreatePageController {
             fulcrum.goToFrontPage();
         }
         else if(buttonType.isPresent() && buttonType.get() == confirmButton){
-            Parent createCreditPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/createcreditpage.fxml"));
-            fulcrum.getPrimaryStage().setScene(new Scene(createCreditPage));
-            fulcrum.getPrimaryStage().setTitle("Tilføj credits");
+            fulcrum.changeView("createcreditpage");
         }
     }
 
@@ -135,13 +134,10 @@ public class CreatePageController {
             System.out.println("Something needs filling in!");
         }
         else if (!errorHandler()) {
-            LocalDate localDate = sendDate.getValue();
-            Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-            Date date = Date.from(instant);
             fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
                     categoryChoiceBox.getValue(),
                     channelTextField.getText(),
-                    date);
+                    datePicker());
             System.out.println("Du har oprettet følgende program: \n" +
                     "Program navn: " + programTitleTextField.getText() + "\n" +
                     "Kategori: " + categoryChoiceBox.getValue() + "\n" +

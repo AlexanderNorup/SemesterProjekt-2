@@ -4,6 +4,7 @@ import dk.sdu.seb05.semesterprojekt.DomainLayer.DomainController;
 import dk.sdu.seb05.semesterprojekt.DomainLayer.IDomainController;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.ICredit;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,7 +43,6 @@ public class CreditPageController implements ViewArgumentAdapter{
     @Override
     public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
-        IDomainController domainController = new DomainController();
         //Gets called when view is changed to.
         if(o instanceof IProgramme){
             programme = (IProgramme) o;
@@ -62,6 +62,12 @@ public class CreditPageController implements ViewArgumentAdapter{
             contentLabel.setText(person.getName());
             fulcrum.setTitle("Credits for: " + person.getName());
             ObservableList<Object> programmes = FXCollections.observableArrayList( fulcrum.getDomainLayer().getProgrammesForPerson(person.getId()) );
+            creditListView.setItems(programmes);
+        } else if(o instanceof IProducer){
+            IProducer producer = (IProducer) o;
+            contentLabel.setText(producer.getCompany());
+            fulcrum.setTitle("Credits for: " + producer.getCompany());
+            ObservableList<Object> programmes = FXCollections.observableArrayList(fulcrum.getDomainLayer().getProgrammes(producer.getId()));
             creditListView.setItems(programmes);
         }
 

@@ -9,9 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -21,6 +19,7 @@ import java.util.List;
 
 public class SearchPageController implements ViewArgumentAdapter {
 
+    public ToggleGroup searchGroup;
     @FXML
     private TextField searchTextField;
     @FXML
@@ -31,6 +30,14 @@ public class SearchPageController implements ViewArgumentAdapter {
     private ListView<Object> programListView;
     @FXML
     private Button creditButton;
+    @FXML
+    private RadioButton personButton;
+    @FXML
+    private RadioButton programButton;
+    @FXML
+    private RadioButton producentButton;
+
+    private int searchTypeId;
 
     public static PresentationSingleton fulcrum;
 
@@ -40,7 +47,21 @@ public class SearchPageController implements ViewArgumentAdapter {
         fulcrum = PresentationSingleton.getInstance();
         fulcrum.setTitle("Søgeresultater");
         searchTextField.setText(fulcrum.getSearch());
-
+        searchTypeId = fulcrum.getID();
+        switch (searchTypeId){
+            case 0:
+                personButton.setSelected(true);
+                break;
+            case 1:
+                producentButton.setSelected(true);
+                break;
+            case 2:
+                programButton.setSelected(true);
+                break;
+            default:
+                System.out.println("Something probably went wrong");
+                programButton.setSelected(true);
+        }
         List<Object> objects = (List<Object>) o;
         ObservableList<Object> thing = FXCollections.observableArrayList(objects);
         programListView.setItems(thing);
@@ -75,12 +96,27 @@ public class SearchPageController implements ViewArgumentAdapter {
         fulcrum.changeView("creditpage", chosen);
     }
 
+    public void searchRadioHandler() {
+        if(personButton.isSelected()){
+            searchTextField.setPromptText("Indtast navn på en person");
+            searchTypeId = 0;
+        }
+        if(producentButton.isSelected()){
+            searchTextField.setPromptText("Indtast navnet på producenten");
+            searchTypeId = 1;
+        }
+        if(programButton.isSelected()){
+            searchTextField.setPromptText("Indtast navn på programmet");
+            searchTypeId = 2;
+        }
+    }
+
     public void searchHandler() {
         String searchText = searchTextField.getText();
         System.out.println("Du søgte efter: " + searchText);
         fulcrum.setSearch(searchText);
-        //TODO: Change chosen search type here.
-        List results = fulcrum.getDomainLayer().search(2, searchText);
+        fulcrum.setID(searchTypeId);
+        List results = fulcrum.getDomainLayer().search(searchTypeId, searchText);
 
         fulcrum.changeView("searchpage", results);
     }

@@ -217,10 +217,11 @@ public class JSONController implements IDataLayer {
         for (IProgramme programme : dataLayer.getProgrammes()) {
             System.out.println(" - " + programme.getName() + " fra kanal: " + programme.getChannel());
         }
-
         /*
+        int alexander = dataLayer.createPerson("Alexander Nørup", new Date(), "Han er en vandrende vandmand");
         int stokkefar = dataLayer.createPerson("Stokkefar", new Date(), "Han er bare ham der hjælper" );
         int lasse = dataLayer.createPerson("Lasse", new Date(), "Han er stormester");
+        int alexCredit = dataLayer.createCredit(dataLayer.getPerson(alexander), FunctionType.ACTOR);
         int stokkeCredit = dataLayer.createCredit(dataLayer.getPerson(stokkefar), FunctionType.ACTOR);
         int lasseCredit = dataLayer.createCredit(dataLayer.getPerson(lasse), FunctionType.CAMERAGUY);
         int producerId = dataLayer.createProducer("TV 2", new ArrayList<>());
@@ -228,11 +229,12 @@ public class JSONController implements IDataLayer {
         ArrayList<ICredit> credits = new ArrayList<>();
         credits.add(dataLayer.getCredit(stokkeCredit));
         credits.add(dataLayer.getCredit(lasseCredit));
+        credits.add(dataLayer.getCredit(alexCredit));
 
         ArrayList<IProducer> producers = new ArrayList<>();
         producers.add(dataLayer.getProducer(producerId));
         dataLayer.createProgramme("Stormester", Category.NEWS,"TV 2", new Date(), credits, producers);
-
+        */
         try {
             ((JSONController) dataLayer).saveFile();
         } catch (JSONException e) {
@@ -515,13 +517,13 @@ public class JSONController implements IDataLayer {
             for (ICredit credit : programme.getCredits()) {
                 if (credit.getPerson().getName().toLowerCase().contains(query)) {
                     actorResults.add(programme);
-                    continue;
+                    break;
                 }
             }
             for (IProducer producer : programme.getProducers()) {
                 if (producer.getCompany().toLowerCase().contains(query)) {
                     producerResults.add(programme);
-                    continue;
+                    break;
                 }
             }
         }
@@ -551,6 +553,7 @@ public class JSONController implements IDataLayer {
             for (IProgramme programme : getProgrammesForPerson(person.getId())) {
                 if (programme.getName().toLowerCase().contains(query)) {
                     programResults.add(person);
+                    break;
                 }
             }
         }
@@ -578,6 +581,7 @@ public class JSONController implements IDataLayer {
             for (IProgramme programme : producer.getProgrammes()) {
                 if (programme.getName().toLowerCase().contains(query)) {
                     programmeResults.add(producer);
+                    break;
                 }
             }
         }

@@ -11,6 +11,13 @@
       <TextField fx:id="searchTextField" layoutX="192.0" layoutY="67.0" prefHeight="25.0" prefWidth="215.0" promptText="Person, program eller producent" />
       <Button fx:id="searchButton" layoutX="408.0" layoutY="67.0" mnemonicParsing="false" onAction="#searchHandler" text="Søg" />
       <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
+      <RadioButton fx:id="personButton" layoutX="264.0" layoutY="43.0" mnemonicParsing="false" onAction="#searchRadioHandler" text="Person">
+         <toggleGroup>
+            <ToggleGroup fx:id="searchGroup" />
+         </toggleGroup></RadioButton>
+      <RadioButton fx:id="programButton" layoutX="193.0" layoutY="43.0" mnemonicParsing="false" onAction="#searchRadioHandler" selected="true" text="Program" toggleGroup="$searchGroup" />
+      <RadioButton fx:id="producentButton" layoutX="326.0" layoutY="43.0" mnemonicParsing="false" onAction="#searchRadioHandler" text="Producent" toggleGroup="$searchGroup" />
+
       <Label layoutX="233.0" layoutY="122.0" text="Søgeresultater:">
          <font>
             <Font size="20.0" />

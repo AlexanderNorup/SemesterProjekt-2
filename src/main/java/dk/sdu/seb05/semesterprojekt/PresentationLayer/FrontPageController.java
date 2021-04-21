@@ -168,12 +168,13 @@ public class FrontPageController {
         String searchText = searchTextField.getText();
         System.out.println("Du søgte efter: " + searchText);
         fulcrum.setSearch(searchText);
+        fulcrum.setID(searchTypeId);
         List results = fulcrum.getDomainLayer().search(searchTypeId, searchText);
 
         fulcrum.changeView("searchpage", results);
     }
 
-    public void editHandler() throws IOException {
+    public void editHandler() {
         if(producerDropdown.getSelectionModel() == null || producerDropdown.getSelectionModel().isEmpty()){
             errorAlert();
         }
@@ -181,21 +182,16 @@ public class FrontPageController {
             String producer = producerDropdown.getValue();
             System.out.println(producer);
             fulcrum.setName(producer);
-
-            Parent editPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/editpage.fxml"));
-            fulcrum.getPrimaryStage().setScene(new Scene(editPage));
-            fulcrum.getPrimaryStage().setTitle("Rediger programmer");
+            fulcrum.changeView("editpage");
         }
     }
 
-    public void createHandler() throws IOException {
+    public void createHandler() {
         if(producerDropdown.getSelectionModel() == null || producerDropdown.getSelectionModel().isEmpty()){
             errorAlert();
         }
         else {
-            Parent createPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/createpage.fxml"));
-            fulcrum.getPrimaryStage().setScene(new Scene(createPage));
-            fulcrum.getPrimaryStage().setTitle("Opret nyt program");
+            fulcrum.changeView("createpage");
         }
     }
 }
