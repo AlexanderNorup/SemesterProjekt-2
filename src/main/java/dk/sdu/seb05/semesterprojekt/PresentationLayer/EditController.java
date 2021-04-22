@@ -26,6 +26,7 @@ public class EditController {
 
     public void initialize(){
         fulcrum = PresentationSingleton.getInstance();
+        fulcrum.setTitle("Rediger programmer");
         System.out.println(fulcrum.getName());
         if (fulcrum.getName().equals("DR1")) {
             programsListView.setItems(FXCollections.observableArrayList(
@@ -53,15 +54,11 @@ public class EditController {
         fulcrum.goToFrontPage();
     }
 
-    public void deleteCreditHandler() throws IOException {
-        Parent deleteCreditPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/deletecreditpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(deleteCreditPage));
-        fulcrum.getPrimaryStage().setTitle("Fjern credits");
+    public void deleteCreditHandler() {
+        fulcrum.changeView("deletecreditpage");
     }
 
-    public void addCreditHandler() throws IOException {
-        Parent createCreditPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/createcreditpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(createCreditPage));
-        fulcrum.getPrimaryStage().setTitle("Tilføj credits");
+    public void addCreditHandler() {
+        fulcrum.changeView("createcreditpage");
     }
 }

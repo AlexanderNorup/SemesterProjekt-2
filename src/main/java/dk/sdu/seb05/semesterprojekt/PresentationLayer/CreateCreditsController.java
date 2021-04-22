@@ -41,11 +41,11 @@ public class CreateCreditsController {
 
     public void initialize() {
         fulcrum = PresentationSingleton.getInstance();
-        FunctionType[] funcs = FunctionType.values();
-        for (int i = 0; i < funcs.length; i++) {
-
-            functionTypeExistChoiceBox.getItems().add(funcs[i].toString());
-            functionTypeNewChoiceBox.getItems().add(funcs[i].toString());
+        fulcrum.setTitle("Tilføj credits");
+        FunctionType[] functionTypes = FunctionType.values();
+        for (int i = 0; i < functionTypes.length; i++) {
+            functionTypeExistChoiceBox.getItems().add(functionTypes[i].toString());
+            functionTypeNewChoiceBox.getItems().add(functionTypes[i].toString());
         }
 
         personChoiceBox.getItems().addAll("person1", "person2", "person3"); //person1 osv.. er Place holder
