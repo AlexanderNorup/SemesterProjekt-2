@@ -1,27 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.SearchPageController">
    <children>
-      <ListView fx:id="programListView" layoutX="124.0" layoutY="152.0" prefHeight="234.0" prefWidth="350.0" />
-      <Button fx:id="creditButton" layoutX="475.0" layoutY="152.0" mnemonicParsing="false" onAction="#chooseHandler" text="Se credit" />
-      <TextField fx:id="searchTextField" layoutX="192.0" layoutY="67.0" prefHeight="25.0" prefWidth="215.0" promptText="Person, program eller producent" />
-      <Button fx:id="searchButton" layoutX="408.0" layoutY="67.0" mnemonicParsing="false" onAction="#searchHandler" text="Søg" />
-      <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
-      <RadioButton fx:id="personButton" layoutX="264.0" layoutY="43.0" mnemonicParsing="false" onAction="#searchRadioHandler" text="Person">
-         <toggleGroup>
-            <ToggleGroup fx:id="searchGroup" />
-         </toggleGroup></RadioButton>
-      <RadioButton fx:id="programButton" layoutX="193.0" layoutY="43.0" mnemonicParsing="false" onAction="#searchRadioHandler" selected="true" text="Program" toggleGroup="$searchGroup" />
-      <RadioButton fx:id="producentButton" layoutX="326.0" layoutY="43.0" mnemonicParsing="false" onAction="#searchRadioHandler" text="Producent" toggleGroup="$searchGroup" />
-
-      <Label layoutX="233.0" layoutY="122.0" text="Søgeresultater:">
+      <HBox layoutX="175.0" layoutY="63.0" prefHeight="20.0" prefWidth="242.0" spacing="10.0">
+         <children>
+            <JFXRadioButton fx:id="programButton" mnemonicParsing="false" onAction="#searchRadioHandler" text="Program">
+               <toggleGroup>
+                  <ToggleGroup fx:id="searchGroup" />
+               </toggleGroup>
+            </JFXRadioButton>
+            <JFXRadioButton fx:id="personButton" mnemonicParsing="false" onAction="#searchRadioHandler" text="Person" toggleGroup="$searchGroup">
+            </JFXRadioButton>
+            <JFXRadioButton fx:id="producentButton" mnemonicParsing="false" onAction="#searchRadioHandler" text="Producent" toggleGroup="$searchGroup">
+            </JFXRadioButton>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutX="172.0" layoutY="92.0" maxHeight="22.0" prefHeight="24.0" prefWidth="311.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="12.0" prefWidth="242.0">
+               <children>
+                  <TextField fx:id="searchTextField" prefHeight="30.0" prefWidth="237.0" promptText="Indtast navn på programmet" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="15.0" prefWidth="65.0">
+               <children>
+                  <JFXButton fx:id="searchButton" buttonType="RAISED" onAction="#searchHandler" text="Søg">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </JFXButton>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <JFXListView id="mylistview" fx:id="searchResultListView" layoutX="121.0" layoutY="156.0" prefHeight="234.0" prefWidth="350.0" showTooltip="true" />
+      <Label layoutX="250.0" layoutY="127.0" text="Søgeresultat:">
          <font>
-            <Font size="20.0" />
+            <Font size="16.0" />
          </font>
       </Label>
+      <JFXButton fx:id="creditButton" layoutX="475.0" layoutY="152.0" mnemonicParsing="false" onAction="#chooseHandler" text="Se credit" />
+      <JFXButton fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
    </children>
 </AnchorPane>

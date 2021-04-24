@@ -1,14 +1,12 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
-import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXRadioButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -20,22 +18,23 @@ import java.util.List;
 public class SearchPageController implements ViewArgumentAdapter {
 
     public ToggleGroup searchGroup;
+    public Label searchLabel;
     @FXML
     private TextField searchTextField;
     @FXML
-    private Button searchButton;
+    private JFXButton searchButton;
     @FXML
-    private Button backButton;
+    private JFXButton backButton;
     @FXML
-    private ListView<Object> programListView;
+    private JFXListView<Object> searchResultListView;
     @FXML
-    private Button creditButton;
+    private JFXButton creditButton;
     @FXML
-    private RadioButton personButton;
+    private JFXRadioButton personButton;
     @FXML
-    private RadioButton programButton;
+    private JFXRadioButton programButton;
     @FXML
-    private RadioButton producentButton;
+    private JFXRadioButton producentButton;
 
     private int searchTypeId;
 
@@ -45,9 +44,9 @@ public class SearchPageController implements ViewArgumentAdapter {
     @Override
     public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
-        fulcrum.setTitle("Søgeresultater");
-        searchTextField.setText(fulcrum.getSearch());
-        searchTypeId = fulcrum.getID();
+        fulcrum.setTitle("Søgeresultat");
+        //searchTextField.setText(fulcrum.getSearchText()); //sets the TextField to be what was searched for, unnecessary?
+        searchTypeId = fulcrum.getSearchType();
         switch (searchTypeId){
             case 0:
                 personButton.setSelected(true);
@@ -64,9 +63,9 @@ public class SearchPageController implements ViewArgumentAdapter {
         }
         List<Object> objects = (List<Object>) o;
         ObservableList<Object> thing = FXCollections.observableArrayList(objects);
-        programListView.setItems(thing);
+        searchResultListView.setItems(thing);
 
-        programListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        searchResultListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if(event.getClickCount() == 2){
@@ -88,7 +87,7 @@ public class SearchPageController implements ViewArgumentAdapter {
 
 
     public void chooseHandler() {
-        Object chosen =  programListView.getSelectionModel().getSelectedItem();
+        Object chosen =  searchResultListView.getSelectionModel().getSelectedItem();
         if(chosen == null){
             return;
         }
@@ -113,9 +112,12 @@ public class SearchPageController implements ViewArgumentAdapter {
 
     public void searchHandler() {
         String searchText = searchTextField.getText();
-        System.out.println("Du søgte efter: " + searchText);
-        fulcrum.setSearch(searchText);
-        fulcrum.setID(searchTypeId);
+        if(searchText == null || searchText.trim().isEmpty()){
+            return;
+        }
+        System.out.println("Du søgte efter: " + searchText + "!");
+        fulcrum.setSearchText(searchText);
+        fulcrum.setSearchType(searchTypeId);
         List results = fulcrum.getDomainLayer().search(searchTypeId, searchText);
 
         fulcrum.changeView("searchpage", results);
