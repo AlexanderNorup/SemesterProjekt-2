@@ -40,7 +40,13 @@ public class JSONProducer implements IProducer {
         return new JSONProducer(id, company, new ArrayList<IProgramme>());
     }
 
-    //TODO: ID
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof JSONProducer){
+            return ((JSONProducer) obj).getId() == this.getId();
+        }
+        return false;
+    }
 
     @Override
     public String toString() {

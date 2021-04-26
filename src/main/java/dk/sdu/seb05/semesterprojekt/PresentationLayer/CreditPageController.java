@@ -30,6 +30,8 @@ import java.util.ArrayList;
 public class CreditPageController implements ViewArgumentAdapter{
 
     @FXML
+    private Label listDescriptionLabel;
+    @FXML
     private JFXButton creditButton;
     @FXML
     private JFXButton backButton;
@@ -50,24 +52,28 @@ public class CreditPageController implements ViewArgumentAdapter{
             programme = (IProgramme) o;
             fulcrum.setTitle("Credits for: " + programme.getName());
             contentLabel.setText(programme.getName());
+            listDescriptionLabel.setText("Rolleliste: ");
             ObservableList<Object> persons = FXCollections.observableArrayList((programme.getCredits()));
             creditListView.setItems(persons);
             creditListView.getSelectionModel().selectFirst();
         }else if(o instanceof ICredit){
             IPerson person = ( (ICredit) o ).getPerson();
             contentLabel.setText(person.getName());
+            listDescriptionLabel.setText("Medvirkende i: ");
             fulcrum.setTitle("Credits for: " + person.getName());
             ObservableList<Object> programmes = FXCollections.observableArrayList( fulcrum.getDomainLayer().getProgrammesForPerson(person.getId()) );
             creditListView.setItems(programmes);
         }else if(o instanceof IPerson){
             IPerson person = (IPerson) o;
             contentLabel.setText(person.getName());
+            listDescriptionLabel.setText("Medvirkende i: ");
             fulcrum.setTitle("Credits for: " + person.getName());
             ObservableList<Object> programmes = FXCollections.observableArrayList( fulcrum.getDomainLayer().getProgrammesForPerson(person.getId()) );
             creditListView.setItems(programmes);
         } else if(o instanceof IProducer){
             IProducer producer = (IProducer) o;
             contentLabel.setText(producer.getCompany());
+            listDescriptionLabel.setText("Producerede programmer: ");
             fulcrum.setTitle("Credits for: " + producer.getCompany());
             ObservableList<Object> programmes = FXCollections.observableArrayList(fulcrum.getDomainLayer().getProgrammes(producer.getId()));
             creditListView.setItems(programmes);

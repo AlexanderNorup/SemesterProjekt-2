@@ -255,7 +255,9 @@ public class JSONController implements IDataLayer {
 
     @Override
     public List<IProducer> getProducers() {
-        return this.producers;
+        List<IProducer> newProducers = new ArrayList<>(producers);
+        newProducers.remove(getProducer(-1));
+        return newProducers;
     }
 
     public List<ICredit> getCredits() {
@@ -306,11 +308,6 @@ public class JSONController implements IDataLayer {
     public boolean updateProgramme(IProgramme iProgramme) {
         this.programmes.remove(getProgram(iProgramme.getId()));
         this.programmes.add(iProgramme);
-        try {
-            saveFile();
-        } catch (JSONException e) {
-            System.out.println("Der skete en fejl med at opdatere et program: " + e.getMessage());
-        }
         return true;
     }
 
@@ -318,11 +315,6 @@ public class JSONController implements IDataLayer {
     public boolean updatePerson(IPerson iPerson) {
         this.persons.remove(getPerson(iPerson.getId()));
         this.persons.add(iPerson);
-        try {
-            saveFile();
-        } catch (JSONException e) {
-            System.out.println("Der skete en fejl med at opdatere en person: " + e.getMessage());
-        }
         return true;
     }
 
@@ -330,11 +322,6 @@ public class JSONController implements IDataLayer {
     public boolean updateProducer(IProducer iProducer) {
         this.producers.remove(getProducer(iProducer.getId()));
         this.producers.add(iProducer);
-        try {
-            saveFile();
-        } catch (JSONException e) {
-            System.out.println("Der skete en fejl med at opdatere en producer: " + e.getMessage());
-        }
         return true;
     }
 
@@ -342,11 +329,6 @@ public class JSONController implements IDataLayer {
     public boolean updateCredit(ICredit iCredit) {
         this.credits.remove(getCredit(iCredit.getId()));
         this.credits.add(iCredit);
-        try {
-            saveFile();
-        } catch (JSONException e) {
-            System.out.println("Der skete en fejl med at opdatere en credit: " + e.getMessage());
-        }
         return true;
     }
 
@@ -354,10 +336,8 @@ public class JSONController implements IDataLayer {
     public int createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
         IProgramme programme = new JSONProgramme(nextProgrammeId, name, category, channel, airedDate, producers, credits);
         this.programmes.add(programme);
-        try {
-            saveFile();
-        } catch (JSONException e) {
-            System.out.println("Der skete en fejl med at oprette et program: " + e.getMessage());
+        for(IProducer producer : producers){
+            producer.addProgramme(programme);
         }
         return nextProgrammeId++;
     }
@@ -366,11 +346,6 @@ public class JSONController implements IDataLayer {
     public int createPerson(String name, Date birthdate, String description) {
         IPerson person = new JSONPerson(nextPersonId, name, birthdate, description);
         this.persons.add(person);
-        try {
-            saveFile();
-        } catch (JSONException e) {
-            System.out.println("Der skete en fejl med at oprette en person: " + e.getMessage());
-        }
         return nextPersonId++;
     }
 
@@ -378,11 +353,6 @@ public class JSONController implements IDataLayer {
     public int createProducer(String company, List<IProgramme> programmes) {
         IProducer producer = new JSONProducer(nextProducerId, company, programmes);
         this.producers.add(producer);
-        try {
-            saveFile();
-        } catch (JSONException e) {
-            System.out.println("Der skete en fejl med at oprette en producer: " + e.getMessage());
-        }
         return nextProducerId++;
     }
 
@@ -390,11 +360,6 @@ public class JSONController implements IDataLayer {
     public int createCredit(IPerson person, FunctionType functionType) {
         ICredit credit = new JSONCredit(nextCreditId, person, functionType);
         this.credits.add(credit);
-        try {
-            saveFile();
-        } catch (JSONException e) {
-            System.out.println("Der skete en fejl med at oprette en credit: " + e.getMessage());
-        }
         return nextCreditId++;
     }
 
@@ -402,12 +367,8 @@ public class JSONController implements IDataLayer {
     public boolean deleteProgramme(IProgramme iProgramme) {
         IProgramme toRemove = getProgram(iProgramme.getId());
         boolean res = programmes.remove(toRemove);
-        if(res) {
-            try {
-                saveFile();
-            } catch (JSONException e) {
-                System.out.println("Der skete en fejl med at slette et program: " + e.getMessage());
-            }
+        for(IProducer producer : toRemove.getProducers()){
+            producer.removeProgramme(toRemove);
         }
         return res;
     }
@@ -416,13 +377,6 @@ public class JSONController implements IDataLayer {
     public boolean deletePerson(IPerson iPerson) {
         IPerson toRemove = getPerson(iPerson.getId());
         boolean res = persons.remove(toRemove);
-        if(res) {
-            try {
-                saveFile();
-            } catch (JSONException e) {
-                System.out.println("Der skete en fejl med at slette en person: " + e.getMessage());
-            }
-        }
         return res;
     }
 
@@ -430,13 +384,6 @@ public class JSONController implements IDataLayer {
     public boolean deleteProducer(IProducer iProducer) {
         IProducer toRemove = getProducer(iProducer.getId());
         boolean res = producers.remove(toRemove);
-        if(res) {
-            try {
-                saveFile();
-            } catch (JSONException e) {
-                System.out.println("Der skete en fejl med at slette en producer: " + e.getMessage());
-            }
-        }
         return res;
     }
 
@@ -444,13 +391,6 @@ public class JSONController implements IDataLayer {
     public boolean deleteCredit(ICredit iCredit) {
         ICredit toRemove = getCredit(iCredit.getId());
         boolean res = credits.remove(toRemove);
-        if(res) {
-            try {
-                saveFile();
-            } catch (JSONException e) {
-                System.out.println("Der skete en fejl med at slette en credit: " + e.getMessage());
-            }
-        }
         return res;
     }
 
@@ -629,6 +569,17 @@ public class JSONController implements IDataLayer {
     @Override
     public List<String> getNotifications(int producerId) {
         return new ArrayList<String>();
+    }
+
+    @Override
+    public boolean commit(){
+        try {
+            saveFile();
+            return true;
+        } catch (JSONException e) {
+            System.out.println("Der skete en fejl med at committe: " + e.getMessage());
+        }
+        return false;
     }
 
     @Override

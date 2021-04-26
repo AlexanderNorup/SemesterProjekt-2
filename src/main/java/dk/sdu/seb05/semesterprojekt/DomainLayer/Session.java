@@ -2,11 +2,11 @@ package dk.sdu.seb05.semesterprojekt.DomainLayer;
 
 
 public class Session {
-    public int producerID;
-    public boolean isAdmin;
+    private int producerID;
+    private boolean isAdmin;
 
     public Session(){
-        this.producerID = 0;
+        this.producerID = -2;
         this.isAdmin = false;
     }
 
@@ -16,7 +16,7 @@ public class Session {
     }
 
     public Session(boolean isAdmin){
-        this.producerID = 0;
+        this.producerID = -1;
         this.isAdmin = isAdmin;
     }
 

@@ -3,6 +3,7 @@ package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.events.JFXDialogEvent;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.Category;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -37,6 +38,8 @@ public class CreatePageController {
     private TextField channelTextField;
     @FXML
     private JFXButton backButton;
+
+    IProgramme programme;
 
     public void initialize() {
         fulcrum = PresentationSingleton.getInstance();
@@ -89,7 +92,10 @@ public class CreatePageController {
         confirmButton.setOnAction(new EventHandler<>() {
             @Override
             public void handle(ActionEvent event) {
-                fulcrum.changeView("createcreditpage");
+                if(programme == null){
+                    return;
+                }
+                fulcrum.changeView("createcreditpage", programme);
             }
         });
         createPageButton.setOnAction(new EventHandler<>() {
@@ -165,7 +171,7 @@ public class CreatePageController {
             System.out.println("Something needs filling in!");
         }
         else if (!errorHandler()) {
-            fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
+            programme = fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
                     categoryComboBox.getValue(),
                     channelTextField.getText(),
                     datePicker());
@@ -175,6 +181,7 @@ public class CreatePageController {
                     "Valgt kanal: " + channelTextField.getText() + "\n" +
                     "Dato: " + dateLabel.getText() + "\n"
             );
+            fulcrum.getDomainLayer().commit();
             popupSuccess();
         }
     }
