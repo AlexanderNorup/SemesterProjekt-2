@@ -87,9 +87,9 @@ public class PresentationSingleton {
     }
 
     /**
-     * Method change between scenes. Two variations, one where an object is parsed and one without.
+     * Method to change between scenes. Two variations, one where an object is parsed and one without.
      * @param view is the String name of the FXML document for the next scene. It gets parsed through an FXMLLoader.
-     * @param additionalData is an optional paramter, which enables the possibility of sending objects between
+     * @param additionalData is an optional parameter, which enables the possibility of sending objects between
      *                       scenes, such as IProgrammes or ICredits.
      */
     public void changeView(String view, Object additionalData){
