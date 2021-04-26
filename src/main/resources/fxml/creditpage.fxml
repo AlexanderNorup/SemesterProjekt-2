@@ -28,5 +28,6 @@
       </VBox>
       <JFXButton fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
       <JFXButton fx:id="creditButton" layoutX="520.0" layoutY="66.0" mnemonicParsing="false" onAction="#seeCreditsHandler" text="Se credit" />
+      <Label fx:id="listDescriptionLabel" layoutX="84.0" layoutY="47.0" styleClass="bold" text="TEMPLATE" />
    </children>
 </AnchorPane>

@@ -1,7 +1,10 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.events.JFXDialogEvent;
+import dk.sdu.seb05.semesterprojekt.DomainLayer.Session;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -34,7 +37,7 @@ public class FrontPageController {
     @FXML
     private JFXButton searchButton;
     @FXML
-    private JFXComboBox<String> producerDropdown;
+    private JFXComboBox<IProducer> producerDropdown;
     @FXML
     private JFXButton darkModeButton;
     @FXML
@@ -77,18 +80,19 @@ public class FrontPageController {
         ObservableList<IProgramme> programs = FXCollections.observableArrayList(fulcrum.getDomainLayer().getLatestProgrammes());
         programListView.setItems(programs);  //gets current programs and sets them to the listview
         searchTextField.setText(""); //makes the search field empty
-        producerDropdown.setVisible(false);
-        programButton.setSelected(true);
-        userButton.setSelected(true);
+        //producerDropdown.setVisible(false);
+        //userButton.setSelected(true);
         ObservableList<String> notifications = FXCollections.observableArrayList(
                 "Der er 3 nye ændringer i dit program \"(2019) Badehotellet\"",
                 "Der er 69 nye ændringer i dit program \"(2010) Natholdet\"",
-                "Der er blevet slettet 5 personer fra dit program \"(2005) Klovn \"");
+                "Der er blevet slettet 5 personer fra dit program \"(2005) Klovn \"",
+                "\n\n\n\n \t\t\t\t\t\t *** WORK IN PROGRESS ***");
         notificationListView.setItems(notifications);
-        String[] producers = {"TV 2", "Disney Channel", "DR1"};
+        ObservableList<IProducer> producers = FXCollections.observableArrayList(fulcrum.getDomainLayer().getProducers());
         producerDropdown.getItems().addAll(producers);
-        radioHandler();
         programListView.getStyleClass().add("mylistview"); //adds a user defined style class from the css file, as it's style (makes it pretty)
+        setLoggedIn();
+        radioHandler();
         programListView.setOnMouseClicked(new EventHandler<MouseEvent>() { //if you double click an item, you will see credits for that item
             @Override
             public void handle(MouseEvent event) {
@@ -113,6 +117,29 @@ public class FrontPageController {
 
     }
 
+    private void setLoggedIn(){
+        Session currentSession = fulcrum.getDomainLayer().getSession();
+        if(currentSession.isAdmin()) {
+            adminButton.setSelected(true);
+            return;
+        }
+        switch (currentSession.getProducerID()){
+            case -2:
+                userButton.setSelected(true);
+                break;
+            default:
+                producerButton.setSelected(true);
+                IProducer producer = fulcrum.getDomainLayer().chooseProducer(currentSession.getProducerID());
+                //producerDropdown.setValue(producer);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        producerDropdown.getSelectionModel().select(producer);
+                    }
+                });
+        }
+    }
+
     public void searchRecentHandler() throws IOException {
         IProgramme programme = programListView.getSelectionModel().getSelectedItem();
         if(programme == null){
@@ -135,11 +162,11 @@ public class FrontPageController {
         if(userButton.isSelected()){
             notificationButton.setVisible(false);
             notificationListView.setVisible(false);
-            //notificationButton.setSelected(false);
             editButton.setVisible(false);
             createButton.setVisible(false);
             producerDropdown.setVisible(false);
             producerDropdown.setValue(null);
+            fulcrum.getDomainLayer().setSession(0, -2); // auth = 0 -> user, id=-2 -> user
         }
         if(producerButton.isSelected()){
             notificationButton.setVisible(true);
@@ -152,8 +179,9 @@ public class FrontPageController {
             notificationButton.setVisible(true);
             editButton.setVisible(true);
             createButton.setVisible(true);
-            producerDropdown.setVisible(true);
+            producerDropdown.setVisible(false);
             producerDropdown.setValue(null);
+            fulcrum.getDomainLayer().setSession(2, -1); // auth = 2 -> admin, id=-1 -> admin
         }
     }
 
@@ -224,19 +252,19 @@ public class FrontPageController {
     }
 
     public void editHandler() {
-        if(producerDropdown.getSelectionModel() == null || producerDropdown.getSelectionModel().isEmpty()){
+        if(fulcrum.getDomainLayer().getSession().getProducerID() == -2){
             popupError();
         }
         else{
-            String producer = producerDropdown.getValue();
+            int producer = fulcrum.getDomainLayer().getSession().getProducerID();
             System.out.println(producer);
-            fulcrum.setName(producer);
+            fulcrum.setProducerID(producer);
             fulcrum.changeView("editpage");
         }
     }
 
     public void createHandler() {
-        if(producerDropdown.getSelectionModel() == null || producerDropdown.getSelectionModel().isEmpty()){
+        if(fulcrum.getDomainLayer().getSession().getProducerID() == -2){
             popupError();
         }
         else {
@@ -265,4 +293,11 @@ public class FrontPageController {
         }
     }
 
+    public void sessionHandler() {
+        String sessionType = (String) sessionGroup.getSelectedToggle().getUserData();
+        int sessionTypeID = Integer.parseInt(sessionType);
+        if (producerDropdown.getValue() != null){
+            fulcrum.getDomainLayer().setSession(sessionTypeID, producerDropdown.getValue().getId());
+        }
+    }
 }

@@ -3,6 +3,9 @@ package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.events.JFXDialogEvent;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.FunctionType;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.ICredit;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,16 +19,19 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-public class CreateCreditsController {
+public class CreateCreditsController implements ViewArgumentAdapter{
 
     public static PresentationSingleton fulcrum;
+    public JFXButton deleteCreditButton;
 
     @FXML
     private StackPane stackPane;
     @FXML
-    private JFXListView<String> creditsListView; //Skal ændres til <ICredit> når implementation er mulig
+    private JFXListView<ICredit> creditsListView; //Skal ændres til <ICredit> når implementation er mulig
     @FXML
     private Label nameLabel;
     @FXML
@@ -37,7 +43,7 @@ public class CreateCreditsController {
     @FXML
     private JFXComboBox<FunctionType> functionTypeNewComboBox;
     @FXML
-    private JFXComboBox<String> personComboBox; //Skal ændres til <IPerson> når implementation er mulig
+    private JFXComboBox<IPerson> personComboBox; //Skal ændres til <IPerson> når implementation er mulig
     @FXML
     private JFXButton seeCreditButton;
     @FXML
@@ -51,23 +57,25 @@ public class CreateCreditsController {
     @FXML
     private DatePicker birthdayPicker;
 
-    public void initialize() {
+    IProgramme programme;
+
+    @Override
+    public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
         fulcrum.setTitle("Tilføj credits");
+        if(o instanceof IProgramme){
+            programme = (IProgramme) o;
+            updateListView();
+        }
+        updateComboBox();
         FunctionType[] functionTypes = FunctionType.values();
         functionTypeExistComboBox.getItems().addAll(functionTypes);
         functionTypeNewComboBox.getItems().addAll(functionTypes);
-        ObservableList<String> persons = FXCollections.observableArrayList(
-                "Boris Johnson - 56 år - Kamera mand",
-                "Lars Andersson - 26 år - Kattemand",
-                "Martin Nielsen - 33 år - Skuespiller",
-                "Alexander Nørup - 20 år - Vandmands biolog");
-        creditsListView.setItems(persons); // test data
         creditsListView.getStyleClass().add("mylistview");
 
-        personComboBox.getItems().addAll("Henrik - 20 år", "Frederik - 23 år", "Malene - 28 år"); //person1 osv.. er Place holder
-
+        //personComboBox.getItems().addAll("Henrik - 20 år", "Frederik - 23 år", "Malene - 28 år"); //person1 osv.. er Place holder
     }
+
 
     public void returnHandler() throws IOException {
         fulcrum.goToFrontPage();
@@ -136,7 +144,7 @@ public class CreateCreditsController {
     }
     public Date datePicker() {
         LocalDate localDate = birthdayPicker.getValue();
-        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+        Instant instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
         Date date = Date.from(instant);
         return date;
     }
@@ -187,57 +195,48 @@ public class CreateCreditsController {
         }
     }
 
+    private void updateListView(){
+        ObservableList<ICredit> credits = FXCollections.observableArrayList(programme.getCredits());
+        creditsListView.setItems(credits);
+    }
+
+    private void updateComboBox(){
+        ObservableList<IPerson> persons = FXCollections.observableArrayList(fulcrum.getDomainLayer().getPersons());
+        personComboBox.setItems(persons);
+    }
+
 
     public void addCredit(ActionEvent actionEvent) {
         if (errorHandler(actionEvent)) {
             System.out.println("Something needs filling in!");
-        } else if (!errorHandler(actionEvent)) {
+        } else {
             if(actionEvent.getSource() == addNewCreditButton) {
-                int age = 2021 - birthdayPicker.getValue().getYear(); //lazy, but just for testing
-                String createdPerson = nameField.getText() + " - " + age + " år" + " - " + functionTypeNewComboBox.getValue().getDesc(); //for testing purposes
-                ObservableList<String> current = creditsListView.getItems(); // gets current credits
-                current.addAll(createdPerson); // adds the newly created credit to that list
-                creditsListView.setItems(current); //adds them to the ListView
+                int age = Calendar.getInstance().get(Calendar.YEAR) - birthdayPicker.getValue().getYear(); //lazy, but just for testing
+                ICredit credit = fulcrum.getDomainLayer().createCredit(nameField.getText(), datePicker(), descriptionField.getText(), functionTypeNewComboBox.getValue());
+                programme.addCredit(credit);
+                fulcrum.getDomainLayer().commit();
+                updateComboBox();
                 nameField.setText(null); // resetting the fields to normal
-                descriptionField.setText(null);
-                birthdayPicker.setValue(null);
-                functionTypeNewComboBox.setValue(null);
+                descriptionField.setText(null); // resetting the fields to normal
+                birthdayPicker.setValue(null); // resetting the fields to normal
+                functionTypeNewComboBox.setValue(null); // resetting the fields to normal
             }
             if(actionEvent.getSource() == addExistingCreditButton){
-                String createdPerson = personComboBox.getValue() + " - " + functionTypeExistComboBox.getValue().getDesc();
-                ObservableList<String> current = creditsListView.getItems();
-                current.addAll(createdPerson);
-                creditsListView.setItems(current);
-                personComboBox.setValue(null);
-                functionTypeExistComboBox.setValue(null);
+                ICredit credit = fulcrum.getDomainLayer().createCredit(personComboBox.getValue(), functionTypeExistComboBox.getValue());
+                programme.addCredit(credit);
+                fulcrum.getDomainLayer().commit();
+                personComboBox.setValue(null); // resetting the fields to normal
+                functionTypeExistComboBox.setValue(null); // resetting the fields to normal
             }
-        }
+            updateListView();
 
-
-    /*
-    public boolean errorHandler(){
-        StringBuilder stringBuilder = new StringBuilder();
-        if(programTitleTextField.getText() == null || programTitleTextField.getText().trim().isEmpty()){
-            stringBuilder.append("Du mangler at give dit program et navn! \n");
-        }
-        if(channelTextField.getText() == null || channelTextField.getText().trim().isEmpty()){
-            stringBuilder.append("Du mangler at vælge en kanal! \n");
-        }
-        if(categoryComboBox.getSelectionModel() == null || categoryComboBox.getSelectionModel().isEmpty()){
-            stringBuilder.append("Du mangler at udfylde kategori! \n");
-        }
-        if(dateLabel.getText() == null || dateLabel.getText().trim().isEmpty()){
-            stringBuilder.append("Du mangler at vælge en dato \n");
-        }
-        if(stringBuilder.toString().trim().isEmpty()){
-            return false;
-        }
-        else {
-            popupError(stringBuilder.toString());
-            return true;
         }
 
     }
-     */
+
+    public void deleteCredit() {
+        fulcrum.getDomainLayer().removeCredit(programme.getId(), creditsListView.getSelectionModel().getSelectedItem());
+        fulcrum.getDomainLayer().commit();
+        updateListView();
     }
 }

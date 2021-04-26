@@ -45,5 +45,7 @@ public interface IDataLayer {
 
     List<String> getNotifications(int producerId);
 
+    boolean commit();
+
     void logMessage(String message);
 }

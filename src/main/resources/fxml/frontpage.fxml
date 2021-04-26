@@ -11,7 +11,7 @@
    <children>
       <HBox layoutX="175.0" layoutY="63.0" prefHeight="20.0" prefWidth="242.0" spacing="10.0">
          <children>
-            <JFXRadioButton fx:id="programButton" mnemonicParsing="false" onAction="#searchRadioHandler" text="Program">
+            <JFXRadioButton fx:id="programButton" mnemonicParsing="false" onAction="#searchRadioHandler" selected="true" text="Program">
                <toggleGroup>
                   <ToggleGroup fx:id="searchGroup" />
                </toggleGroup>
@@ -24,7 +24,7 @@
       </HBox>
       <HBox alignment="TOP_CENTER" layoutX="378.0" layoutY="9.0" prefHeight="20.0" prefWidth="210.0" spacing="10.0">
          <children>
-            <JFXRadioButton fx:id="userButton" ellipsisString="" mnemonicParsing="false" onAction="#radioHandler" text="User">
+            <JFXRadioButton fx:id="userButton" ellipsisString="" mnemonicParsing="false" onAction="#radioHandler" text="User" userData="0">
                <toggleGroup>
                   <ToggleGroup fx:id="sessionGroup" />
                </toggleGroup>
@@ -32,11 +32,11 @@
                   <Color red="0.1725490242242813" green="0.6039215922355652" blue="0.4313725531101227" />
                </selectedColor>
             </JFXRadioButton>
-            <JFXRadioButton fx:id="producerButton" mnemonicParsing="false" onAction="#radioHandler" text="Producer" toggleGroup="$sessionGroup">
+            <JFXRadioButton fx:id="producerButton" mnemonicParsing="false" onAction="#radioHandler" text="Producer" toggleGroup="$sessionGroup" userData="1">
                <selectedColor>
                   <Color red="0.1725490242242813" green="0.6039215922355652" blue="0.4313725531101227" />
                </selectedColor></JFXRadioButton>
-            <JFXRadioButton fx:id="adminButton" mnemonicParsing="false" onAction="#radioHandler" text="Admin" toggleGroup="$sessionGroup">
+            <JFXRadioButton fx:id="adminButton" mnemonicParsing="false" onAction="#radioHandler" text="Admin" toggleGroup="$sessionGroup" userData="2">
                <selectedColor>
                   <Color red="0.1725490242242813" green="0.6039215922355652" blue="0.4313725531101227" />
                </selectedColor></JFXRadioButton>
@@ -73,7 +73,7 @@
       <JFXToggleButton fx:id="toggleDarkModeButton" layoutX="480.0" layoutY="341.0" onAction="#darkMode" text="Theme" toggleColor="#ff8c00" toggleLineColor="#ff9d35" />
       <HBox alignment="CENTER_RIGHT" layoutX="440.0" layoutY="35.0" prefHeight="25.0" prefWidth="149.0">
          <children>
-            <JFXComboBox id="comboBox" fx:id="producerDropdown" nodeOrientation="LEFT_TO_RIGHT" prefHeight="25.0" promptText="Login" />
+            <JFXComboBox id="comboBox" fx:id="producerDropdown" nodeOrientation="LEFT_TO_RIGHT" onAction="#sessionHandler" prefHeight="25.0" promptText="Login" />
          </children>
       </HBox>
       <HBox layoutX="1.0" layoutY="4.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="30.0" prefWidth="370.0" spacing="4.0">
