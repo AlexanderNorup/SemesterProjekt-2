@@ -5,6 +5,9 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IDataLayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class JSONPerson implements IPerson {
@@ -57,10 +60,9 @@ public class JSONPerson implements IPerson {
 
     @Override
     public String toString() {
-        Date today = new Date();
-        today.setTime(today.getTime()+(60*60*24*365*30));
-        long ageDiff = today.getTime() - getBirthdate().getTime();
-        int age = (int) ageDiff / (60*60*24*365);
+        LocalDate today = LocalDate.now();
+        LocalDate birthDate =  getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        int age = Period.between(birthDate, today).getYears();
         return name + " ("+age+" år)";
     }
 
