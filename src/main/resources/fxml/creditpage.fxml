@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreditPageController">
    <children>
-      <ListView fx:id="creditListView" layoutX="84.0" layoutY="66.0" prefHeight="268.0" prefWidth="433.0" />
-      <Label layoutX="274.0" layoutY="18.0" text="Credit for:" />
-      <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
-      <Label fx:id="contentLabel" alignment="CENTER" layoutX="48.0" layoutY="39.0" prefHeight="17.0" prefWidth="506.0" text="Titel af indhold" textAlignment="CENTER" />
-      <Button fx:id="creditButton" layoutX="520.0" layoutY="66.0" mnemonicParsing="false" onAction="#seeCreditsHandler" text="Se credits" />
+      <JFXListView id="mylistview" fx:id="creditListView" layoutX="84.0" layoutY="66.0" prefHeight="320.0" prefWidth="433.0" showTooltip="true" />
+      <VBox alignment="CENTER" layoutX="250.0" prefHeight="70.0" prefWidth="100.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label text="Credit for:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label fx:id="contentLabel" alignment="CENTER" prefHeight="17.0" prefWidth="506.0" text="Titel af indhold" textAlignment="CENTER" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <JFXButton fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
+      <JFXButton fx:id="creditButton" layoutX="520.0" layoutY="66.0" mnemonicParsing="false" onAction="#seeCreditsHandler" text="Se credit" />
    </children>
 </AnchorPane>

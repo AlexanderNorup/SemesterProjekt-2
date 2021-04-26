@@ -1,5 +1,7 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import dk.sdu.seb05.semesterprojekt.DomainLayer.DomainController;
 import dk.sdu.seb05.semesterprojekt.DomainLayer.IDomainController;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.ICredit;
@@ -26,15 +28,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class CreditPageController implements ViewArgumentAdapter{
-    public Button creditButton;
+
     @FXML
-    private Button backButton;
+    private JFXButton creditButton;
+    @FXML
+    private JFXButton backButton;
     @FXML
     private Label contentLabel;
     @FXML
-    private TextArea creditTextArea;
-    @FXML
-    private ListView<Object> creditListView;
+    private JFXListView<Object> creditListView;
 
     public static PresentationSingleton fulcrum;
 

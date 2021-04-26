@@ -1,5 +1,7 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,13 +18,15 @@ public class EditController {
     PresentationSingleton fulcrum;
 
     @FXML
-    private Button removeProgramButton;
+    private JFXButton backButton;
     @FXML
-    private Button removeCreditButton;
+    private JFXButton removeProgramButton;
     @FXML
-    private Button addCreditButton;
+    private JFXButton removeCreditButton;
     @FXML
-    private ListView<String> programsListView;
+    private JFXButton addCreditButton;
+    @FXML
+    private JFXListView<String> programsListView;
 
     public void initialize(){
         fulcrum = PresentationSingleton.getInstance();

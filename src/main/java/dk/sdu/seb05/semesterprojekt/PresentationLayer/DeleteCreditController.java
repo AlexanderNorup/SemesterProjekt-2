@@ -1,5 +1,7 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
@@ -10,9 +12,9 @@ import java.io.IOException;
 public class DeleteCreditController {
 
     PresentationSingleton fulcrum;
-    public ListView<String> creditListView;
-    public Button backButton;
-    public Button deleteButton;
+    public JFXListView<String> creditListView;
+    public JFXButton backButton;
+    public JFXButton deleteButton;
 
     public void initialize(){
         fulcrum = PresentationSingleton.getInstance();
@@ -23,6 +25,7 @@ public class DeleteCreditController {
                 "Bjarne Hansen - 62 år - Professional database manager",
                 "Alexander Nørup - 20 år - Vandmand");
         creditListView.setItems(persons);
+        creditListView.getStyleClass().add("mylistview");
     }
 
     public void returnHandler() throws IOException {
