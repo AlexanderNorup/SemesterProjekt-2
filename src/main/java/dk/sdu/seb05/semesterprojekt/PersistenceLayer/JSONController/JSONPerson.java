@@ -33,7 +33,7 @@ public class JSONPerson implements IPerson {
         {
           "id": 1,
           "name": "Palle Pallesen",
-          "birthdate": "20/09/1995",
+          "birthdate": 1619128800000,
           "description": "Han boede på en gård."
         }
          */
