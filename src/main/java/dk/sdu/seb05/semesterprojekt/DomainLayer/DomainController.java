@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public class DomainController implements IDomainController {
-    IDataLayer dataLayer = new JSONController();
+    IDataLayer dataLayer = PersistenceFactory.getDataLayer(0);
     Session session = new Session();
     Category[] categories = Category.values();
     List<FunctionType> functionTypes = FunctionType.getAllFunctionTypes();

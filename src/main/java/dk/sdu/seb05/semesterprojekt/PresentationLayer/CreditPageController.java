@@ -79,7 +79,7 @@ public class CreditPageController implements ViewArgumentAdapter{
             creditListView.setItems(programmes);
         }
 
-
+        //Opsætter dobbeltklik på
         creditListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {

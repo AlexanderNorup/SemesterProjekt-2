@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -8,14 +9,17 @@
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreditPageController">
    <children>
       <JFXListView id="mylistview" fx:id="creditListView" layoutX="84.0" layoutY="66.0" prefHeight="320.0" prefWidth="433.0" showTooltip="true" />
-      <VBox alignment="CENTER" layoutX="250.0" prefHeight="70.0" prefWidth="100.0">
+      <VBox alignment="CENTER" layoutX="141.0" layoutY="4.0" prefHeight="70.0" prefWidth="320.0">
          <children>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="BASELINE_CENTER" prefHeight="100.0" prefWidth="320.0">
                <children>
-                  <Label text="Credit for:">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="13.0" prefWidth="320" text="Credit for:">
                      <font>
                         <Font size="16.0" />
                      </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </Label>
                </children>
             </HBox>
@@ -23,6 +27,9 @@
                <children>
                   <Label fx:id="contentLabel" alignment="CENTER" prefHeight="17.0" prefWidth="506.0" text="Titel af indhold" textAlignment="CENTER" />
                </children>
+               <VBox.margin>
+                  <Insets top="-20.0" />
+               </VBox.margin>
             </HBox>
          </children>
       </VBox>
