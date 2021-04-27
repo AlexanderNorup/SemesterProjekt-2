@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public class DomainController implements IDomainController {
-    IDataLayer dataLayer = new JSONController();
+    IDataLayer dataLayer = PersistenceFactory.getDataLayer(0);
     Session session = new Session();
     Category[] categories = Category.values();
     List<FunctionType> functionTypes = FunctionType.getAllFunctionTypes();
@@ -18,7 +18,21 @@ public class DomainController implements IDomainController {
 
     @Override
     public List<IProgramme> getProgrammes(int producerID) {
-        return dataLayer.getProducer(producerID).getProgrammes();
+        IProducer iProducer = dataLayer.getProducer(producerID);
+        if(iProducer == null){
+            return new ArrayList<IProgramme>();
+        }
+        return iProducer.getProgrammes();
+    }
+
+    @Override
+    public List<IProducer> getProducers(){
+        return dataLayer.getProducers();
+    }
+
+    @Override
+    public List<IPerson> getPersons(){
+        return dataLayer.getPersons();
     }
 
     @Override
@@ -31,40 +45,40 @@ public class DomainController implements IDomainController {
 
     //Get producerID from session
     @Override
-    public boolean createProgramme(String name, Category category, String channel, Date airedDate) {
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+    public IProgramme createProgramme(String name, Category category, String channel, Date airedDate) {
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         List<ICredit> credits = new ArrayList<>(0);
         List<IProducer> producers = new ArrayList<>(0);
-        producers.add(dataLayer.getProducer(session.producerID));
-        dataLayer.createProgramme(name, category, channel, airedDate, credits, producers);
+        producers.add(dataLayer.getProducer(session.getProducerID()));
+        int programID = dataLayer.createProgramme(name, category, channel, airedDate, credits, producers);
         dataLayer.logMessage(user + " added programme: " + name);
-        return true;
+        return dataLayer.getProgram(programID);
     }
 
     @Override
     public boolean createPerson(String name, Date birthdate, String description) {
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         dataLayer.createPerson(name, birthdate, description);
         dataLayer.logMessage(user + " added person: " + name);
         return true;
     }
 
     @Override
-    public boolean createCredit(IPerson person, FunctionType functionType) {
-        String user = (session.isAdmin) ? "Admin" : "Producer";
-        dataLayer.createCredit(person, functionType);
+    public ICredit createCredit(IPerson person, FunctionType functionType) {
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
+        int creditID = dataLayer.createCredit(person, functionType);
         dataLayer.logMessage(user + " added credit for: " + person.getName() + " as " + functionType);
-        return true;
+        return dataLayer.getCredit(creditID);
     }
 
     @Override
-    public boolean createCredit(String name, Date birthDate, String description, FunctionType functionType) {
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+    public ICredit createCredit(String name, Date birthDate, String description, FunctionType functionType) {
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         int personID = dataLayer.createPerson(name, birthDate, description);
         //createCredit returns int, maybe return -1 if credit couldn't be created
-        dataLayer.createCredit(dataLayer.getPerson(personID), functionType);
+        int creditID = dataLayer.createCredit(dataLayer.getPerson(personID), functionType);
         dataLayer.logMessage(user + " added credit for: " + name + " as " + functionType);
-        return true;
+        return dataLayer.getCredit(creditID);
     }
 
 
@@ -87,7 +101,7 @@ public class DomainController implements IDomainController {
         programme.setCategory(newCategory);
         programme.setChannel(newChannel);
         programme.setName(newName);
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         boolean result = dataLayer.updateProgramme(programme);
         if(result){
             dataLayer.logMessage(user + " updated programme: " + newName);
@@ -101,7 +115,7 @@ public class DomainController implements IDomainController {
         person.setBirthDate(birthDate);
         person.setDescription(description);
         person.setName(name);
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         boolean result = dataLayer.updatePerson(person);
         if(result){
             dataLayer.logMessage(user + " updated person: " + name);
@@ -111,7 +125,7 @@ public class DomainController implements IDomainController {
 
     @Override
     public boolean deleteProducer(int producerID) {
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         boolean result = dataLayer.deleteProducer(dataLayer.getProducer(producerID));
         if(result){
             dataLayer.logMessage(user + " deleted producer with ID: " + producerID);
@@ -121,7 +135,7 @@ public class DomainController implements IDomainController {
 
     @Override
     public boolean deleteProgramme(int programmeID) {
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         boolean result = dataLayer.deleteProgramme(dataLayer.getProgram(programmeID));
         if(result){
             dataLayer.logMessage(user + " deleted programme with ID: " + programmeID);
@@ -131,7 +145,7 @@ public class DomainController implements IDomainController {
 
     @Override
     public boolean deletePerson(int personID) {
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         boolean result = dataLayer.deletePerson(dataLayer.getPerson(personID));
         if(result){
             dataLayer.logMessage(user + " deleted person with ID: " + personID);
@@ -146,19 +160,21 @@ public class DomainController implements IDomainController {
 
     @Override
     public List<String> getNotifications() {
-        return dataLayer.getNotifications(session.producerID);
+        return dataLayer.getNotifications(session.getProducerID());
     }
 
     @Override
-    public void setSession(int auth) {
+    public void setSession(int auth, int id) {
         session = null;
         switch (auth) {
             case 0:
                 session = new Session();
+                System.out.println("Changed to user");
                 break;
             case 1:
-                session = new Session(1);
-                dataLayer.logMessage("Producer with id: " + 1 + " logged in");
+                session = new Session(id);
+                IProducer producer = producers.get(id);
+                dataLayer.logMessage("Producer with id: " + id + " logged in" + " --> " + producer.toString());
                 break;
             case 2:
                 session = new Session(true);
@@ -182,6 +198,15 @@ public class DomainController implements IDomainController {
         return dataLayer.getCreditsForPerson(personID);
     }
 
+    @Override
+    public List<IProgramme> getProgrammesForPerson(int personID) {
+        return dataLayer.getProgrammesForPerson(personID);
+    }
+
+    @Override
+    public IProducer chooseProducer(int producerID){
+        return dataLayer.getProducer(producerID);
+    }
 
     @Override
     public IProgramme chooseProgramme(int programmeID) {
@@ -207,7 +232,7 @@ public class DomainController implements IDomainController {
         IProgramme programme = dataLayer.getProgram(programmeID);
         //programme.addCredit returns void so we can't verify that credit has been added.
         programme.addCredit(dataLayer.getCredit(creditID));
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         dataLayer.logMessage(user + " added credit for "  + person.getName() + " as " + functionType + " in " + programme.getName());
         return true;
     }
@@ -221,12 +246,17 @@ public class DomainController implements IDomainController {
     @Override
     public void addProducer(int programmeID, IProducer producer) {
         dataLayer.getProgram(programmeID).addProducer(producer);
-        String user = (session.isAdmin) ? "Admin" : "Producer";
+        String user = (session.isAdmin()) ? "Admin" : "Producer";
         dataLayer.logMessage(user + " added producer to " );
     }
 
     @Override
     public void removeProducer(int programmeID, IProducer producer) {
 
+    }
+
+    @Override
+    public boolean commit(){
+        return dataLayer.commit();
     }
 }

@@ -1,13 +1,18 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 
@@ -16,36 +21,44 @@ public class EditController {
     PresentationSingleton fulcrum;
 
     @FXML
-    private Button removeProgramButton;
+    private JFXButton backButton;
     @FXML
-    private Button removeCreditButton;
+    private JFXButton removeProgramButton;
     @FXML
-    private Button addCreditButton;
+    private JFXButton removeCreditButton;
     @FXML
-    private ListView<String> programsListView;
+    private JFXButton addCreditButton;
+    @FXML
+    private JFXListView<IProgramme> programsListView;
+
+    IProgramme programme;
 
     public void initialize(){
         fulcrum = PresentationSingleton.getInstance();
+        fulcrum.setTitle("Rediger programmer");
+
+        programsListView.setItems(FXCollections.observableArrayList(
+                fulcrum.getDomainLayer().getProgrammes(fulcrum.getDomainLayer().getSession().getProducerID())
+        ));
         System.out.println(fulcrum.getName());
-        if (fulcrum.getName().equals("DR1")) {
-            programsListView.setItems(FXCollections.observableArrayList(
-                    "(1953) Far til fire - DR 1",
-                    "(2000) Blinkende Lygter - DR 1"));
-        }
-        if(fulcrum.getName().equals("TV 2")){
-            programsListView.setItems(FXCollections.observableArrayList(
-                    "(2019) Badehotellet - TV 2",
-                    "(2010) Natholdet - TV 2",
-                    "(2008) Bonderøven - TV 2 "));
-        }
-        if(fulcrum.getName().equals("Disney Channel")){
-            programsListView.setItems(FXCollections.observableArrayList(
-                    "(2007) Phineas og Ferb - Disney Channel"));
-        }
+        programsListView.setOnMouseClicked(new EventHandler<MouseEvent>() { //if you double click an item, you will see credits for that item
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getClickCount() == 2){
+                        addCreditHandler();
+                }
+            }
+        });
     }
 
     public void removeProgramHandler() {
-        programsListView.getItems().remove(programsListView.getSelectionModel().getSelectedItem());
+        programme = programsListView.getSelectionModel().getSelectedItem();
+        if(programme == null){
+            return;
+        }
+        programsListView.getItems().remove(programme);
+        fulcrum.getDomainLayer().deleteProgramme(programme.getId());
+        fulcrum.getDomainLayer().commit();
     }
 
 
@@ -53,15 +66,11 @@ public class EditController {
         fulcrum.goToFrontPage();
     }
 
-    public void deleteCreditHandler() throws IOException {
-        Parent deleteCreditPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/deletecreditpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(deleteCreditPage));
-        fulcrum.getPrimaryStage().setTitle("Fjern credits");
-    }
-
-    public void addCreditHandler() throws IOException {
-        Parent createCreditPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/createcreditpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(createCreditPage));
-        fulcrum.getPrimaryStage().setTitle("Tilføj credits");
+    public void addCreditHandler() {
+        IProgramme programme = programsListView.getSelectionModel().getSelectedItem();
+        if(programme == null){
+            return;
+        }
+        fulcrum.changeView("createcreditpage", programme);
     }
 }

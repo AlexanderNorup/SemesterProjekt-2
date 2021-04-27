@@ -1,0 +1,372 @@
+{
+  "credits": [
+    {
+      "functionType": "PRODUCER",
+      "id": 0,
+      "person": 0
+    },
+    {
+      "functionType": "PRODUCER",
+      "id": 1,
+      "person": 1
+    },
+    {
+      "functionType": "PRODUCER",
+      "id": 2,
+      "person": 2
+    },
+    {
+      "functionType": "CAMERAGUY",
+      "id": 3,
+      "person": 3
+    },
+    {
+      "functionType": "CAMERAGUY",
+      "id": 4,
+      "person": 4
+    },
+    {
+      "functionType": "CAMERAGUY",
+      "id": 5,
+      "person": 5
+    },
+    {
+      "functionType": "CUTTER",
+      "id": 6,
+      "person": 3
+    },
+    {
+      "functionType": "SOUND_EDIT",
+      "id": 7,
+      "person": 3
+    },
+    {
+      "functionType": "PRODUCER",
+      "id": 8,
+      "person": 6
+    },
+    {
+      "functionType": "EDITORIAL_OFFICE",
+      "id": 9,
+      "person": 7
+    },
+    {
+      "functionType": "EDITORIAL_OFFICE",
+      "id": 10,
+      "person": 8
+    },
+    {
+      "functionType": "ACTOR",
+      "id": 11,
+      "person": 9
+    },
+    {
+      "functionType": "ACTOR",
+      "id": 12,
+      "person": 10
+    },
+    {
+      "functionType": "ACTOR",
+      "id": 13,
+      "person": 11
+    },
+    {
+      "functionType": "ACTOR",
+      "id": 14,
+      "person": 9
+    },
+    {
+      "functionType": "ACTOR",
+      "id": 15,
+      "person": 10
+    },
+    {
+      "functionType": "ACTOR",
+      "id": 16,
+      "person": 11
+    },
+    {
+      "functionType": "PRODUCER",
+      "id": 17,
+      "person": 12
+    },
+    {
+      "functionType": "CONTRIBUTOR",
+      "id": 18,
+      "person": 13
+    },
+    {
+      "functionType": "CONTRIBUTOR",
+      "id": 19,
+      "person": 14
+    },
+    {
+      "functionType": "NARRATOR",
+      "id": 20,
+      "person": 15
+    },
+    {
+      "functionType": "SOURCE_IDEA",
+      "id": 21,
+      "person": 13
+    },
+    {
+      "functionType": "ACTOR",
+      "id": 22,
+      "person": 16
+    },
+    {
+      "functionType": "SOURCE_IDEA",
+      "id": 23,
+      "person": 13
+    },
+    {
+      "functionType": "CAMERAGUY",
+      "id": 24,
+      "person": 1
+    },
+    {
+      "functionType": "GRAPHIC_DESIGN",
+      "id": 25,
+      "person": 2
+    },
+    {
+      "functionType": "ACTOR",
+      "id": 26,
+      "person": 17
+    },
+    {
+      "functionType": "SOURCE_IDEA",
+      "id": 27,
+      "person": 13
+    }
+  ],
+  "persons": [
+    {
+      "birthdate": 1207778400000,
+      "description": "Han er en mand",
+      "id": 0,
+      "name": "Halfdan Muurholm"
+    },
+    {
+      "birthdate": 1366149600000,
+      "description": "Han er også en mand",
+      "id": 1,
+      "name": "Stefan Schaaf"
+    },
+    {
+      "birthdate": 1461276000000,
+      "description": "Han er en mand",
+      "id": 2,
+      "name": "Thomad Aders"
+    },
+    {
+      "birthdate": 1366322400000,
+      "description": "God med kamera",
+      "id": 3,
+      "name": "Hans Jørgen Rasmussen"
+    },
+    {
+      "birthdate": 1155938400000,
+      "description": "Han kommer ikke fra Danmark",
+      "id": 4,
+      "name": "Gavyn Stevens"
+    },
+    {
+      "birthdate": 1333058400000,
+      "description": "Han er sej",
+      "id": 5,
+      "name": "Dieter Dubb"
+    },
+    {
+      "birthdate": 639266400000,
+      "description": "Gammel dygtig mand",
+      "id": 6,
+      "name": "Lars Feldballe Petersen"
+    },
+    {
+      "birthdate": 909788400000,
+      "description": "Bor i en skov",
+      "id": 7,
+      "name": "Mikkel Skovsbo"
+    },
+    {
+      "birthdate": 1619128800000,
+      "description": "Han er sej",
+      "id": 8,
+      "name": "Anton Swart"
+    },
+    {
+      "birthdate": -1578877200000,
+      "description": "Kendt som Egon Olsen",
+      "id": 9,
+      "name": "Ove Sprogøoe"
+    },
+    {
+      "birthdate": 1365458400000,
+      "description": "Kendt som Benny",
+      "id": 10,
+      "name": "Morten Grundwald"
+    },
+    {
+      "birthdate": 1604962800000,
+      "description": "Kendt som Keld",
+      "id": 11,
+      "name": "Poul Bundgaard"
+    },
+    {
+      "birthdate": 1428444000000,
+      "description": "Meget berømt instruktør",
+      "id": 12,
+      "name": "Erik Balling"
+    },
+    {
+      "birthdate": 1271973600000,
+      "description": "Komiker og vært",
+      "id": 13,
+      "name": "Lasse Rimmer"
+    },
+    {
+      "birthdate": 1460671200000,
+      "description": "LE FEVREEEE",
+      "id": 14,
+      "name": "Mark Le Fêvre"
+    },
+    {
+      "birthdate": 1616968800000,
+      "description": "Kendt bager",
+      "id": 15,
+      "name": "Mette Blomsterberg"
+    },
+    {
+      "birthdate": 1616968800000,
+      "description": "Skuespiler",
+      "id": 16,
+      "name": "Amalie Dollerup"
+    },
+    {
+      "birthdate": 1602021600000,
+      "description": "Niels",
+      "id": 17,
+      "name": "Nicolaj Kopernikus"
+    }
+  ],
+  "producers": [
+    {
+      "company": "Film & TV Compagniet",
+      "id": 0
+    },
+    {
+      "company": "Nordisk Film",
+      "id": 1
+    },
+    {
+      "company": "Metronome Productions",
+      "id": 2
+    },
+    {
+      "company": "TV 2",
+      "id": 3
+    }
+  ],
+  "programmes": [
+    {
+      "category": "UNKNOWN",
+      "channel": "TV 2",
+      "credits": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "id": 0,
+      "name": "Eksempel ItsLearning",
+      "producers": [0],
+      "sendDate": 1615849200000
+    },
+    {
+      "category": "MOVIE",
+      "channel": "TV 2 Charlie",
+      "credits": [
+        11,
+        12,
+        13
+      ],
+      "id": 1,
+      "name": "Olsen Banden på Sporet",
+      "producers": [1],
+      "sendDate": 1619128800000
+    },
+    {
+      "category": "MOVIE",
+      "channel": "TV 2 Charlie",
+      "credits": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "id": 2,
+      "name": "Olsen Banden I Jylland",
+      "producers": [1],
+      "sendDate": 1586815200000
+    },
+    {
+      "category": "ENTERTAINMENT",
+      "channel": "TV 2",
+      "credits": [
+        18,
+        19
+      ],
+      "id": 3,
+      "name": "Stormester",
+      "producers": [3],
+      "sendDate": 1523484000000
+    },
+    {
+      "category": "CULTURE_AND_NATURE",
+      "channel": "DR 1",
+      "credits": [
+        20,
+        21
+      ],
+      "id": 4,
+      "name": "Den Store Bagedyst",
+      "producers": [2],
+      "sendDate": 1618351200000
+    },
+    {
+      "category": "TV_SERIES",
+      "channel": "TV 2",
+      "credits": [
+        22,
+        23,
+        24,
+        25
+      ],
+      "id": 5,
+      "name": "Badehotellet",
+      "producers": [3],
+      "sendDate": 1303423200000
+    },
+    {
+      "category": "MOVIE",
+      "channel": "TV 2",
+      "credits": [
+        26,
+        27
+      ],
+      "id": 6,
+      "name": "Klassefesten",
+      "producers": [1],
+      "sendDate": 1602626400000
+    }
+  ]
+}

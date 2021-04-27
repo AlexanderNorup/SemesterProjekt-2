@@ -1,0 +1,172 @@
+/**
+ * Primary CSS file containing all the styles currently needed for the program.
+ */
+
+@import "../css/fonts.css";
+
+.root {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-font-size: 14;
+}
+
+#pane{
+    -fx-background-color: #ededed;
+}
+
+.bold {
+    -fx-font-weight: 700;
+    -fx-font-size: 16;
+}
+
+.text-field {
+    -fx-background-color: #a9a9a9 , white , white;
+    -fx-opacity: 10;
+    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 0 -1;
+}
+
+.text-field:focused {
+    -fx-background-color: #a9a9a9 , white , white;
+    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -2 0 -2;
+}
+
+
+.jfx-button,
+.radio-button,
+.toggle-button,
+.label,
+.button{
+    -fx-text-fill: black;
+}
+
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(#487ccb 0%, #5c8ad1 25%, #5c8ad1 75%, #487ccb 100%);
+    -fx-text-fill: white;
+}
+
+.list-cell {
+    -fx-text-fill: black;
+}
+.list-cell:odd {
+    -fx-background-color: white;
+}
+.list-cell:even {
+    -fx-background-color: white;
+}
+
+.list-cell:filled:hover{
+    -fx-background-color: #487ccb;
+    -fx-text-fill: white;
+}
+
+.list-view{
+    -fx-font-family: "Roboto Regular";
+    -fx-font-size: 14px;
+}
+
+
+.jfx-radio-button{
+    -fx-font-size: 13;
+    -jfx-selected-color: #487ccb;
+    -jfx-unselected-color: #5a5a5a;
+}
+
+#jfxSpecialButton{
+    -jfx-button-type: FLAT;
+}
+#deleteButton{
+    -fx-font-size: 15;
+    -fx-background-color: #ef0000;
+    -fx-font-family: "Roboto Bold";
+}
+
+#deleteButton:hover{
+    -fx-background-color: #bc0000;
+}
+
+.jfx-button {
+    -jfx-button-type: RAISED;
+    -fx-background-color: #487ccb;
+    -fx-font-size: 14;
+    -fx-font-family: "Roboto Medium";
+    -fx-text-fill: white;
+}
+
+.jfx-button:hover{
+    -fx-background-color: #3263ae;
+}
+
+.mylistview .scroll-bar:horizontal .track,
+.mylistview .scroll-bar:vertical .track{
+    -fx-background-color:transparent;
+    -fx-border-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-border-radius:2em;
+}
+
+.mylistview .scroll-bar:horizontal .increment-button ,
+.mylistview .scroll-bar:horizontal .decrement-button {
+    -fx-background-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 0 10 0;
+}
+
+.mylistview .scroll-bar:vertical .increment-button ,
+.mylistview .scroll-bar:vertical .decrement-button {
+    -fx-background-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 10 0 0;
+}
+.mylistview  .scroll-bar .increment-arrow,
+.mylistview  .scroll-bar .decrement-arrow{
+    -fx-shape:" ";
+    -fx-padding:0;
+}
+
+.mylistview .scroll-bar:horizontal .thumb,
+.mylistview .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(#5a5a5a,90%);
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+
+
+/* Specific implementations for many different buttons and other elements, if needed. But currently not necessary*/
+/**
+
+#jfxSearch{
+    -fx-background-color: #5c8ad1;
+    -jfx-rippler-fill: red;
+}
+#jfxUtilButton{
+    -fx-background-color: #2c9a6e;
+    -fx-font-size: 14;
+}
+#jfxSearch:hover{
+    -fx-background-color: #487ccb;
+}
+
+#jfxRadioSearch{
+    -jfx-selected-color: #2c589a;
+    -jfx-unselected-color: #5a5a5a;
+}
+
+#jfxRadioLogin{
+    -jfx-selected-color: #2c9a6e;
+    -jfx-unselected-color: #5a5a5a;
+}
+
+#comboBoxDropDown .list-cell:filled:selected:focused, .list-cell:filled:selected{
+    -fx-background-color: #2c9a6e;
+    -fx-text-fill: white; #5c8ad1
+}
+.combo-box:filled:hover{
+    -fx-background-color: #2c9a6e;
+    -fx-mark-color: #217b7f;
+}
+.jfx-combo-box{
+    -jfx-focus-color: #2c589a;
+    -jfx-unfocus-color: #2c589a;
+    -fx-font-size: 14;
+ **/

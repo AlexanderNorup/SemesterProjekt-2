@@ -1,8 +1,17 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
+import dk.sdu.seb05.semesterprojekt.DomainLayer.DomainController;
+import dk.sdu.seb05.semesterprojekt.DomainLayer.IDomainController;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.ICredit;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,32 +21,78 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-public class CreditPageController {
-    public Button creditButton;
+public class CreditPageController implements ViewArgumentAdapter{
+
     @FXML
-    private Button backButton;
+    private Label listDescriptionLabel;
+    @FXML
+    private JFXButton creditButton;
+    @FXML
+    private JFXButton backButton;
     @FXML
     private Label contentLabel;
     @FXML
-    private TextArea creditTextArea;
-    @FXML
-    private ListView<String> creditListView;
+    private JFXListView<Object> creditListView;
 
     public static PresentationSingleton fulcrum;
 
-    public void initialize(){
+    private IProgramme programme;
+
+    @Override
+    public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
-        contentLabel.setText(fulcrum.getName());
-        System.out.println(fulcrum.getName());
-        ObservableList<String> persons = FXCollections.observableArrayList(
-                "Mikael Nielsen - 17 år - Skuespiller ",
-                "Annelise Jensen - 34 år - Lydmand",
-                "Alexander Nørup - 20 år - Vandmand");
-        creditListView.setItems(persons);
-        creditListView.getSelectionModel().selectFirst();
+        //Gets called when view is changed to.
+        if(o instanceof IProgramme){
+            programme = (IProgramme) o;
+            fulcrum.setTitle("Credits for: " + programme.getName());
+            contentLabel.setText(programme.getName());
+            listDescriptionLabel.setText("Rolleliste: ");
+            ObservableList<Object> persons = FXCollections.observableArrayList((programme.getCredits()));
+            creditListView.setItems(persons);
+            creditListView.getSelectionModel().selectFirst();
+        }else if(o instanceof ICredit){
+            IPerson person = ( (ICredit) o ).getPerson();
+            contentLabel.setText(person.getName());
+            listDescriptionLabel.setText("Medvirkende i: ");
+            fulcrum.setTitle("Credits for: " + person.getName());
+            ObservableList<Object> programmes = FXCollections.observableArrayList( fulcrum.getDomainLayer().getProgrammesForPerson(person.getId()) );
+            creditListView.setItems(programmes);
+        }else if(o instanceof IPerson){
+            IPerson person = (IPerson) o;
+            contentLabel.setText(person.getName());
+            listDescriptionLabel.setText("Medvirkende i: ");
+            fulcrum.setTitle("Credits for: " + person.getName());
+            ObservableList<Object> programmes = FXCollections.observableArrayList( fulcrum.getDomainLayer().getProgrammesForPerson(person.getId()) );
+            creditListView.setItems(programmes);
+        } else if(o instanceof IProducer){
+            IProducer producer = (IProducer) o;
+            contentLabel.setText(producer.getCompany());
+            listDescriptionLabel.setText("Producerede programmer: ");
+            fulcrum.setTitle("Credits for: " + producer.getCompany());
+            ObservableList<Object> programmes = FXCollections.observableArrayList(fulcrum.getDomainLayer().getProgrammes(producer.getId()));
+            creditListView.setItems(programmes);
+        }
+
+        //Opsætter dobbeltklik på
+        creditListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getClickCount() == 2){
+                    try {
+                        seeCreditsHandler();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
     }
 
     public void returnHandler() throws IOException {
@@ -45,10 +100,13 @@ public class CreditPageController {
     }
 
     public void seeCreditsHandler() throws IOException {
+        if(creditListView.getSelectionModel().getSelectedItem() == null){
+            return;
+        }
         System.out.println("Du har valgt: " + creditListView.getSelectionModel().getSelectedItem());
-        fulcrum.setName(creditListView.getSelectionModel().getSelectedItem());
-        Parent creditPage = FXMLLoader.load(JavaFXTest.class.getResource("/fxml/creditpage.fxml"));
-        fulcrum.getPrimaryStage().setScene(new Scene(creditPage));
-        fulcrum.getPrimaryStage().setTitle("Credits til " + creditListView.getSelectionModel().getSelectedItem());
+        //fulcrum.setName(creditListView.getSelectionModel().getSelectedItem());
+        fulcrum.changeView("creditpage", creditListView.getSelectionModel().getSelectedItem());
     }
+
+
 }

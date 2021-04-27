@@ -1,25 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreateCreditsController">
    <children>
-      <Button fx:id="seeCreditButton" layoutX="389.0" layoutY="241.0" mnemonicParsing="false" prefHeight="121.0" prefWidth="177.0" text="Se Credit" />
-      <TextField fx:id="nameField" layoutX="15.0" layoutY="70.0" prefHeight="25.0" prefWidth="129.0" />
-      <Label fx:id="nameLabel" layoutX="23.0" layoutY="50.0" text="Navn" />
-      <TextField fx:id="descriptionField" layoutX="164.0" layoutY="70.0" prefHeight="25.0" prefWidth="116.0" />
-      <Label fx:id="descriptionLabel" layoutX="171.0" layoutY="50.0" text="Deskription" />
-      <DatePicker fx:id="birthdayPicker" layoutX="293.0" layoutY="70.0" prefHeight="25.0" prefWidth="87.0" />
-      <Label layoutX="300.0" layoutY="50.0" text="Fødselsdag" />
-      <ChoiceBox fx:id="functionTypeNewChoiceBox" layoutX="389.0" layoutY="70.0" prefWidth="150.0" />
-      <Label layoutX="389.0" layoutY="50.0" text="Funktions Type" />
-      <Label layoutX="15.0" layoutY="180.0" text="Person" />
-      <Label layoutX="182.0" layoutY="180.0" text="Funktions Type" />
-      <Button fx:id="addExistButton" layoutX="178.0" layoutY="241.0" mnemonicParsing="false" text="Tilføj eksisterende" />
-      <Button fx:id="addNewButton" layoutX="196.0" layoutY="103.0" mnemonicParsing="false" text="Tilføj ny" />
-      <ChoiceBox fx:id="personChoiceBox" layoutX="14.0" layoutY="200.0" prefWidth="150.0" />
-      <ChoiceBox fx:id="functionTypeExistChoiceBox" layoutX="170.0" layoutY="200.0" prefWidth="150.0" />
-      <Button fx:id="returnButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
+      <TextField fx:id="nameField" layoutX="25.0" layoutY="104.0" prefHeight="25.0" prefWidth="129.0" />
+      <Label fx:id="nameLabel" layoutX="25.0" layoutY="84.0" text="Navn" />
+      <TextField fx:id="descriptionField" layoutX="164.0" layoutY="104.0" prefHeight="25.0" prefWidth="116.0" />
+      <Label fx:id="descriptionLabel" layoutX="164.0" layoutY="84.0" text="Beskrivelse" />
+      <DatePicker fx:id="birthdayPicker" layoutX="293.0" layoutY="104.0" prefHeight="25.0" prefWidth="129.0" />
+      <Label layoutX="25.0" layoutY="55.0" text="Opret credit for ny person">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font></Label>
+      <JFXComboBox fx:id="functionTypeNewComboBox" layoutX="431.0" layoutY="104.0" prefWidth="150.0" />
+      <Label layoutX="431.0" layoutY="84.0" text="Funktions Type" />
+      <Label layoutX="25.0" layoutY="204.0" text="Person" />
+      <Label layoutX="194.0" layoutY="204.0" text="Funktions Type" />
+      <JFXButton fx:id="addExistingCreditButton" layoutX="25.0" layoutY="262.0" mnemonicParsing="false" onAction="#addCredit" text="Tilføj credit" />
+      <JFXButton fx:id="addNewCreditButton" layoutX="25.0" layoutY="136.0" mnemonicParsing="false" onAction="#addCredit" text="Tilføj credit" />
+      <JFXComboBox fx:id="personComboBox" layoutX="25.0" layoutY="222.0" prefWidth="150.0" />
+      <JFXComboBox fx:id="functionTypeExistComboBox" layoutX="194.0" layoutY="222.0" prefWidth="150.0" />
+      <JFXButton fx:id="returnButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage">
+         <font>
+            <Font size="14.0" />
+         </font></JFXButton>
+      <JFXListView id="mylistview" fx:id="creditsListView" layoutX="366.0" layoutY="165.0" prefHeight="224.0" prefWidth="220.0" showTooltip="true" />
+      <Label layoutX="25.0" layoutY="179.0" text="Opret credit for eksisterende person">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="366.0" layoutY="146.0" text="Nuværende credits:">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="deleteCreditButton" layoutX="282.0" layoutY="358.0" onAction="#deleteCredit" text="Slet credit">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </JFXButton>
+      <Label layoutX="293.0" layoutY="84.0" text="Fødselsdato" />
+      <StackPane fx:id="stackPane" layoutX="100.0" layoutY="55.0" prefWidth="400.0" visible="false" />
    </children>
 </AnchorPane>

@@ -5,6 +5,9 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IDataLayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class JSONPerson implements IPerson {
@@ -30,7 +33,7 @@ public class JSONPerson implements IPerson {
         {
           "id": 1,
           "name": "Palle Pallesen",
-          "birthdate": "20/09/1995",
+          "birthdate": 1619128800000,
           "description": "Han boede på en gård."
         }
          */
@@ -55,7 +58,14 @@ public class JSONPerson implements IPerson {
         return new JSONPerson(id, name, birthDate, description);
     }
 
-    // TODO: ID
+    @Override
+    public String toString() {
+        LocalDate today = LocalDate.now();
+        LocalDate birthDate =  getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        int age = Period.between(birthDate, today).getYears();
+        return name + " ("+age+" år)";
+    }
+
     @Override
     public int getId() {
         return this.id;

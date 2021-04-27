@@ -3,6 +3,7 @@ package dk.sdu.seb05.semesterprojekt.PersistenceLayer.JSONController;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.json.JSONArray;
@@ -48,7 +49,7 @@ public class JSONController implements IDataLayer {
     private synchronized JSONObject loadFile() throws JSONException {
         try {
             if (file.exists()) {
-                Scanner reader = new Scanner(file);
+                Scanner reader = new Scanner(file, StandardCharsets.UTF_8);
                 StringBuilder stringReader = new StringBuilder();
                 while (reader.hasNextLine()) {
                     stringReader.append(reader.nextLine()).append("\n");
@@ -71,7 +72,6 @@ public class JSONController implements IDataLayer {
     }
 
     private synchronized void saveFile() throws JSONException {
-        //TODO: Skriv jsonObject til fil.
         //Først fjerner vi alle credits som ikke længere findes.
         cleanCredits();
 
@@ -103,22 +103,22 @@ public class JSONController implements IDataLayer {
                 producerArray.put(jsonProducer.toJSONObject());
             }
         }
-        jsonObject.put("producer", producerArray);
+        jsonObject.put("producers", producerArray);
 
         JSONArray programmeArray = new JSONArray();
         for (IProgramme programme : programmes) {
             if (programme instanceof JSONProgramme) {
                 JSONProgramme jsonProgramme = (JSONProgramme) programme;
-                producerArray.put(jsonProgramme.toJSONObject());
+                programmeArray.put(jsonProgramme.toJSONObject());
             }
         }
         jsonObject.put("programmes", programmeArray);
 
-        String finalJson = jsonObject.toString();
+        String finalJson = jsonObject.toString(2);
 
         //Now we just write the file
-        try (PrintWriter writer = new PrintWriter(new FileOutputStream(file.getPath(), false))) {
-            writer.println(finalJson);
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file.getPath(), false), StandardCharsets.UTF_8))) {
+            writer.print(finalJson);
             writer.flush();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -213,7 +213,16 @@ public class JSONController implements IDataLayer {
             System.out.println(" - " + person.getName() + " med beskrivelse: " + person.getDescription());
         }
 
-        /*
+        System.out.println("Alle programmer i data systemet:");
+        for (IProgramme programme : dataLayer.getProgrammes()) {
+            System.out.println(" - " + programme.getName() + " fra kanal: " + programme.getChannel());
+        }
+
+        /*dataLayer.createProducer("Film & TV Compagniet", new ArrayList<>());
+        dataLayer.createProducer("Nordisk Film", new ArrayList<>());
+        dataLayer.createProducer("Metronome Productions", new ArrayList<>());
+        dataLayer.createProducer("TV 2", new ArrayList<>());*/
+
         try {
             ((JSONController) dataLayer).saveFile();
         } catch (JSONException e) {
@@ -234,7 +243,9 @@ public class JSONController implements IDataLayer {
 
     @Override
     public List<IProducer> getProducers() {
-        return this.producers;
+        List<IProducer> newProducers = new ArrayList<>(producers);
+        newProducers.remove(getProducer(-1));
+        return newProducers;
     }
 
     public List<ICredit> getCredits() {
@@ -283,28 +294,28 @@ public class JSONController implements IDataLayer {
 
     @Override
     public boolean updateProgramme(IProgramme iProgramme) {
-        this.deleteProgramme(iProgramme);
+        this.programmes.remove(getProgram(iProgramme.getId()));
         this.programmes.add(iProgramme);
         return true;
     }
 
     @Override
     public boolean updatePerson(IPerson iPerson) {
-        this.deletePerson(iPerson);
+        this.persons.remove(getPerson(iPerson.getId()));
         this.persons.add(iPerson);
         return true;
     }
 
     @Override
     public boolean updateProducer(IProducer iProducer) {
-        this.deleteProducer(iProducer);
+        this.producers.remove(getProducer(iProducer.getId()));
         this.producers.add(iProducer);
         return true;
     }
 
     @Override
     public boolean updateCredit(ICredit iCredit) {
-        this.deleteCredit(iCredit);
+        this.credits.remove(getCredit(iCredit.getId()));
         this.credits.add(iCredit);
         return true;
     }
@@ -313,6 +324,9 @@ public class JSONController implements IDataLayer {
     public int createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
         IProgramme programme = new JSONProgramme(nextProgrammeId, name, category, channel, airedDate, producers, credits);
         this.programmes.add(programme);
+        for(IProducer producer : producers){
+            producer.addProgramme(programme);
+        }
         return nextProgrammeId++;
     }
 
@@ -340,25 +354,32 @@ public class JSONController implements IDataLayer {
     @Override
     public boolean deleteProgramme(IProgramme iProgramme) {
         IProgramme toRemove = getProgram(iProgramme.getId());
-        return programmes.remove(toRemove);
+        boolean res = programmes.remove(toRemove);
+        for(IProducer producer : toRemove.getProducers()){
+            producer.removeProgramme(toRemove);
+        }
+        return res;
     }
 
     @Override
     public boolean deletePerson(IPerson iPerson) {
         IPerson toRemove = getPerson(iPerson.getId());
-        return persons.remove(toRemove);
+        boolean res = persons.remove(toRemove);
+        return res;
     }
 
     @Override
     public boolean deleteProducer(IProducer iProducer) {
         IProducer toRemove = getProducer(iProducer.getId());
-        return producers.remove(toRemove);
+        boolean res = producers.remove(toRemove);
+        return res;
     }
 
     @Override
     public boolean deleteCredit(ICredit iCredit) {
         ICredit toRemove = getCredit(iCredit.getId());
-        return credits.remove(toRemove);
+        boolean res = credits.remove(toRemove);
+        return res;
     }
 
     private void cleanCredits() {
@@ -411,26 +432,26 @@ public class JSONController implements IDataLayer {
         List<IProgramme> programResults = new ArrayList<>();
         List<IProgramme> actorResults = new ArrayList<>();
         List<IProgramme> producerResults = new ArrayList<>();
-
+        query = query.toLowerCase();
         for (IProgramme programme : programmes) {
-            if (programme.getName().startsWith(query)) {
+            if (programme.getName().toLowerCase().startsWith(query)) {
                 topResults.add(programme);
                 continue;
             }
-            if (programme.getName().contains(query)) {
+            if (programme.getName().toLowerCase().contains(query)) {
                 programResults.add(programme);
                 continue;
             }
             for (ICredit credit : programme.getCredits()) {
-                if (credit.getPerson().getName().contains(query)) {
+                if (credit.getPerson().getName().toLowerCase().contains(query)) {
                     actorResults.add(programme);
-                    continue;
+                    break;
                 }
             }
             for (IProducer producer : programme.getProducers()) {
-                if (producer.getCompany().contains(query)) {
+                if (producer.getCompany().toLowerCase().contains(query)) {
                     producerResults.add(programme);
-                    continue;
+                    break;
                 }
             }
         }
@@ -446,19 +467,21 @@ public class JSONController implements IDataLayer {
         List<IPerson> topResults = new ArrayList<>();
         List<IPerson> personResults = new ArrayList<>();
         List<IPerson> programResults = new ArrayList<>();
+        query = query.toLowerCase();
 
         for (IPerson person : persons) {
-            if (person.getName().startsWith(query)) {
+            if (person.getName().toLowerCase().startsWith(query)) {
                 topResults.add(person);
                 continue;
             }
-            if (person.getName().contains(query)) {
+            if (person.getName().toLowerCase().contains(query)) {
                 personResults.add(person);
                 continue;
             }
             for (IProgramme programme : getProgrammesForPerson(person.getId())) {
-                if (programme.getName().contains(query)) {
+                if (programme.getName().toLowerCase().contains(query)) {
                     programResults.add(person);
+                    break;
                 }
             }
         }
@@ -473,19 +496,20 @@ public class JSONController implements IDataLayer {
         List<IProducer> topResults = new ArrayList<>();
         List<IProducer> producerResults = new ArrayList<>();
         List<IProducer> programmeResults = new ArrayList<>();
-
+        query = query.toLowerCase();
         for (IProducer producer : producers) {
-            if (producer.getCompany().startsWith(query)) {
+            if (producer.getCompany().toLowerCase().startsWith(query)) {
                 topResults.add(producer);
                 continue;
             }
-            if (producer.getCompany().contains(query)) {
+            if (producer.getCompany().toLowerCase().contains(query)) {
                 producerResults.add(producer);
                 continue;
             }
             for (IProgramme programme : producer.getProgrammes()) {
-                if (programme.getName().contains(query)) {
+                if (programme.getName().toLowerCase().contains(query)) {
                     programmeResults.add(producer);
+                    break;
                 }
             }
         }
@@ -533,6 +557,17 @@ public class JSONController implements IDataLayer {
     @Override
     public List<String> getNotifications(int producerId) {
         return new ArrayList<String>();
+    }
+
+    @Override
+    public boolean commit(){
+        try {
+            saveFile();
+            return true;
+        } catch (JSONException e) {
+            System.out.println("Der skete en fejl med at committe: " + e.getMessage());
+        }
+        return false;
     }
 
     @Override
