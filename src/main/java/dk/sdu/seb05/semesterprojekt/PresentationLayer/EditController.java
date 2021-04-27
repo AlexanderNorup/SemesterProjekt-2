@@ -4,15 +4,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 
@@ -24,8 +16,6 @@ public class EditController {
     private JFXButton backButton;
     @FXML
     private JFXButton removeProgramButton;
-    @FXML
-    private JFXButton removeCreditButton;
     @FXML
     private JFXButton addCreditButton;
     @FXML
@@ -40,13 +30,11 @@ public class EditController {
         programsListView.setItems(FXCollections.observableArrayList(
                 fulcrum.getDomainLayer().getProgrammes(fulcrum.getDomainLayer().getSession().getProducerID())
         ));
-        System.out.println(fulcrum.getName());
-        programsListView.setOnMouseClicked(new EventHandler<MouseEvent>() { //if you double click an item, you will see credits for that item
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getClickCount() == 2){
-                        addCreditHandler();
-                }
+        programsListView.getStyleClass().add("mylistview");
+        //if you double click an item, you will see credits for that item
+        programsListView.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                    addCreditHandler();
             }
         });
     }

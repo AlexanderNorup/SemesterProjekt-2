@@ -2,30 +2,16 @@ package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
-import dk.sdu.seb05.semesterprojekt.DomainLayer.DomainController;
-import dk.sdu.seb05.semesterprojekt.DomainLayer.IDomainController;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.ICredit;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class CreditPageController implements ViewArgumentAdapter{
 
@@ -78,17 +64,14 @@ public class CreditPageController implements ViewArgumentAdapter{
             ObservableList<Object> programmes = FXCollections.observableArrayList(fulcrum.getDomainLayer().getProgrammes(producer.getId()));
             creditListView.setItems(programmes);
         }
-
+        creditListView.getStyleClass().add("mylistview");
         //Opsætter dobbeltklik på
-        creditListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getClickCount() == 2){
-                    try {
-                        seeCreditsHandler();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        creditListView.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                try {
+                    seeCreditsHandler();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -104,7 +87,6 @@ public class CreditPageController implements ViewArgumentAdapter{
             return;
         }
         System.out.println("Du har valgt: " + creditListView.getSelectionModel().getSelectedItem());
-        //fulcrum.setName(creditListView.getSelectionModel().getSelectedItem());
         fulcrum.changeView("creditpage", creditListView.getSelectionModel().getSelectedItem());
     }
 

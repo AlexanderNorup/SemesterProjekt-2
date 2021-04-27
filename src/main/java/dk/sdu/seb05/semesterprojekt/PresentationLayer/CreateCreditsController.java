@@ -1,7 +1,6 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
 import com.jfoenix.controls.*;
-import com.jfoenix.controls.events.JFXDialogEvent;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.FunctionType;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.ICredit;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
@@ -9,7 +8,6 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
@@ -19,7 +17,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +28,7 @@ public class CreateCreditsController implements ViewArgumentAdapter{
     @FXML
     private StackPane stackPane;
     @FXML
-    private JFXListView<ICredit> creditsListView; //Skal ændres til <ICredit> når implementation er mulig
+    private JFXListView<ICredit> creditsListView;
     @FXML
     private Label nameLabel;
     @FXML
@@ -43,9 +40,7 @@ public class CreateCreditsController implements ViewArgumentAdapter{
     @FXML
     private JFXComboBox<FunctionType> functionTypeNewComboBox;
     @FXML
-    private JFXComboBox<IPerson> personComboBox; //Skal ændres til <IPerson> når implementation er mulig
-    @FXML
-    private JFXButton seeCreditButton;
+    private JFXComboBox<IPerson> personComboBox;
     @FXML
     private JFXButton addNewCreditButton;
     @FXML
@@ -68,52 +63,15 @@ public class CreateCreditsController implements ViewArgumentAdapter{
             updateListView();
         }
         updateComboBox();
-        FunctionType[] functionTypes = FunctionType.values();
+        List<FunctionType> functionTypes = fulcrum.getDomainLayer().getFunctionTypes();
         functionTypeExistComboBox.getItems().addAll(functionTypes);
         functionTypeNewComboBox.getItems().addAll(functionTypes);
         creditsListView.getStyleClass().add("mylistview");
-
-        //personComboBox.getItems().addAll("Henrik - 20 år", "Frederik - 23 år", "Malene - 28 år"); //person1 osv.. er Place holder
     }
 
 
     public void returnHandler() throws IOException {
         fulcrum.goToFrontPage();
-    }
-
-
-    public void addCredits() {
-        System.out.println("\n");
-        if (nameField.getText() == null || nameField.getText().trim().isEmpty()) {
-            System.out.println("Du skal udfylde et navn!");
-        }
-        if (descriptionField.getText() == null || descriptionField.getText().trim().isEmpty()) {
-            System.out.println("Du skal udfylde detaljer!");
-        }
-        if (functionTypeNewComboBox.getSelectionModel() == null || functionTypeNewComboBox.getSelectionModel().isEmpty()) {
-            System.out.println("Du skal vælge en funktion!");
-        } else {
-            System.out.println("Dine credits er blevet tilføjet \n" +
-                    "Person navn: " + nameField.getText() + "\n" +
-                    "Deskription navn: " + descriptionField.getText() + "\n" +
-                    "funktion typen er: " + functionTypeNewComboBox.getValue() + " \n"
-            );
-        }
-    }
-
-
-    public void addExistingCredit() {
-        System.out.println("\n");
-        if (personComboBox.getSelectionModel() == null || personComboBox.getSelectionModel().isEmpty()) {
-            System.out.println("Du skal vælge en person!");
-        }
-        if (functionTypeExistComboBox.getSelectionModel() == null || functionTypeExistComboBox.getSelectionModel().isEmpty()) {
-            System.out.println("Du skal vælge en funktion!");
-        } else {
-            System.out.println("Du har tilføjet: " + fulcrum.getDomainLayer().getCreditsForPerson(0) + "med funktion typen: "
-                    + functionTypeExistComboBox.getValue()
-            );
-        }
     }
 
     private void popupError(String errorText) {
@@ -123,43 +81,21 @@ public class CreateCreditsController implements ViewArgumentAdapter{
         text.setText(errorText);
         content.setHeading(new Text("Der skete en fejl!"));
         content.setBody(text);
-
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
-        dialog.setOnDialogClosed(new EventHandler<>() {
-            @Override
-            public void handle(JFXDialogEvent events) {
-                stackPane.setVisible(false);
-            }
-        });
+        //makes the button close the dialog
+        button.setOnAction(event -> dialog.close());
+        //when the dialog is closed the StackPane get set to invisible
+        dialog.setOnDialogClosed(events -> stackPane.setVisible(false));
         content.setActions(button);
         dialog.show();
-
     }
+
     public Date datePicker() {
         LocalDate localDate = birthdayPicker.getValue();
         Instant instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
         Date date = Date.from(instant);
         return date;
-    }
-
-    public void seeCredits() {
-        creditsListView.setVisible(!creditsListView.isVisible());
-        if (creditsListView.isVisible()) {
-            functionTypeNewComboBox.setDisable(true);
-            addNewCreditButton.setDisable(true);
-            addExistingCreditButton.setDisable(true);
-        } else {
-            functionTypeNewComboBox.setDisable(false);
-            addNewCreditButton.setDisable(false);
-            addExistingCreditButton.setDisable(false);
-        }
     }
 
     public boolean errorHandler(ActionEvent actionEvent) {
@@ -211,7 +147,6 @@ public class CreateCreditsController implements ViewArgumentAdapter{
             System.out.println("Something needs filling in!");
         } else {
             if(actionEvent.getSource() == addNewCreditButton) {
-                int age = Calendar.getInstance().get(Calendar.YEAR) - birthdayPicker.getValue().getYear(); //lazy, but just for testing
                 ICredit credit = fulcrum.getDomainLayer().createCredit(nameField.getText(), datePicker(), descriptionField.getText(), functionTypeNewComboBox.getValue());
                 programme.addCredit(credit);
                 fulcrum.getDomainLayer().commit();
@@ -229,9 +164,7 @@ public class CreateCreditsController implements ViewArgumentAdapter{
                 functionTypeExistComboBox.setValue(null); // resetting the fields to normal
             }
             updateListView();
-
         }
-
     }
 
     public void deleteCredit() {

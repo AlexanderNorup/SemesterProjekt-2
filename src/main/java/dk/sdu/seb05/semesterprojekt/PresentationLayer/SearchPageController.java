@@ -5,20 +5,17 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXRadioButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.util.List;
 
 public class SearchPageController implements ViewArgumentAdapter {
 
-    public ToggleGroup searchGroup;
-    public Label searchLabel;
+    @FXML
+    private ToggleGroup searchGroup;
     @FXML
     private TextField searchTextField;
     @FXML
@@ -45,7 +42,6 @@ public class SearchPageController implements ViewArgumentAdapter {
     public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
         fulcrum.setTitle("Søgeresultat");
-        //searchTextField.setText(fulcrum.getSearchText()); //sets the TextField to be what was searched for, unnecessary?
         searchTypeId = fulcrum.getSearchType();
         switch (searchTypeId){
             case 0:
@@ -64,27 +60,19 @@ public class SearchPageController implements ViewArgumentAdapter {
         List<Object> objects = (List<Object>) o;
         ObservableList<Object> thing = FXCollections.observableArrayList(objects);
         searchResultListView.setItems(thing);
-
-        searchResultListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getClickCount() == 2){
-                    chooseHandler();
-                }
+        searchResultListView.getStyleClass().add("mylistview");
+        searchResultListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                chooseHandler();
             }
         });
-
-        searchTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER){
-                    searchHandler();
-                }
+        searchTextField.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                searchHandler();
             }
         });
 
     }
-
 
     public void chooseHandler() {
         Object chosen =  searchResultListView.getSelectionModel().getSelectedItem();

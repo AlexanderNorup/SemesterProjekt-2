@@ -17,8 +17,6 @@ public class JavaFXTest extends Application {
         Parent fxmlTest = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
         Scene s = new Scene(fxmlTest);
         primaryStage.setResizable(false);
-        //s.getStylesheets().add(String.valueOf(getClass().getResource("/css/darkmode.css"))); //sets stylesheets
-        //s.getStylesheets().add(String.valueOf(getClass().getResource("/css/style.css"))); //sets stylesheet
         primaryStage.setScene(s);
         primaryStage.getIcons().add(new Image(String.valueOf(getClass().getResource("/pictures/TV_2_RGB.png"))));
         instance = PresentationSingleton.getInstance();

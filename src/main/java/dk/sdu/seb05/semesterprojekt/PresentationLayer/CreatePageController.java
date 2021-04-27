@@ -1,11 +1,8 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
 import com.jfoenix.controls.*;
-import com.jfoenix.controls.events.JFXDialogEvent;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.Category;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
@@ -44,7 +41,7 @@ public class CreatePageController {
     public void initialize() {
         fulcrum = PresentationSingleton.getInstance();
         fulcrum.setTitle("Opret nyt program");
-        Category[] categories = Category.values();
+        Category[] categories = fulcrum.getDomainLayer().getCategories();
         categoryComboBox.getItems().addAll(categories);
     }
 
@@ -79,37 +76,24 @@ public class CreatePageController {
         JFXButton frontPageButton = new JFXButton("Tilbage til forside");
         JFXButton createPageButton = new JFXButton("Opret nyt program");
         dialog.setOverlayClose(false);
-        frontPageButton.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    fulcrum.goToFrontPage();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        //goes to front page
+        frontPageButton.setOnAction(event -> {
+            try {
+                fulcrum.goToFrontPage();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
-        confirmButton.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(programme == null){
-                    return;
-                }
-                fulcrum.changeView("createcreditpage", programme);
+        //goes to createcredit page for the created program
+        confirmButton.setOnAction(event -> {
+            if(programme == null){
+                return;
             }
+            fulcrum.changeView("createcreditpage", programme);
         });
-        createPageButton.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                fulcrum.changeView("createpage");
-            }
-        });
-        dialog.setOnDialogClosed(new EventHandler<>() {
-            @Override
-            public void handle(JFXDialogEvent events) {
-                stackPane.setVisible(false);
-            }
-        });
+        //goes back to the current page to create a new program
+        createPageButton.setOnAction(event -> fulcrum.changeView("createpage"));
+        dialog.setOnDialogClosed(event -> stackPane.setVisible(false));
         content.setActions(frontPageButton, createPageButton ,confirmButton);
         dialog.show();
 
@@ -125,18 +109,8 @@ public class CreatePageController {
 
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
-        dialog.setOnDialogClosed(new EventHandler<>() {
-            @Override
-            public void handle(JFXDialogEvent events) {
-                stackPane.setVisible(false);
-            }
-        });
+        button.setOnAction(event -> dialog.close());
+        dialog.setOnDialogClosed(events -> stackPane.setVisible(false));
         content.setActions(button);
         dialog.show();
 
@@ -170,7 +144,7 @@ public class CreatePageController {
         if(errorHandler()){
             System.out.println("Something needs filling in!");
         }
-        else if (!errorHandler()) {
+        else {
             programme = fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
                     categoryComboBox.getValue(),
                     channelTextField.getText(),
@@ -187,48 +161,21 @@ public class CreatePageController {
     }
 
     public String monthToString(int month){
-        String returnMonth;
-        switch (month){
-            case 1:
-                returnMonth = "Januar";
-                break;
-            case 2:
-                returnMonth = "Februar";
-                break;
-            case 3:
-                returnMonth = "Marts";
-                break;
-            case 4:
-                returnMonth = "April";
-                break;
-            case 5:
-                returnMonth = "Maj";
-                break;
-            case 6:
-                returnMonth = "Juni";
-                break;
-            case 7:
-                returnMonth = "Juli";
-                break;
-            case 8:
-                returnMonth = "August";
-                break;
-            case 9:
-                returnMonth = "September";
-                break;
-            case 10:
-                returnMonth = "Oktober";
-                break;
-            case 11:
-                returnMonth = "November";
-                break;
-            case 12:
-                returnMonth = "December";
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + month);
-        }
-        return returnMonth;
+        return switch (month) {
+            case 1 -> "Januar";
+            case 2 -> "Februar";
+            case 3 -> "Marts";
+            case 4 -> "April";
+            case 5 -> "Maj";
+            case 6 -> "Juni";
+            case 7 -> "Juli";
+            case 8 -> "August";
+            case 9 -> "September";
+            case 10 -> "Oktober";
+            case 11 -> "November";
+            case 12 -> "December";
+            default -> throw new IllegalStateException("Unexpected value: " + month);
+        };
     }
 
 }
