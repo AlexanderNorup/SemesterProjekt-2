@@ -174,7 +174,7 @@ public class CreatePageController {
             case 10 -> "Oktober";
             case 11 -> "November";
             case 12 -> "December";
-            default -> throw new IllegalStateException("Unexpected value: " + month);
+            default -> throw new IllegalArgumentException("Unexpected value: " + month);
         };
     }
 
