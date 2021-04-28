@@ -12,9 +12,6 @@ public class DomainController implements IDomainController {
     Session session = new Session();
     Category[] categories = Category.values();
     List<FunctionType> functionTypes = FunctionType.getAllFunctionTypes();
-    List<IProgramme> programmes = dataLayer.getProgrammes();
-    List<IProducer> producers = dataLayer.getProducers();
-    List<IPerson> persons = dataLayer.getPersons();
 
     @Override
     public Category[] getCategories() {
@@ -38,17 +35,17 @@ public class DomainController implements IDomainController {
 
     @Override
     public List<IProgramme> getProgrammes(){
-        return programmes;
+        return dataLayer.getProgrammes();
     }
 
     @Override
     public List<IProducer> getProducers(){
-        return producers;
+        return dataLayer.getProducers();
     }
 
     @Override
     public List<IPerson> getPersons(){
-        return persons;
+        return dataLayer.getPersons();
     }
 
     @Override
@@ -189,7 +186,7 @@ public class DomainController implements IDomainController {
                 break;
             case 1:
                 session = new Session(id);
-                IProducer producer = producers.get(id);
+                IProducer producer = dataLayer.getProducers().get(id);
                 dataLayer.logMessage("Producer with id: " + id + " logged in" + " --> " + producer.toString());
                 break;
             case 2:
