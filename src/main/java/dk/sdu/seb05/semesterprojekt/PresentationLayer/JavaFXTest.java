@@ -45,12 +45,12 @@ public class JavaFXTest extends Application {
 
 
     private boolean checkDatabaseAuth(){
-        File auth = new File("auth.json");
+        File auth = new File("auth.txt");
         if(auth.exists()){
             try {
-                JSONObject auth_obj = new JSONObject(Files.readString(Path.of(auth.toURI()), StandardCharsets.UTF_8));
-                return auth_obj.has("password") && !auth_obj.getString("password").isEmpty();
-            } catch (IOException | JSONException e) {
+                String password = Files.readString(Path.of(auth.toURI()), StandardCharsets.UTF_8);
+                return !password.isEmpty();
+            } catch (IOException e) {
                 System.out.println("Failed to load file or JSON object: " + e.getMessage());
                 e.printStackTrace();
                 return false;
