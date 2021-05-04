@@ -1,6 +1,6 @@
 # CUSTOM IGNORES
 data.json
-
+auth.json
 
 #Under .idea/
 # Default ignored files
