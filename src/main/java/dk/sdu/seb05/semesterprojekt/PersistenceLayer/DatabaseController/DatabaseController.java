@@ -30,7 +30,7 @@ public class DatabaseController implements IDataLayer {
         producers = new ArrayList<>();
         credits = new ArrayList<>();
 
-        //Make path to database
+        //the path to database
         String url = "jdbc:postgresql://hosting.alexandernorup.com:5432/tv2"; //Connection Url
         String user = "java";
         String password = null;
@@ -42,7 +42,7 @@ public class DatabaseController implements IDataLayer {
             e.printStackTrace();
         }
 
-        // Connecter og laver et Statement Object til at sende SQL statements til databasen
+        //Connects and makes a Statement Object to send SQL Statements to the database
         try {
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException throwables) {
@@ -57,7 +57,7 @@ public class DatabaseController implements IDataLayer {
         try  (Statement statement = connection.createStatement();)
         {
             ResultSet resultSet = statement.executeQuery("SELECT VERSION()");
-            // Lukker resurcer efter hver statement
+            // Closes resorces after the statement
             if (resultSet.next()) {
                 System.out.println("Database Version: " + resultSet.getString(1));
                 return true;
