@@ -3,9 +3,11 @@ package dk.sdu.seb05.semesterprojekt.PersistenceLayer.DatabaseController;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.FunctionType;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.ICredit;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
+import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 
 import java.sql.*;
 import java.time.ZoneId;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +47,6 @@ public class DatabaseCredit implements ICredit, DatabaseObject {
         }
         return null; //If the state is not set (or is clean), we return null.
     }
-
 
     @Override
     public String toString() {

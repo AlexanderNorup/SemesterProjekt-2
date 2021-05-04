@@ -17,8 +17,9 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
     private Category category;
     private String channel;
     private Date airedDate;
-    private List<ICredit> credits;
+    //private List<ICredit> credits;
     private HashMap<IProducer, DatabaseState> producers;
+    private HashMap<ICredit, DatabaseState> credits;
     private DatabaseState state;
 
     public DatabaseProgramme(int id, String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
@@ -27,7 +28,10 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
         this.category = category;
         this.channel = channel;
         this.airedDate = airedDate;
-        this.credits = credits;
+        //this.credits = credits;
+        for(ICredit credit : credits){
+            this.credits.put(credit, DatabaseState.CLEAN);
+        }
         for(IProducer producer : producers){
             this.producers.put(producer, DatabaseState.CLEAN);
         }
@@ -78,6 +82,34 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
                 insertStatement.addBatch();
             }else if(keyValueSet.getValue() == DatabaseState.TRASH){
                 //Produceren skal smides ud.
+                deleteStatement.setInt(1, this.id);
+                deleteStatement.setInt(2, keyValueSet.getKey().getId());
+                deleteStatement.addBatch();
+            }
+        }
+
+        return new PreparedStatement[]{updateStatement, insertStatement, deleteStatement};
+    }
+
+    public PreparedStatement[] getCreditBatchStatements(Connection connection) throws SQLException{
+        PreparedStatement updateStatement = connection.prepareStatement("UPDATE credits_list SET programme = ? WHERE credits = ?");
+        PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO credits_list (programme, credits) VALUES  (?,?)");
+        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM credits_list WHERE programme = ? AND credits = ?");
+
+        for(Map.Entry<ICredit, DatabaseState> keyValueSet : this.credits.entrySet()){
+            //Løber igennem alle credits
+            if(keyValueSet.getValue() == DatabaseState.DIRTY){
+                //credits er blevet ændret
+                updateStatement.setInt(1, this.id);
+                updateStatement.setInt(2, keyValueSet.getKey().getId());
+                updateStatement.addBatch();
+            } else if( keyValueSet.getValue() == DatabaseState.BRAND_NEW){
+                //credits er helt ny
+                insertStatement.setInt(1, this.id);
+                insertStatement.setInt(2, keyValueSet.getKey().getId());
+                insertStatement.addBatch();
+            }else if(keyValueSet.getValue() == DatabaseState.TRASH){
+                //credits skal smides ud.
                 deleteStatement.setInt(1, this.id);
                 deleteStatement.setInt(2, keyValueSet.getKey().getId());
                 deleteStatement.addBatch();
