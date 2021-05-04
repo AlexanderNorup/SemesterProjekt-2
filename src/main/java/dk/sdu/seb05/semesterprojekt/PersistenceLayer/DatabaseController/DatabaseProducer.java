@@ -35,4 +35,13 @@ public class DatabaseProducer implements IProducer {
     public void removeProgramme(IProgramme programme) {
 
     }
+
+    public DatabaseState getState(){
+        return state;
+    }
+
+    public void setState(DatabaseState newState){
+        this.state = newState;
+    }
+
 }

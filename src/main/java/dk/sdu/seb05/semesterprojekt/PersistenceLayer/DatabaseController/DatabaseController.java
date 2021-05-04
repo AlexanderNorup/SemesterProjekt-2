@@ -73,8 +73,64 @@ public class DatabaseController implements IDataLayer {
         DatabaseController dataLayer = new DatabaseController();
         if(dataLayer.checkConnection()){
             System.out.println("Vi er klar til at bruge databasen!");
+            try {
+                dataLayer.saveData();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }else{
             System.out.println("Vi kunne ikke forbinde til databasen :/");
+        }
+    }
+
+    public void saveData() throws SQLException {
+        connection.setAutoCommit(false); //Start by setting autocommit to false.
+
+        //This method will run through all objects, and commit them to the database
+
+        //We start with persons
+        commitObjects(persons);
+        //Then we save credits
+        commitObjects(credits);
+        //Then we save producers
+        commitObjects(producers);
+
+        //Programme is a little special
+        for(IProgramme programme_ : programmes){
+            DatabaseProgramme programme = (DatabaseProgramme) programme_;
+            if(programme.getState() != DatabaseState.CLEAN){
+                PreparedStatement stmt = programme.getStatement(connection);
+                if (stmt != null) {
+                    stmt.execute();
+                }
+                //The programme is now inserted or updated into the database.
+                //Now set's setup the relation to credits_list and producers_list
+
+                for(PreparedStatement producerStmt : programme.getProducerBatchStatements(connection)){
+                    if(producerStmt != null){
+                        producerStmt.executeBatch();
+                    }
+                }
+
+
+            }
+        }
+
+        connection.commit(); //Fires all commands.
+        System.out.println("Committed all edits");
+    }
+
+    private void commitObjects(List objects) throws SQLException {
+        for(Object object : objects){
+            if(object instanceof DatabaseObject){
+                DatabaseObject databaseObject = (DatabaseObject) object;
+                if(databaseObject.getState() != DatabaseState.CLEAN) {
+                    PreparedStatement stmt = databaseObject.getStatement(connection);
+                    if (stmt != null) {
+                        stmt.execute();
+                    }
+                }
+            }
         }
     }
 
