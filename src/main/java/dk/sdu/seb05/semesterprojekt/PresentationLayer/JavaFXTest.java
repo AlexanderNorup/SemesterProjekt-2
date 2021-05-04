@@ -70,11 +70,9 @@ public class JavaFXTest extends Application {
         if (result.isPresent()){
             try{
                 String auth = result.get();
-                JSONObject json = new JSONObject();
-                json.put("password", auth);
-                File authFile = new File("auth.json");
-                Files.writeString(Path.of(authFile.toURI()), json.toString(2), StandardCharsets.UTF_8);
-            }catch(IOException | JSONException e){
+                File authFile = new File("auth.txt");
+                Files.writeString(Path.of(authFile.toURI()), auth, StandardCharsets.UTF_8);
+            }catch(IOException e){
                 System.out.println("Could not save file: " + e.getMessage());
                 e.printStackTrace();
             }
