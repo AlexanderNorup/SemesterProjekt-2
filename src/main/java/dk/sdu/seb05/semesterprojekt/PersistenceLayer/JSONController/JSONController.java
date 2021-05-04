@@ -321,34 +321,38 @@ public class JSONController implements IDataLayer {
     }
 
     @Override
-    public int createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
+    public IProgramme createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
         IProgramme programme = new JSONProgramme(nextProgrammeId, name, category, channel, airedDate, producers, credits);
         this.programmes.add(programme);
         for(IProducer producer : producers){
             producer.addProgramme(programme);
         }
-        return nextProgrammeId++;
+        nextProgrammeId++;
+        return programme;
     }
 
     @Override
-    public int createPerson(String name, Date birthdate, String description) {
+    public IPerson createPerson(String name, Date birthdate, String description) {
         IPerson person = new JSONPerson(nextPersonId, name, birthdate, description);
         this.persons.add(person);
-        return nextPersonId++;
+        nextPersonId++;
+        return person;
     }
 
     @Override
-    public int createProducer(String company, List<IProgramme> programmes) {
+    public IProducer createProducer(String company, List<IProgramme> programmes) {
         IProducer producer = new JSONProducer(nextProducerId, company, programmes);
         this.producers.add(producer);
-        return nextProducerId++;
+        nextProducerId++;
+        return producer;
     }
 
     @Override
-    public int createCredit(IPerson person, FunctionType functionType) {
+    public ICredit createCredit(IPerson person, FunctionType functionType) {
         ICredit credit = new JSONCredit(nextCreditId, person, functionType);
         this.credits.add(credit);
-        return nextCreditId++;
+        nextCreditId++;
+        return credit;
     }
 
     @Override

@@ -24,7 +24,6 @@ public class DatabaseController implements IDataLayer {
     private Connection connection;
 
     public DatabaseController(){
-
         persons = new ArrayList<>();
         programmes = new ArrayList<>();
         producers = new ArrayList<>();
@@ -84,9 +83,25 @@ public class DatabaseController implements IDataLayer {
     }
 
     public void saveData() throws SQLException {
-        connection.setAutoCommit(false); //Start by setting autocommit to false.
+        long start_time = System.currentTimeMillis();
+        connection.setAutoCommit(false); //Start by setting autocommit to false, because we only want to commit if everything's good.
 
         //This method will run through all objects, and commit them to the database
+/*
+        IPerson person = new DatabasePerson(-1,"Egon", new Date(), "Har hest");
+        ICredit credit = new DatabaseCredit(-1, person, FunctionType.ANIMATION);
+        IProducer producer = new DatabaseProducer(-1, "SDU");
+        IProgramme programme__ = new DatabaseProgramme(-1, "Stormester", Category.TV_SERIES, "TV3", new Date(), new ArrayList<>(), new ArrayList<>());
+        programme__.addCredit(credit);
+        programme__.addProducer(producer);
+
+        programmes.add(programme__);
+        producers.add(producer);
+        persons.add(person);
+        credits.add(credit);
+;*/
+
+
 
         //We start with persons
         commitObjects(persons);
@@ -102,7 +117,16 @@ public class DatabaseController implements IDataLayer {
                 PreparedStatement stmt = programme.getStatement(connection);
                 if (stmt != null) {
                     stmt.execute();
+                    if(programme.getState() == DatabaseState.BRAND_NEW) {
+                        //If the programme was brand new (and thus just only inserted), we give it it's insertID back.
+                        ResultSet resultSet = stmt.getGeneratedKeys();
+                        if (resultSet.next()) {
+                            int insertKey = resultSet.getInt(1);
+                            programme.setId(insertKey);
+                        }
+                    }
                 }
+
                 //The programme is now inserted or updated into the database.
                 //Now set's setup the relation to credits_list and producers_list
 
@@ -112,12 +136,33 @@ public class DatabaseController implements IDataLayer {
                     }
                 }
 
-
+                for(PreparedStatement creditStmt : programme.getCreditBatchStatements(connection)){
+                    if(creditStmt != null){
+                        creditStmt.executeBatch();
+                    }
+                }
             }
         }
 
         connection.commit(); //Fires all commands.
-        System.out.println("Committed all edits");
+        long end_time = System.currentTimeMillis();
+        System.out.println("Committed all edits. Took " + (end_time-start_time) + "ms");
+
+        resetStates(persons);
+        resetStates(credits);
+        resetStates(producers);
+        resetStates(programmes);
+
+        //TODO: Lav JavaDoc
+    }
+
+    private void resetStates(List objects){
+        for(Object object : objects) {
+            if (object instanceof DatabaseObject) {
+                DatabaseObject databaseObject = (DatabaseObject) object;
+                databaseObject.setState(DatabaseState.CLEAN);
+            }
+        }
     }
 
     private void commitObjects(List objects) throws SQLException {
@@ -128,11 +173,21 @@ public class DatabaseController implements IDataLayer {
                     PreparedStatement stmt = databaseObject.getStatement(connection);
                     if (stmt != null) {
                         stmt.execute();
+                        if(databaseObject.getState() == DatabaseState.BRAND_NEW) {
+                            //If the object was brand new (and thus just only inserted), we give it it's insertID back.
+                            ResultSet resultSet = stmt.getGeneratedKeys();
+                            if (resultSet.next()) {
+                                int insertKey = resultSet.getInt(1);
+                                databaseObject.setId(insertKey);
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
+
 
     @Override
     public List<IPerson> getPersons() {
@@ -190,23 +245,23 @@ public class DatabaseController implements IDataLayer {
     }
 
     @Override
-    public int createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
-        return 0;
+    public IProgramme createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
+        return null;
     }
 
     @Override
-    public int createPerson(String name, Date birthdate, String description) {
-        return 0;
+    public IPerson createPerson(String name, Date birthdate, String description) {
+        return null;
     }
 
     @Override
-    public int createProducer(String company, List<IProgramme> programmes) {
-        return 0;
+    public IProducer createProducer(String company, List<IProgramme> programmes) {
+        return null;
     }
 
     @Override
-    public int createCredit(IPerson person, FunctionType functionType) {
-        return 0;
+    public ICredit createCredit(IPerson person, FunctionType functionType) {
+        return null;
     }
 
     @Override

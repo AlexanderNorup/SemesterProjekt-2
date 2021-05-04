@@ -36,7 +36,7 @@ public class DatabaseCredit implements ICredit, DatabaseObject {
                 updateStmt.setInt(3, id);
                 return updateStmt;
             case BRAND_NEW:
-                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO credits (person, function_type) VALUES (?,?)");
+                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO credits (person, function_type) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
                 insertStatement.setInt(1, person.getId());
                 insertStatement.setString(2, functionType.name());
                 return insertStatement;
@@ -86,5 +86,10 @@ public class DatabaseCredit implements ICredit, DatabaseObject {
 
     public void setState(DatabaseState newState){
         this.state = newState;
+    }
+
+    @Override
+    public void setId(int newId) {
+        this.id = newId;
     }
 }

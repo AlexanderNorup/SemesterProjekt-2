@@ -31,15 +31,15 @@ public class DatabasePerson implements IPerson, DatabaseObject {
             case DIRTY:
                 PreparedStatement updateStmt = connection.prepareStatement("UPDATE persons SET name = ?, birthdate = ?, description = ? WHERE id = ?");
                 updateStmt.setString(1, name);
-                updateStmt.setDate(2, new java.sql.Date(1));
+                updateStmt.setDate(2, new java.sql.Date(birthdate.getTime()));
                 updateStmt.setString(3, description);
                 updateStmt.setInt(4, id);
                 return updateStmt;
             case BRAND_NEW:
-                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO persons (name, birthdate, description) VALUES (?,?,?)");
+                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO persons (name, birthdate, description) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
                 insertStatement.setString(1, name);
                 //insertStatement.setString(2, birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toString());
-                insertStatement.setDate(2, new java.sql.Date(1));
+                insertStatement.setDate(2, new java.sql.Date(birthdate.getTime()));
                 insertStatement.setString(3, description);
                 return insertStatement;
             case TRASH:
@@ -102,6 +102,11 @@ public class DatabasePerson implements IPerson, DatabaseObject {
 
     public void setState(DatabaseState newState){
         this.state = newState;
+    }
+
+    @Override
+    public void setId(int newId) {
+        this.id = newId;
     }
 
 }

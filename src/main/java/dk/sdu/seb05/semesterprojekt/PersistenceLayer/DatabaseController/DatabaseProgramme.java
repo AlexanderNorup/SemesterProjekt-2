@@ -8,6 +8,7 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -28,6 +29,8 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
         this.category = category;
         this.channel = channel;
         this.airedDate = airedDate;
+        this.producers = new HashMap<>();
+        this.credits = new HashMap<>();
         //this.credits = credits;
         for(ICredit credit : credits){
             this.credits.put(credit, DatabaseState.CLEAN);
@@ -45,15 +48,15 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
                 updateStmt.setString(1, name);
                 updateStmt.setString(2, category.name());
                 updateStmt.setString(3, channel);
-                updateStmt.setDate(4, new java.sql.Date(1));
+                updateStmt.setDate(4, new java.sql.Date(airedDate.getTime()));
                 updateStmt.setInt(5, id);
                 return updateStmt;
             case BRAND_NEW:
-                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO programmes (name, category, channel, airedDate) VALUES (?,?,?,?)");
+                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO programmes (name, category, channel, airedDate) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
                 insertStatement.setString(1, name);
                 insertStatement.setString(2, category.name());
                 insertStatement.setString(3, channel);
-                insertStatement.setDate(4, new java.sql.Date(15156));
+                insertStatement.setDate(4, new java.sql.Date(airedDate.getTime()));
                 return insertStatement;
             case TRASH:
                 PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM programmes WHERE id = ?");
@@ -65,7 +68,7 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
 
     public PreparedStatement[] getProducerBatchStatements(Connection connection) throws SQLException{
         PreparedStatement updateStatement = connection.prepareStatement("UPDATE producer_list SET programme = ? WHERE producer = ?");
-        PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO producer_list (programme, producer) VALUES  (?,?)");
+        PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO producer_list (programme, producer) VALUES  (?,?)", Statement.RETURN_GENERATED_KEYS);
         PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM producer_list WHERE programme = ? AND producer = ?");
 
         for(Map.Entry<IProducer, DatabaseState> keyValueSet : this.producers.entrySet()){
@@ -92,9 +95,9 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
     }
 
     public PreparedStatement[] getCreditBatchStatements(Connection connection) throws SQLException{
-        PreparedStatement updateStatement = connection.prepareStatement("UPDATE credits_list SET programme = ? WHERE credits = ?");
-        PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO credits_list (programme, credits) VALUES  (?,?)");
-        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM credits_list WHERE programme = ? AND credits = ?");
+        PreparedStatement updateStatement = connection.prepareStatement("UPDATE credits_list SET programme = ? WHERE credit = ?");
+        PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO credits_list (programme, credit) VALUES  (?,?)", Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM credits_list WHERE programme = ? AND credit = ?");
 
         for(Map.Entry<ICredit, DatabaseState> keyValueSet : this.credits.entrySet()){
             //Løber igennem alle credits
@@ -167,17 +170,23 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
 
     @Override
     public List<ICredit> getCredits() {
-        return null;
+        return new ArrayList<>(this.credits.keySet());
     }
 
     @Override
     public void addCredit(ICredit credit) {
-
+        if(credits.containsKey(credit)){
+            credits.put(credit, DatabaseState.DIRTY);
+        }else{
+            credits.put(credit, DatabaseState.BRAND_NEW);
+        }
     }
 
     @Override
     public void removeCredit(ICredit credit) {
-
+        if(credits.containsKey(credit)){
+            credits.put(credit, DatabaseState.TRASH);
+        }
     }
 
     @Override
@@ -208,5 +217,10 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
 
     public void setState(DatabaseState newState){
         this.state = newState;
+    }
+
+    @Override
+    public void setId(int newId) {
+        this.id = newId;
     }
 }

@@ -18,10 +18,10 @@ public interface IDataLayer {
     boolean updateProducer(IProducer iProducer);
     boolean updateCredit(ICredit iCredit);
 
-    int createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers);
-    int createPerson(String name, Date birthdate, String description);
-    int createProducer(String company, List <IProgramme> programmes);
-    int createCredit(IPerson person, FunctionType functionType);
+    IProgramme createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers);
+    IPerson createPerson(String name, Date birthdate, String description);
+    IProducer createProducer(String company, List <IProgramme> programmes);
+    ICredit createCredit(IPerson person, FunctionType functionType);
 
     boolean deleteProgramme(IProgramme iProgramme);
     boolean deletePerson(IPerson iPerson);

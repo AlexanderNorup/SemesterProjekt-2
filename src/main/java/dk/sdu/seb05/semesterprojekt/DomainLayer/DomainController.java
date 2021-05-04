@@ -50,9 +50,9 @@ public class DomainController implements IDomainController {
         List<ICredit> credits = new ArrayList<>(0);
         List<IProducer> producers = new ArrayList<>(0);
         producers.add(dataLayer.getProducer(session.getProducerID()));
-        int programID = dataLayer.createProgramme(name, category, channel, airedDate, credits, producers);
+        IProgramme programme = dataLayer.createProgramme(name, category, channel, airedDate, credits, producers);
         dataLayer.logMessage(user + " added programme: " + name);
-        return dataLayer.getProgram(programID);
+        return programme;
     }
 
     @Override
@@ -66,19 +66,19 @@ public class DomainController implements IDomainController {
     @Override
     public ICredit createCredit(IPerson person, FunctionType functionType) {
         String user = (session.isAdmin()) ? "Admin" : "Producer";
-        int creditID = dataLayer.createCredit(person, functionType);
+        ICredit credit = dataLayer.createCredit(person, functionType);
         dataLayer.logMessage(user + " added credit for: " + person.getName() + " as " + functionType);
-        return dataLayer.getCredit(creditID);
+        return credit;
     }
 
     @Override
     public ICredit createCredit(String name, Date birthDate, String description, FunctionType functionType) {
         String user = (session.isAdmin()) ? "Admin" : "Producer";
-        int personID = dataLayer.createPerson(name, birthDate, description);
+        IPerson person = dataLayer.createPerson(name, birthDate, description);
         //createCredit returns int, maybe return -1 if credit couldn't be created
-        int creditID = dataLayer.createCredit(dataLayer.getPerson(personID), functionType);
+        ICredit credit = dataLayer.createCredit(person, functionType);
         dataLayer.logMessage(user + " added credit for: " + name + " as " + functionType);
-        return dataLayer.getCredit(creditID);
+        return credit;
     }
 
 
@@ -228,10 +228,10 @@ public class DomainController implements IDomainController {
 
     @Override
     public boolean addCredit(int programmeID, IPerson person, FunctionType functionType) {
-        int creditID = dataLayer.createCredit(person, functionType);
+        ICredit credit = dataLayer.createCredit(person, functionType);
         IProgramme programme = dataLayer.getProgram(programmeID);
         //programme.addCredit returns void so we can't verify that credit has been added.
-        programme.addCredit(dataLayer.getCredit(creditID));
+        programme.addCredit(credit);
         String user = (session.isAdmin()) ? "Admin" : "Producer";
         dataLayer.logMessage(user + " added credit for "  + person.getName() + " as " + functionType + " in " + programme.getName());
         return true;

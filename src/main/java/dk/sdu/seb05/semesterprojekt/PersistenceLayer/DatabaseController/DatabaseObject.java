@@ -9,5 +9,6 @@ public interface DatabaseObject {
     PreparedStatement getStatement(Connection connection) throws SQLException;
     DatabaseState getState();
     void setState(DatabaseState newState);
+    void setId(int newId);
 
 }

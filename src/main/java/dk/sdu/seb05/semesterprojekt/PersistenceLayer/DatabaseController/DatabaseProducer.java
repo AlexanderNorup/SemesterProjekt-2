@@ -6,6 +6,7 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 public class DatabaseProducer implements IProducer, DatabaseObject {
@@ -29,7 +30,7 @@ public class DatabaseProducer implements IProducer, DatabaseObject {
                 updateStmt.setInt(2, id);
                 return updateStmt;
             case BRAND_NEW:
-                PreparedStatement insertStmt = connection.prepareStatement("INSERT INTO producers (company) VALUES (?)");
+                PreparedStatement insertStmt = connection.prepareStatement("INSERT INTO producers (company) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
                 insertStmt.setString(1,company);
                 return insertStmt;
             case TRASH:
@@ -83,6 +84,11 @@ public class DatabaseProducer implements IProducer, DatabaseObject {
 
     public void setState(DatabaseState newState){
         this.state = newState;
+    }
+
+    @Override
+    public void setId(int newId) {
+        this.id = newId;
     }
 
 }
