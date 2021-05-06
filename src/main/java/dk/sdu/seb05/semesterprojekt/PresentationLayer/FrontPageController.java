@@ -1,23 +1,15 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 import com.jfoenix.controls.*;
-import com.jfoenix.controls.events.JFXDialogEvent;
 import dk.sdu.seb05.semesterprojekt.DomainLayer.Session;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
@@ -38,8 +30,6 @@ public class FrontPageController {
     private JFXButton searchButton;
     @FXML
     private JFXComboBox<IProducer> producerDropdown;
-    @FXML
-    private JFXButton darkModeButton;
     @FXML
     private JFXRadioButton personButton;
     @FXML
@@ -80,8 +70,6 @@ public class FrontPageController {
         ObservableList<IProgramme> programs = FXCollections.observableArrayList(fulcrum.getDomainLayer().getLatestProgrammes());
         programListView.setItems(programs);  //gets current programs and sets them to the listview
         searchTextField.setText(""); //makes the search field empty
-        //producerDropdown.setVisible(false);
-        //userButton.setSelected(true);
         ObservableList<String> notifications = FXCollections.observableArrayList(
                 "Der er 3 nye ændringer i dit program \"(2019) Badehotellet\"",
                 "Der er 69 nye ændringer i dit program \"(2010) Natholdet\"",
@@ -93,25 +81,21 @@ public class FrontPageController {
         programListView.getStyleClass().add("mylistview"); //adds a user defined style class from the css file, as it's style (makes it pretty)
         setLoggedIn();
         radioHandler();
-        programListView.setOnMouseClicked(new EventHandler<MouseEvent>() { //if you double click an item, you will see credits for that item
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getClickCount() == 2){
-                    try {
-                        searchRecentHandler();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        //if you double click an item, you will see credits for that item
+        programListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                try {
+                    searchRecentHandler();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
 
-        searchTextField.setOnKeyPressed(new EventHandler<KeyEvent>() { //possible to press enter to search
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER){
-                    searchHandler();
-                }
+        //possible to press enter to search
+        searchTextField.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                searchHandler();
             }
         });
 
@@ -130,7 +114,6 @@ public class FrontPageController {
             default:
                 producerButton.setSelected(true);
                 IProducer producer = fulcrum.getDomainLayer().chooseProducer(currentSession.getProducerID());
-                //producerDropdown.setValue(producer);
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -201,22 +184,15 @@ public class FrontPageController {
 
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<ActionEvent>() { //sets the "Okay" button to close the popup
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
+        //sets the "Okay" button to close the popup
+        button.setOnAction(event -> dialog.close());
         //whenever the popup gets closed, the associated StackPane gets set to invisible, so it does not interfere
-        dialog.setOnDialogClosed(new EventHandler<JFXDialogEvent>() {
-            @Override
-            public void handle(JFXDialogEvent event) {
-                stackPane.setVisible(false);
-                //enabling the buttons again
-                notificationButton.setDisable(false);
-                createButton.setDisable(false);
-                editButton.setDisable(false);
-            }
+        dialog.setOnDialogClosed(event -> {
+            stackPane.setVisible(false);
+            //enabling the buttons again
+            notificationButton.setDisable(false);
+            createButton.setDisable(false);
+            editButton.setDisable(false);
         });
         content.setActions(button);
         dialog.show();
@@ -270,10 +246,6 @@ public class FrontPageController {
         else {
             fulcrum.changeView("createpage");
         }
-    }
-
-    public void setupUI(){
-        fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
     }
 
     /**

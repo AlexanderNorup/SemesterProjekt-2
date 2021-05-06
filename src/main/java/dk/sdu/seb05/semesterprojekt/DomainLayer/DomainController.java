@@ -1,20 +1,28 @@
 package dk.sdu.seb05.semesterprojekt.DomainLayer;
 
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.*;
-import dk.sdu.seb05.semesterprojekt.PersistenceLayer.JSONController.JSONController;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class DomainController implements IDomainController {
-    IDataLayer dataLayer = PersistenceFactory.getDataLayer(0);
+    private final int PERSISTENCE_TYPE = 0; //0 = JSON, 1 = RDBMS
+    IDataLayer dataLayer = PersistenceFactory.getDataLayer(PERSISTENCE_TYPE);
     Session session = new Session();
     Category[] categories = Category.values();
     List<FunctionType> functionTypes = FunctionType.getAllFunctionTypes();
-    List<IProgramme> programmes = dataLayer.getProgrammes();
-    List<IProducer> producers = dataLayer.getProducers();
-    List<IPerson> person = dataLayer.getPersons();
+
+    @Override
+    public Category[] getCategories() {
+        return categories;
+    }
+
+    @Override
+    public List<FunctionType> getFunctionTypes() {
+        return functionTypes;
+    }
+
 
     @Override
     public List<IProgramme> getProgrammes(int producerID) {
@@ -23,6 +31,11 @@ public class DomainController implements IDomainController {
             return new ArrayList<IProgramme>();
         }
         return iProducer.getProgrammes();
+    }
+
+    @Override
+    public List<IProgramme> getProgrammes(){
+        return dataLayer.getProgrammes();
     }
 
     @Override
@@ -173,7 +186,7 @@ public class DomainController implements IDomainController {
                 break;
             case 1:
                 session = new Session(id);
-                IProducer producer = producers.get(id);
+                IProducer producer = dataLayer.getProducers().get(id);
                 dataLayer.logMessage("Producer with id: " + id + " logged in" + " --> " + producer.toString());
                 break;
             case 2:

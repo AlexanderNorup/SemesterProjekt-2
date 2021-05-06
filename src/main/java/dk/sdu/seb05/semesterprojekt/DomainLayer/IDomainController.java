@@ -13,6 +13,9 @@ public interface IDomainController {
     ICredit createCredit(IPerson person, FunctionType functionType);
     ICredit createCredit(String name, Date birthDate, String description, FunctionType functionType);
 
+    Category[] getCategories();
+    List<FunctionType> getFunctionTypes();
+
     boolean updateProducer(int producerID, String name);
     boolean updateProgramme(int programmeID, Date airedDate, Category category, String channel, String name);
     boolean updatePerson(int personID, Date birthdate, String description, String name);
@@ -22,6 +25,7 @@ public interface IDomainController {
     boolean deletePerson(int personID);
 
     List<IProgramme> getLatestProgrammes();
+    List<IProgramme> getProgrammes();
     List<IProducer> getProducers();
     List<IPerson> getPersons();
 

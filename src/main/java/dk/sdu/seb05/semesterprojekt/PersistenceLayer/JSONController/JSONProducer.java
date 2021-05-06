@@ -1,15 +1,12 @@
 package dk.sdu.seb05.semesterprojekt.PersistenceLayer.JSONController;
 
-import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 public class JSONProducer implements IProducer {
 
@@ -35,9 +32,8 @@ public class JSONProducer implements IProducer {
     public static JSONProducer fromJSONObject(JSONObject jsonObject) throws JSONException {
         int id = jsonObject.getInt("id");
         String company = jsonObject.getString("company");
-        //  List< > programmeList = jsonObject.getString("programmeList");
 
-        return new JSONProducer(id, company, new ArrayList<IProgramme>());
+        return new JSONProducer(id, company, new ArrayList<>());
     }
 
     @Override

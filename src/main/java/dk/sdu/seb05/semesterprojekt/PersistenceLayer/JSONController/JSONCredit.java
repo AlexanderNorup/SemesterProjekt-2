@@ -7,11 +7,6 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IDataLayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-
 public class JSONCredit implements ICredit {
 
     private int id;
@@ -31,7 +26,7 @@ public class JSONCredit implements ICredit {
         String functionType_ = jsonObject.getString("functionType");
         FunctionType functionType;
         //Fordi FunctionType er en enum, så skal den gemmes som en String. Man kan bruge
-        // FunctionType.valueOf() til at konvertere en string tilbage til en enum. Men den kaster en IllegalArgumentException hvis det går galt.
+        //FunctionType.valueOf() til at konvertere en string tilbage til en enum. Men den kaster en IllegalArgumentException hvis det går galt.
         try {
             functionType = FunctionType.valueOf(functionType_);
         } catch (IllegalArgumentException e) {

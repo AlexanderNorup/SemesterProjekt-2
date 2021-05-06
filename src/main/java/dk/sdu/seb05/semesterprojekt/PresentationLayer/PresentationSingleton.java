@@ -14,7 +14,6 @@ public class PresentationSingleton {
     private Stage primaryStage;
     private int searchTypeId;
     private int producerID;
-    private String name;
     private String searchText;
     private IDomainController domainController;
     private static PresentationSingleton instance;
@@ -57,14 +56,6 @@ public class PresentationSingleton {
 
     public void setProducerID(int producerID) {
         this.producerID = producerID;
-    }
-
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getName(){
-        return name;
     }
 
     public String getSearchText(){

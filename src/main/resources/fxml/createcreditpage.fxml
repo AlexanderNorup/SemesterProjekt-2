@@ -20,8 +20,8 @@
       <Label layoutX="431.0" layoutY="84.0" text="Funktions Type" />
       <Label layoutX="25.0" layoutY="204.0" text="Person" />
       <Label layoutX="194.0" layoutY="204.0" text="Funktions Type" />
-      <JFXButton fx:id="addExistingCreditButton" layoutX="25.0" layoutY="262.0" mnemonicParsing="false" onAction="#addCredit" text="Tilføj credit" />
-      <JFXButton fx:id="addNewCreditButton" layoutX="25.0" layoutY="136.0" mnemonicParsing="false" onAction="#addCredit" text="Tilføj credit" />
+      <JFXButton fx:id="addExistingCreditButton" layoutX="24.0" layoutY="264.0" mnemonicParsing="false" onAction="#addCredit" text="Tilføj credit" />
+      <JFXButton fx:id="addNewCreditButton" layoutX="24.0" layoutY="138.0" mnemonicParsing="false" onAction="#addCredit" text="Tilføj credit" />
       <JFXComboBox fx:id="personComboBox" layoutX="25.0" layoutY="222.0" prefWidth="150.0" />
       <JFXComboBox fx:id="functionTypeExistComboBox" layoutX="194.0" layoutY="222.0" prefWidth="150.0" />
       <JFXButton fx:id="returnButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage">
@@ -39,9 +39,9 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <JFXButton fx:id="deleteCreditButton" layoutX="282.0" layoutY="358.0" onAction="#deleteCredit" text="Slet credit">
+      <JFXButton id="deleteButton" fx:id="deleteCreditButton" layoutX="274.0" layoutY="359.0" onAction="#deleteCredit" text="Slet credit">
          <font>
-            <Font size="14.0" />
+            <Font size="15.0" />
          </font>
       </JFXButton>
       <Label layoutX="293.0" layoutY="84.0" text="Fødselsdato" />
