@@ -9,7 +9,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
@@ -199,6 +201,7 @@ public class CreateCreditsController implements ViewArgumentAdapter{
             if(actionEvent.getSource() == addNewCreditButton) {
                 ICredit credit = fulcrum.getDomainLayer().createCredit(nameField.getText(), datePicker(), descriptionField.getText(), functionTypeNewComboBox.getValue());
                 programme.addCredit(credit);
+                fulcrum.getDomainLayer().updateProgramme(programme);
                 fulcrum.getDomainLayer().commit();
                 updateComboBox();
                 nameField.setText(null); // resetting the fields to normal
@@ -209,6 +212,7 @@ public class CreateCreditsController implements ViewArgumentAdapter{
             if(actionEvent.getSource() == addExistingCreditButton){
                 ICredit credit = fulcrum.getDomainLayer().createCredit(personComboBox.getValue(), functionTypeExistComboBox.getValue());
                 programme.addCredit(credit);
+                fulcrum.getDomainLayer().updateProgramme(programme);
                 fulcrum.getDomainLayer().commit();
                 personComboBox.setValue(null); // resetting the fields to normal
                 functionTypeExistComboBox.setValue(null); // resetting the fields to normal

@@ -98,21 +98,6 @@ public class DatabaseController implements IDataLayer {
         long start_time = System.currentTimeMillis();
         connection.setAutoCommit(false); //Start by setting autocommit to false, because we only want to commit if everything's good.
 
-        //This method will run through all objects, and commit them to the database
-
-        IPerson person = new DatabasePerson(-1, "Hans", new Date(), "Fra Sverige");
-        ICredit credit = new DatabaseCredit(-1, person, FunctionType.CAMERAGUY);
-        IProducer producer = new DatabaseProducer(-1, "Nordisk Film");
-        IProgramme programme__ = new DatabaseProgramme(-1, "Hvem vil være millionær", Category.ENTERTAINMENT, "TV 2", new Date(), new ArrayList<>(), new ArrayList<>());
-        programme__.addCredit(credit);
-        programme__.addProducer(producer);
-
-        programmes.add(new CachedDatabaseObject((DatabaseObject) programme__));
-        producers.add(new CachedDatabaseObject((DatabaseObject) producer));
-        persons.add(new CachedDatabaseObject((DatabaseObject) person));
-        credits.add(new CachedDatabaseObject((DatabaseObject) credit));
-
-
         //We start with persons
         commitObjects(persons);
         //Then we save credits
@@ -157,6 +142,8 @@ public class DatabaseController implements IDataLayer {
             }
         }
 
+
+
         connection.commit(); //Fires all commands.
         long end_time = System.currentTimeMillis();
         System.out.println("Committed all edits. Took " + (end_time - start_time) + "ms");
@@ -165,6 +152,12 @@ public class DatabaseController implements IDataLayer {
         resetStates(credits);
         resetStates(producers);
         resetStates(programmes);
+
+        for(CachedDatabaseObject programme : programmes){
+            if(programme.getObject() instanceof DatabaseProgramme){
+                ((DatabaseProgramme) programme.getObject()).OnFinishedCommit();
+            }
+        }
 
         //TODO: Lav JavaDoc
     }
@@ -190,6 +183,8 @@ public class DatabaseController implements IDataLayer {
                             int insertKey = resultSet.getInt(1);
                             databaseObject.setId(insertKey);
                         }
+                    }else if(databaseObject.getState() == DatabaseState.TRASH){
+                        objects.remove(object);
                     }
                     stmt.close();
                 }
@@ -492,7 +487,9 @@ public class DatabaseController implements IDataLayer {
     public boolean updateProgramme(IProgramme iProgramme) {
         if(iProgramme instanceof DatabaseObject){
             ((DatabaseObject) iProgramme).setState(DatabaseState.DIRTY);
-            programmes.add(new CachedDatabaseObject((DatabaseObject) iProgramme));
+            CachedDatabaseObject newProgramme = new CachedDatabaseObject((DatabaseObject) iProgramme);
+            programmes.remove(newProgramme); //Adding and removing to update, since add() in treeset is ignored if exists.
+            programmes.add(newProgramme);
         }
         return true;
     }
@@ -501,7 +498,9 @@ public class DatabaseController implements IDataLayer {
     public boolean updatePerson(IPerson iPerson) {
         if(iPerson instanceof DatabaseObject){
             ((DatabaseObject) iPerson).setState(DatabaseState.DIRTY);
-            persons.add(new CachedDatabaseObject((DatabaseObject) iPerson));
+            CachedDatabaseObject newPerson = new CachedDatabaseObject((DatabaseObject) iPerson);
+            persons.remove(newPerson);
+            persons.add(newPerson);
         }
         return true;
     }
@@ -510,7 +509,9 @@ public class DatabaseController implements IDataLayer {
     public boolean updateProducer(IProducer iProducer) {
         if(iProducer instanceof DatabaseObject){
             ((DatabaseObject) iProducer).setState(DatabaseState.DIRTY);
-            producers.add(new CachedDatabaseObject((DatabaseObject) iProducer));
+            CachedDatabaseObject newProducer = new CachedDatabaseObject((DatabaseObject) iProducer);
+            producers.remove(newProducer);
+            producers.add(newProducer);
         }
         return true;
     }
@@ -519,14 +520,22 @@ public class DatabaseController implements IDataLayer {
     public boolean updateCredit(ICredit iCredit) {
         if(iCredit instanceof DatabaseObject){
             ((DatabaseObject) iCredit).setState(DatabaseState.DIRTY);
-            credits.add(new CachedDatabaseObject((DatabaseObject) iCredit));
+            CachedDatabaseObject newCredit = new CachedDatabaseObject((DatabaseObject) iCredit);
+            credits.remove(newCredit);
+            credits.add(newCredit);
         }
         return true;
     }
 
     @Override
     public IProgramme createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
-        DatabaseProgramme programme = new DatabaseProgramme(tempInsertId--, name, category, channel, airedDate, credits, producers);
+        DatabaseProgramme programme = new DatabaseProgramme(tempInsertId--, name, category, channel, airedDate, new ArrayList<>(), new ArrayList<>());
+        for(ICredit credit : credits){
+            programme.addCredit(credit); //Doing it here, and not in the constructor for DatabaseProgramme, because otherwise the credit gets the wrong state of "CLEAN".
+        }
+        for(IProducer producer : producers){
+            programme.addProducer(producer);
+        }
         programme.setState(DatabaseState.BRAND_NEW);
         this.programmes.add(new CachedDatabaseObject(programme));
         return programme;

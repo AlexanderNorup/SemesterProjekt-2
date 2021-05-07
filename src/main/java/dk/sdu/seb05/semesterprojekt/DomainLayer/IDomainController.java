@@ -16,9 +16,9 @@ public interface IDomainController {
     Category[] getCategories();
     List<FunctionType> getFunctionTypes();
 
-    boolean updateProducer(int producerID, String name);
-    boolean updateProgramme(int programmeID, Date airedDate, Category category, String channel, String name);
-    boolean updatePerson(int personID, Date birthdate, String description, String name);
+    boolean updateProducer(IProducer iProducer);
+    boolean updateProgramme(IProgramme iProgramme);
+    boolean updatePerson(IPerson iPerson);
 
     boolean deleteProducer(int producerID);
     boolean deleteProgramme(int programmeID);

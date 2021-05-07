@@ -122,6 +122,31 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
         return new PreparedStatement[]{updateStatement, insertStatement, deleteStatement};
     }
 
+    public void OnFinishedCommit(){
+        ArrayList<ICredit> creditsToDelete = new ArrayList<>();
+        for(Map.Entry<ICredit, DatabaseState> keyValueSet : this.credits.entrySet()){
+            if(keyValueSet.getValue() == DatabaseState.TRASH){
+                System.out.println("Marking credit '" + keyValueSet.getKey().toString() + "' on " + this.getName() + " for deletion.");
+                creditsToDelete.add(keyValueSet.getKey());
+                return;
+            }
+            this.credits.put(keyValueSet.getKey(), DatabaseState.CLEAN);
+        }
+        for(Map.Entry<IProducer, DatabaseState> keyValueSet : this.producers.entrySet()){
+            if(keyValueSet.getValue() == DatabaseState.TRASH){
+                System.out.println("Deleted " + keyValueSet.getKey().getCompany() + " on " + this.getName());
+                this.producers.remove(keyValueSet.getKey());
+                return;
+            }
+            this.producers.put(keyValueSet.getKey(), DatabaseState.CLEAN);
+        }
+
+        for(ICredit credit : creditsToDelete){
+            this.credits.remove(credit);
+        }
+
+    }
+
 
     @Override
     public int getId() {
@@ -189,9 +214,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
 
     @Override
     public void removeCredit(ICredit credit) {
-        if(credits.containsKey(credit)){
-            credits.put(credit, DatabaseState.TRASH);
-        }
+        credits.put(credit, DatabaseState.TRASH);
         this.state = DatabaseState.DIRTY;
     }
 

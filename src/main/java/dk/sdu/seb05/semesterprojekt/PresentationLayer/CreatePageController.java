@@ -176,11 +176,11 @@ public class CreatePageController implements ViewArgumentAdapter {
         }
         else {
             if (isUpdating) {
-                fulcrum.getDomainLayer().updateProgramme(programme.getId(),
-                        datePicker(),
-                        categoryComboBox.getValue(),
-                        channelTextField.getText(),
-                        programTitleTextField.getText());
+                programme.setAiredDate(datePicker());
+                programme.setChannel(channelTextField.getText());
+                programme.setCategory(categoryComboBox.getValue());
+                programme.setName(programTitleTextField.getText());
+                fulcrum.getDomainLayer().updateProgramme(programme);
             } else {
                 programme = fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
                         categoryComboBox.getValue(),

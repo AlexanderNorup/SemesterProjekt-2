@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public class DomainController implements IDomainController {
-    private final int PERSISTENCE_TYPE = 1; //0 = JSON, 1 = RDBMS
+    private final int PERSISTENCE_TYPE = 0; //0 = JSON, 1 = RDBMS
     IDataLayer dataLayer = PersistenceFactory.getDataLayer(PERSISTENCE_TYPE);
     Session session = new Session();
     Category[] categories = Category.values();
@@ -96,42 +96,33 @@ public class DomainController implements IDomainController {
 
 
     @Override
-    public boolean updateProducer(int producerID, String newName) {
-        IProducer producer = dataLayer.getProducer(producerID);
-        producer.setCompany(newName);
+    public boolean updateProducer(IProducer producer) {
         String user = "Admin";
         boolean result = dataLayer.updateProducer(producer);
         if(result){
-            dataLayer.logMessage(user + " updated producer: " + newName);
+            dataLayer.logMessage(user + " updated producer: " + producer.getCompany());
         }
         return result;
     }
 
     @Override
-    public boolean updateProgramme(int programmeID, Date newDate, Category newCategory, String newChannel, String newName ) {
-        IProgramme programme = dataLayer.getProgram(programmeID);
-        programme.setAiredDate(newDate);
-        programme.setCategory(newCategory);
-        programme.setChannel(newChannel);
-        programme.setName(newName);
+    public boolean updateProgramme(IProgramme programme) {
+
         String user = (session.isAdmin()) ? "Admin" : "Producer";
         boolean result = dataLayer.updateProgramme(programme);
         if(result){
-            dataLayer.logMessage(user + " updated programme: " + newName);
+            dataLayer.logMessage(user + " updated programme: " + programme.toString());
         }
         return result;
     }
 
+
     @Override
-    public boolean updatePerson(int personID, Date birthDate, String description, String name) {
-        IPerson person = dataLayer.getPerson(personID);
-        person.setBirthDate(birthDate);
-        person.setDescription(description);
-        person.setName(name);
+    public boolean updatePerson(IPerson person) {
         String user = (session.isAdmin()) ? "Admin" : "Producer";
         boolean result = dataLayer.updatePerson(person);
         if(result){
-            dataLayer.logMessage(user + " updated person: " + name);
+            dataLayer.logMessage(user + " updated person: " + person.toString());
         }
         return result;
     }
@@ -186,7 +177,7 @@ public class DomainController implements IDomainController {
                 break;
             case 1:
                 session = new Session(id);
-                IProducer producer = dataLayer.getProducers().get(id);
+                IProducer producer = dataLayer.getProducer(id);
                 dataLayer.logMessage("Producer with id: " + id + " logged in" + " --> " + producer.toString());
                 break;
             case 2:
@@ -252,7 +243,9 @@ public class DomainController implements IDomainController {
 
     @Override
     public boolean removeCredit(int programmeID, ICredit credit) {
-        dataLayer.getProgram(programmeID).removeCredit(credit);
+        IProgramme programme = dataLayer.getProgram(programmeID);
+        programme.removeCredit(credit);
+        dataLayer.updateProgramme(programme);
         return true;
     }
 
@@ -265,7 +258,9 @@ public class DomainController implements IDomainController {
 
     @Override
     public void removeProducer(int programmeID, IProducer producer) {
-
+        IProgramme programme = dataLayer.getProgram(programmeID);
+        programme.removeProducer(producer);
+        dataLayer.updateProgramme(programme);
     }
 
     @Override
