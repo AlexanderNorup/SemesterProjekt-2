@@ -9,6 +9,7 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -17,6 +18,8 @@ import java.io.IOException;
 
 public class CreditPageController implements ViewArgumentAdapter{
 
+    @FXML
+    private JFXButton editCredits;
     @FXML
     private TextArea descriptionTextArea;
     @FXML
@@ -37,6 +40,7 @@ public class CreditPageController implements ViewArgumentAdapter{
     @Override
     public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
+        editCredits.setVisible(false);
         //Gets called when view is changed to.
         if(o instanceof IProgramme){
             programme = (IProgramme) o;
@@ -46,6 +50,17 @@ public class CreditPageController implements ViewArgumentAdapter{
             ObservableList<Object> persons = FXCollections.observableArrayList((programme.getCredits()));
             creditListView.setItems(persons);
             creditListView.getSelectionModel().selectFirst();
+            int producerID = fulcrum.getDomainLayer().getSession().getProducerID();
+            if(producerID != -2){
+                boolean owner = false;
+                for(IProducer producer: programme.getProducers()){
+                    if(producer.getId() == producerID || producerID == -1){
+                        owner = true;
+                        break;
+                    }
+                }
+                if(owner) editCredits.setVisible(true);
+            }
             setLayoutElse();
         }else if(o instanceof ICredit){
             IPerson person = ( (ICredit) o ).getPerson();
@@ -129,4 +144,7 @@ public class CreditPageController implements ViewArgumentAdapter{
     }
 
 
+    public void editCreditsHandler(ActionEvent event) {
+        fulcrum.changeView("createcreditpage", programme);
+    }
 }
