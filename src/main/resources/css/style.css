@@ -47,11 +47,6 @@
 
 .list-cell {
     -fx-text-fill: black;
-}
-.list-cell:odd {
-    -fx-background-color: white;
-}
-.list-cell:even {
     -fx-background-color: white;
 }
 
@@ -63,8 +58,16 @@
 .list-view{
     -fx-font-family: "Roboto Regular";
     -fx-font-size: 14px;
+    -fx-background-color: white;
 }
 
+.jfx-dialog-layout {
+    -fx-background-color: white;
+}
+
+.popupTextColor{
+    -fx-fill: black;
+}
 
 .jfx-radio-button{
     -fx-font-size: 13;

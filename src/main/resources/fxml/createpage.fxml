@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreatePageController">
+<AnchorPane id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreatePageController">
    <children>
       <JFXButton fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage" />
       <TextField fx:id="programTitleTextField" layoutX="157.0" layoutY="86.0" prefHeight="25.0" prefWidth="287.0" />
@@ -14,7 +14,7 @@
       <TextField fx:id="channelTextField" layoutX="157.0" layoutY="200.0" prefHeight="25.0" prefWidth="287.0" />
       <Label layoutX="157.0" layoutY="183.0" text="Kanal" />
       <Label layoutX="158.0" layoutY="243.0" text="Sendedato" />
-      <DatePicker fx:id="sendDate" accessibleHelp="vælg dato noob" layoutX="157.0" layoutY="260.0" onAction="#datePicker" prefHeight="25.0" prefWidth="202.0" promptText="Dato for udsendelsen" />
+      <DatePicker id="datepicker" fx:id="sendDate" accessibleHelp="vælg dato noob" layoutX="157.0" layoutY="260.0" onAction="#datePicker" prefHeight="25.0" prefWidth="202.0" promptText="Dato for udsendelsen" />
       <HBox alignment="CENTER_LEFT" layoutX="157.0" layoutY="294.0" prefHeight="17.0" prefWidth="361.0" spacing="6.0">
          <children>
             <Label fx:id="chosenLabel" text="Du har valgt følgende dato:" visible="false" />

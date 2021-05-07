@@ -206,10 +206,13 @@ public class JSONController implements IDataLayer {
             System.out.println(" - " + programme.getName() + " fra kanal: " + programme.getChannel());
         }
 
-        /*dataLayer.createProducer("Film & TV Compagniet", new ArrayList<>());
+        /*
+        Nuværende producere:
+        dataLayer.createProducer("Film & TV Compagniet", new ArrayList<>());
         dataLayer.createProducer("Nordisk Film", new ArrayList<>());
         dataLayer.createProducer("Metronome Productions", new ArrayList<>());
-        dataLayer.createProducer("TV 2", new ArrayList<>());*/
+        dataLayer.createProducer("TV 2", new ArrayList<>());
+        */
 
         try {
             ((JSONController) dataLayer).saveFile();
@@ -350,22 +353,19 @@ public class JSONController implements IDataLayer {
     @Override
     public boolean deletePerson(IPerson iPerson) {
         IPerson toRemove = getPerson(iPerson.getId());
-        boolean res = persons.remove(toRemove);
-        return res;
+        return persons.remove(toRemove);
     }
 
     @Override
     public boolean deleteProducer(IProducer iProducer) {
         IProducer toRemove = getProducer(iProducer.getId());
-        boolean res = producers.remove(toRemove);
-        return res;
+        return producers.remove(toRemove);
     }
 
     @Override
     public boolean deleteCredit(ICredit iCredit) {
         ICredit toRemove = getCredit(iCredit.getId());
-        boolean res = credits.remove(toRemove);
-        return res;
+        return credits.remove(toRemove);
     }
 
     private void cleanCredits() {
@@ -381,7 +381,7 @@ public class JSONController implements IDataLayer {
         this.credits.removeAll(toRemove);
 
         //The remove all credits which are no longer referenced from programmes.
-        List<ICredit> unusedCredits = new ArrayList(credits);
+        List<ICredit> unusedCredits = new ArrayList<>(credits);
         for (IProgramme programme : programmes) {
             for (ICredit credit : programme.getCredits()) {
                 if (credits.contains(credit)) {
@@ -556,7 +556,7 @@ public class JSONController implements IDataLayer {
 
     @Override
     public List<String> getNotifications(int producerId) {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override

@@ -39,7 +39,7 @@ public enum FunctionType {
     REQUISITOR("Rekvisitør"),
     SET_DESIGNER("Scenograf"),
     SCRIPTER("Scripter"),
-    SPECIAL_EFEFCTS("Special Effects"),
+    SPECIAL_EFFECTS("Special Effects"),
     SPONSOR("Sponsor"),
     ANIMATION("Animation"),
     TEXTER("Tekster"),

@@ -1,24 +1,17 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 import com.jfoenix.controls.*;
-import com.jfoenix.controls.events.JFXDialogEvent;
 import dk.sdu.seb05.semesterprojekt.DomainLayer.Session;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -38,8 +31,6 @@ public class FrontPageController {
     private JFXButton searchButton;
     @FXML
     private JFXComboBox<IProducer> producerDropdown;
-    @FXML
-    private JFXButton darkModeButton;
     @FXML
     private JFXRadioButton personButton;
     @FXML
@@ -73,15 +64,14 @@ public class FrontPageController {
 
     private int searchTypeId = 2;
 
-    private int darkModeCounter = 0;
+    private boolean darkMode = false;
 
     public void initialize(){
         fulcrum = PresentationSingleton.getInstance();
+        darkMode = fulcrum.isDarkMode();
         ObservableList<IProgramme> programs = FXCollections.observableArrayList(fulcrum.getDomainLayer().getLatestProgrammes());
         programListView.setItems(programs);  //gets current programs and sets them to the listview
         searchTextField.setText(""); //makes the search field empty
-        //producerDropdown.setVisible(false);
-        //userButton.setSelected(true);
         ObservableList<String> notifications = FXCollections.observableArrayList(
                 "Der er 3 nye ændringer i dit program \"(2019) Badehotellet\"",
                 "Der er 69 nye ændringer i dit program \"(2010) Natholdet\"",
@@ -93,25 +83,22 @@ public class FrontPageController {
         programListView.getStyleClass().add("mylistview"); //adds a user defined style class from the css file, as it's style (makes it pretty)
         setLoggedIn();
         radioHandler();
-        programListView.setOnMouseClicked(new EventHandler<MouseEvent>() { //if you double click an item, you will see credits for that item
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getClickCount() == 2){
-                    try {
-                        searchRecentHandler();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        toggleDarkModeButton.setSelected(darkMode);
+        //if you double click an item, you will see credits for that item
+        programListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                try {
+                    searchRecentHandler();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
 
-        searchTextField.setOnKeyPressed(new EventHandler<KeyEvent>() { //possible to press enter to search
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER){
-                    searchHandler();
-                }
+        //possible to press enter to search
+        searchTextField.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                searchHandler();
             }
         });
 
@@ -130,7 +117,6 @@ public class FrontPageController {
             default:
                 producerButton.setSelected(true);
                 IProducer producer = fulcrum.getDomainLayer().chooseProducer(currentSession.getProducerID());
-                //producerDropdown.setValue(producer);
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -196,27 +182,24 @@ public class FrontPageController {
         createButton.setDisable(true);
         editButton.setDisable(true);
         JFXDialogLayout content = new JFXDialogLayout();
-        content.setHeading(new Text("Der skete en fejl!"));
-        content.setBody(new Text("Du er ikke logget ind!"));
+        Text headingText = new Text("Der skete en fejl!");
+        Text bodyText = new Text("Du er ikke logget ind!");
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
 
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<ActionEvent>() { //sets the "Okay" button to close the popup
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
+        //sets the "Okay" button to close the popup
+        button.setOnAction(event -> dialog.close());
         //whenever the popup gets closed, the associated StackPane gets set to invisible, so it does not interfere
-        dialog.setOnDialogClosed(new EventHandler<JFXDialogEvent>() {
-            @Override
-            public void handle(JFXDialogEvent event) {
-                stackPane.setVisible(false);
-                //enabling the buttons again
-                notificationButton.setDisable(false);
-                createButton.setDisable(false);
-                editButton.setDisable(false);
-            }
+        dialog.setOnDialogClosed(event -> {
+            stackPane.setVisible(false);
+            //enabling the buttons again
+            notificationButton.setDisable(false);
+            createButton.setDisable(false);
+            editButton.setDisable(false);
         });
         content.setActions(button);
         dialog.show();
@@ -258,7 +241,6 @@ public class FrontPageController {
         else{
             int producer = fulcrum.getDomainLayer().getSession().getProducerID();
             System.out.println(producer);
-            fulcrum.setProducerID(producer);
             fulcrum.changeView("editpage");
         }
     }
@@ -272,23 +254,17 @@ public class FrontPageController {
         }
     }
 
-    public void setupUI(){
-        fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
-    }
-
     /**
      * TODO
      * Method to enable darkMode. Still very basic and only for frontpage
      */
     public void darkMode(){
-        darkModeCounter++;
-        System.out.println(darkModeCounter);
-        if(darkModeCounter % 2 != 0){
-            System.out.println("I tried to make it dark");
+        darkMode = !darkMode;
+        fulcrum.setDarkMode(darkMode);
+        if(darkMode){
             fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
         }
-        if(darkModeCounter % 2 == 0){
-            System.out.println("I tried to make it light");
+        else {
             fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
         }
     }

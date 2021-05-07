@@ -17,7 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public class JavaFXTest extends Application {
+public class MainGUI extends Application {
 
     public static PresentationSingleton instance;
 
@@ -29,11 +29,9 @@ public class JavaFXTest extends Application {
         }
 
         primaryStage.setTitle("Forside");
-        Parent fxmlTest = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
-        Scene s = new Scene(fxmlTest);
+        Parent frontpage = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
+        Scene s = new Scene(frontpage);
         primaryStage.setResizable(false);
-        //s.getStylesheets().add(String.valueOf(getClass().getResource("/css/darkmode.css"))); //sets stylesheets
-        //s.getStylesheets().add(String.valueOf(getClass().getResource("/css/style.css"))); //sets stylesheet
         primaryStage.setScene(s);
         primaryStage.getIcons().add(new Image(String.valueOf(getClass().getResource("/pictures/TV_2_RGB.png"))));
         instance = PresentationSingleton.getInstance();

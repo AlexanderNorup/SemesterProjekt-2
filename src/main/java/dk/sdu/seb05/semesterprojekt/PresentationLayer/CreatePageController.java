@@ -1,11 +1,8 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
 import com.jfoenix.controls.*;
-import com.jfoenix.controls.events.JFXDialogEvent;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.Category;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
@@ -17,7 +14,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class CreatePageController {
+public class CreatePageController implements ViewArgumentAdapter {
     public static PresentationSingleton fulcrum;
 
     @FXML
@@ -39,13 +36,28 @@ public class CreatePageController {
     @FXML
     private JFXButton backButton;
 
+    private boolean isUpdating;
+
     IProgramme programme;
 
-    public void initialize() {
+    public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
         fulcrum.setTitle("Opret nyt program");
-        Category[] categories = Category.values();
+        isUpdating = false;
+        Category[] categories = fulcrum.getDomainLayer().getCategories();
         categoryComboBox.getItems().addAll(categories);
+        if(o instanceof IProgramme){
+            programme = (IProgramme) o;
+            programTitleTextField.setText(programme.getName());
+            categoryComboBox.getSelectionModel().select(programme.getCategory());
+            LocalDate programmeLocalDate = programme.getAiredDate().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            sendDate.setValue(programmeLocalDate);
+            channelTextField.setText(programme.getChannel());
+            createProgramButton.setText("Opdater program");
+            isUpdating = true;
+        }
     }
 
     public void returnHandler() throws IOException {
@@ -67,49 +79,49 @@ public class CreatePageController {
         createProgramButton.setDisable(true);
         backButton.setDisable(true);
         JFXDialogLayout content = new JFXDialogLayout();
-        content.setHeading(new Text("Der er oprettet et program!"));
-        String successString = "Du har oprettet følgende program: \n" +
+        Text headingText;
+        String context;
+        if(isUpdating) {
+            headingText = new Text("Der er opdateret et program!");
+            context = "opdateret";
+        }
+        else{
+            headingText = new Text("Der er oprettet et program!");
+            context = "oprettet";
+        }
+        String successString = "Du har " + context + " følgende program: \n" +
                 "Program navn: " + programTitleTextField.getText() + "\n" +
                 "Kategori: " + categoryComboBox.getValue() + "\n" +
                 "Valgt kanal: " + channelTextField.getText() + "\n" +
                 "Dato: " + dateLabel.getText() + "\n";
-        content.setBody(new Text(successString));
+        Text bodyText = new Text(successString);
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
-        JFXButton confirmButton = new JFXButton("Opret credits");
+        JFXButton confirmButton = new JFXButton("Tilføj credits");
         JFXButton frontPageButton = new JFXButton("Tilbage til forside");
         JFXButton createPageButton = new JFXButton("Opret nyt program");
         dialog.setOverlayClose(false);
-        frontPageButton.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    fulcrum.goToFrontPage();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        //goes to front page
+        frontPageButton.setOnAction(event -> {
+            try {
+                fulcrum.goToFrontPage();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
-        confirmButton.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(programme == null){
-                    return;
-                }
-                fulcrum.changeView("createcreditpage", programme);
+        //goes to createcredit page for the created program
+        confirmButton.setOnAction(event -> {
+            if(programme == null){
+                return;
             }
+            fulcrum.changeView("createcreditpage", programme);
         });
-        createPageButton.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                fulcrum.changeView("createpage");
-            }
-        });
-        dialog.setOnDialogClosed(new EventHandler<>() {
-            @Override
-            public void handle(JFXDialogEvent events) {
-                stackPane.setVisible(false);
-            }
-        });
+        //goes back to the current page to create a new program
+        createPageButton.setOnAction(event -> fulcrum.changeView("createpage"));
+        dialog.setOnDialogClosed(event -> stackPane.setVisible(false));
         content.setActions(frontPageButton, createPageButton ,confirmButton);
         dialog.show();
 
@@ -118,25 +130,17 @@ public class CreatePageController {
     private void popupError(String errorText){
         stackPane.setVisible(true);
         JFXDialogLayout content = new JFXDialogLayout();
-        Text text = new Text();
-        text.setText(errorText);
-        content.setHeading(new Text("Der skete en fejl!"));
-        content.setBody(text);
+        Text headingText = new Text("Der skete en fejl!");
+        Text bodyText = new Text(errorText);
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
 
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
-        dialog.setOnDialogClosed(new EventHandler<>() {
-            @Override
-            public void handle(JFXDialogEvent events) {
-                stackPane.setVisible(false);
-            }
-        });
+        button.setOnAction(event -> dialog.close());
+        dialog.setOnDialogClosed(events -> stackPane.setVisible(false));
         content.setActions(button);
         dialog.show();
 
@@ -170,65 +174,46 @@ public class CreatePageController {
         if(errorHandler()){
             System.out.println("Something needs filling in!");
         }
-        else if (!errorHandler()) {
-            programme = fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
-                    categoryComboBox.getValue(),
-                    channelTextField.getText(),
-                    datePicker());
-            System.out.println("Du har oprettet følgende program: \n" +
-                    "Program navn: " + programTitleTextField.getText() + "\n" +
-                    "Kategori: " + categoryComboBox.getValue() + "\n" +
-                    "Valgt kanal: " + channelTextField.getText() + "\n" +
-                    "Dato: " + dateLabel.getText() + "\n"
-            );
+        else {
+            if (isUpdating) {
+                fulcrum.getDomainLayer().updateProgramme(programme.getId(),
+                        datePicker(),
+                        categoryComboBox.getValue(),
+                        channelTextField.getText(),
+                        programTitleTextField.getText());
+            } else {
+                programme = fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
+                        categoryComboBox.getValue(),
+                        channelTextField.getText(),
+                        datePicker());
+                System.out.println("Du har oprettet følgende program: \n" +
+                        "Program navn: " + programTitleTextField.getText() + "\n" +
+                        "Kategori: " + categoryComboBox.getValue() + "\n" +
+                        "Valgt kanal: " + channelTextField.getText() + "\n" +
+                        "Dato: " + dateLabel.getText() + "\n"
+                );
+            }
             fulcrum.getDomainLayer().commit();
             popupSuccess();
         }
     }
 
     public String monthToString(int month){
-        String returnMonth;
-        switch (month){
-            case 1:
-                returnMonth = "Januar";
-                break;
-            case 2:
-                returnMonth = "Februar";
-                break;
-            case 3:
-                returnMonth = "Marts";
-                break;
-            case 4:
-                returnMonth = "April";
-                break;
-            case 5:
-                returnMonth = "Maj";
-                break;
-            case 6:
-                returnMonth = "Juni";
-                break;
-            case 7:
-                returnMonth = "Juli";
-                break;
-            case 8:
-                returnMonth = "August";
-                break;
-            case 9:
-                returnMonth = "September";
-                break;
-            case 10:
-                returnMonth = "Oktober";
-                break;
-            case 11:
-                returnMonth = "November";
-                break;
-            case 12:
-                returnMonth = "December";
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + month);
-        }
-        return returnMonth;
+        return switch (month) {
+            case 1 -> "Januar";
+            case 2 -> "Februar";
+            case 3 -> "Marts";
+            case 4 -> "April";
+            case 5 -> "Maj";
+            case 6 -> "Juni";
+            case 7 -> "Juli";
+            case 8 -> "August";
+            case 9 -> "September";
+            case 10 -> "Oktober";
+            case 11 -> "November";
+            case 12 -> "December";
+            default -> throw new IllegalArgumentException("Unexpected value: " + month);
+        };
     }
 
 }

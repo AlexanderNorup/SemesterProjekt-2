@@ -33,7 +33,6 @@ public class JSONProducer implements IProducer {
     public static JSONProducer fromJSONObject(JSONObject jsonObject) throws JSONException {
         int id = jsonObject.getInt("id");
         String company = jsonObject.getString("company");
-        //  List< > programmeList = jsonObject.getString("programmeList");
 
         return new JSONProducer(id, company);
     }
