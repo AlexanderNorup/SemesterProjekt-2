@@ -1,8 +1,9 @@
-package dk.sdu.seb05.semesterprojekt.PresentationLayer;
+package dk.sdu.seb05.semesterprojekt.PresentationLayer.Controllers;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXRadioButton;
+import dk.sdu.seb05.semesterprojekt.PresentationLayer.PresentationSingleton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class SearchPageController implements ViewArgumentAdapter {
+
+    PresentationSingleton presentationSingleton;
 
     @FXML
     private ToggleGroup searchGroup;
@@ -35,14 +38,11 @@ public class SearchPageController implements ViewArgumentAdapter {
 
     private int searchTypeId;
 
-    public static PresentationSingleton fulcrum;
-
-
     @Override
     public void onLaunch(Object o) {
-        fulcrum = PresentationSingleton.getInstance();
-        fulcrum.setTitle("Søgeresultat");
-        searchTypeId = fulcrum.getSearchType();
+        presentationSingleton = PresentationSingleton.getInstance();
+        presentationSingleton.setTitle("Søgeresultat");
+        searchTypeId = presentationSingleton.getSearchType();
         switch (searchTypeId){
             case 0:
                 personButton.setSelected(true);
@@ -80,7 +80,7 @@ public class SearchPageController implements ViewArgumentAdapter {
             return;
         }
         System.out.println("Du har valgt følgende element: " + chosen);
-        fulcrum.changeView("creditpage", chosen);
+        presentationSingleton.changeView("creditpage", chosen);
     }
 
     public void searchRadioHandler() {
@@ -104,15 +104,15 @@ public class SearchPageController implements ViewArgumentAdapter {
             return;
         }
         System.out.println("Du søgte efter: " + searchText + "!");
-        fulcrum.setSearchText(searchText);
-        fulcrum.setSearchType(searchTypeId);
-        List results = fulcrum.getDomainLayer().search(searchTypeId, searchText);
+        presentationSingleton.setSearchText(searchText);
+        presentationSingleton.setSearchType(searchTypeId);
+        List results = presentationSingleton.getDomainLayer().search(searchTypeId, searchText);
 
-        fulcrum.changeView("searchpage", results);
+        presentationSingleton.changeView("searchpage", results);
     }
 
     public void returnHandler() throws IOException {
-        fulcrum.goToFrontPage();
+        presentationSingleton.goToFrontPage();
     }
 
 }
