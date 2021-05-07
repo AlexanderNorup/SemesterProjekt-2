@@ -242,7 +242,6 @@ public class FrontPageController {
         else{
             int producer = fulcrum.getDomainLayer().getSession().getProducerID();
             System.out.println(producer);
-            fulcrum.setProducerID(producer);
             fulcrum.changeView("editpage");
         }
     }
@@ -264,11 +263,9 @@ public class FrontPageController {
         darkMode = !darkMode;
         fulcrum.setDarkMode(darkMode);
         if(darkMode){
-            System.out.println("I tried to make it dark");
             fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
         }
         else {
-            System.out.println("I tried to make it light");
             fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
         }
     }

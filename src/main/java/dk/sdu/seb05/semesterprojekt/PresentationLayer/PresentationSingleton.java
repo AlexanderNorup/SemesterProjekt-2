@@ -13,7 +13,6 @@ public class PresentationSingleton {
 
     private Stage primaryStage;
     private int searchTypeId;
-    private int producerID;
     private String searchText;
     private IDomainController domainController;
     private static PresentationSingleton instance;
@@ -60,14 +59,6 @@ public class PresentationSingleton {
         this.darkMode = darkMode;
     }
 
-    public int getProducerID() {
-        return producerID;
-    }
-
-    public void setProducerID(int producerID) {
-        this.producerID = producerID;
-    }
-
     public String getSearchText(){
         return searchText;
     }
@@ -101,11 +92,9 @@ public class PresentationSingleton {
             getPrimaryStage().setScene(new Scene(targetPage));
             //getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
             if(darkMode){
-                System.out.println("I tried to make it dark");
                 getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
             }
             else {
-                System.out.println("I tried to make it light");
                 getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
             }
             if(loader.getController() instanceof ViewArgumentAdapter){
