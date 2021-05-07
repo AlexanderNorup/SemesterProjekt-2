@@ -13,10 +13,11 @@ public class PresentationSingleton {
 
     private Stage primaryStage;
     private int searchTypeId;
-    private int producerID;
     private String searchText;
     private IDomainController domainController;
     private static PresentationSingleton instance;
+    private boolean darkMode = false;
+
 
     private PresentationSingleton(){
         domainController = new DomainController();
@@ -50,12 +51,12 @@ public class PresentationSingleton {
         this.searchTypeId = searchTypeId;
     }
 
-    public int getProducerID() {
-        return producerID;
+    public boolean isDarkMode() {
+        return darkMode;
     }
 
-    public void setProducerID(int producerID) {
-        this.producerID = producerID;
+    public void setDarkMode(boolean darkMode) {
+        this.darkMode = darkMode;
     }
 
     public String getSearchText(){
@@ -64,13 +65,6 @@ public class PresentationSingleton {
 
     public void setSearchText(String searchText){
         this.searchText = searchText;
-    }
-
-    public void goToFrontPage() throws IOException {
-        Parent searchPage = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
-        instance.getPrimaryStage().setScene(new Scene(searchPage));
-        instance.getPrimaryStage().setTitle("Forside");
-        instance.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css"))); //midlertidig fix
     }
 
     public void changeView(String view){
@@ -89,7 +83,12 @@ public class PresentationSingleton {
             FXMLLoader loader = new FXMLLoader(PresentationSingleton.class.getResource("/fxml/" + view + ".fxml"));
             targetPage = loader.load();
             getPrimaryStage().setScene(new Scene(targetPage));
-            instance.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css"))); //midlertidig fix
+            if(darkMode){
+                getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
+            }
+            else {
+                getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
+            }
             if(loader.getController() instanceof ViewArgumentAdapter){
                 ViewArgumentAdapter adapter = loader.getController();
                 adapter.onLaunch(additionalData);
@@ -98,6 +97,11 @@ public class PresentationSingleton {
             System.out.println("Der skete en fejl med at indlæse view: " + view);
             e.printStackTrace();
         }
+    }
+
+    public void goToFrontPage() throws IOException {
+        changeView("frontpage");
+        instance.getPrimaryStage().setTitle("Forside");
     }
 
 }
