@@ -47,6 +47,7 @@ public class EditController {
         removeProgramButton.setDisable(true);
         editCreditButton.setDisable(true);
         backButton.setDisable(true);
+        editProgramButton.setDisable(true);
         JFXDialogLayout content = new JFXDialogLayout();
         Text headingText = new Text("Ønsker du at fjerne følgende program?");
         String successString = programme.getName() + " - " + programme.getChannel();
@@ -77,10 +78,10 @@ public class EditController {
             removeProgramButton.setDisable(false);
             editCreditButton.setDisable(false);
             backButton.setDisable(false);
+            editProgramButton.setDisable(false);
         });
         content.setActions(cancelButton, confirmButton);
         dialog.show();
-
     }
 
     public void removeProgramHandler() {
