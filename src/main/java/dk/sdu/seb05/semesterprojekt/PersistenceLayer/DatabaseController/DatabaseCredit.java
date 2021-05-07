@@ -24,8 +24,7 @@ public class DatabaseCredit extends DatabaseObject implements ICredit {
     }
 
     public PreparedStatement getStatement(Connection connection) throws SQLException {
-        System.out.println("GetStatement kører i databasecredit");
-
+        if(this.getId() < 0){this.state = DatabaseState.BRAND_NEW;}
         switch (this.state){
             case DIRTY:
                 PreparedStatement updateStmt = connection.prepareStatement("UPDATE credits SET person = ?, function_type = ? WHERE id = ?");

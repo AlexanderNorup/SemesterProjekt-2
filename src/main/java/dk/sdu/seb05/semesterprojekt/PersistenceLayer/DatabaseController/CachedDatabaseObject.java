@@ -15,7 +15,8 @@ public class CachedDatabaseObject implements Comparable<CachedDatabaseObject>{
     }
 
     public boolean isExpired(){
-        if(object.getState() == DatabaseState.BRAND_NEW) {
+        if(object.getState() != DatabaseState.CLEAN) {
+            //If the object state is either DIRTY, BRAND_NEW or TRASH, then it never expires.
             return false;
         }
         return System.currentTimeMillis() > expiresAt;

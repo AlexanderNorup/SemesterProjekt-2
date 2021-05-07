@@ -18,11 +18,7 @@ public class DomainController implements IDomainController {
 
     @Override
     public List<IProgramme> getProgrammes(int producerID) {
-        IProducer iProducer = dataLayer.getProducer(producerID);
-        if(iProducer == null){
-            return new ArrayList<IProgramme>();
-        }
-        return iProducer.getProgrammes();
+        return dataLayer.getProgrammesForProducer(producerID);
     }
 
     @Override
@@ -38,7 +34,10 @@ public class DomainController implements IDomainController {
     @Override
     public boolean createProducer(String company, List <IProgramme> programmes) {
         String user = "Admin";
-        dataLayer.createProducer(company, programmes);
+        IProducer producer = dataLayer.createProducer(company);
+        for(IProgramme programme : programmes){
+            programme.addProducer(producer);
+        }
         dataLayer.logMessage(user + " added producer " + company);
         return true;
     }

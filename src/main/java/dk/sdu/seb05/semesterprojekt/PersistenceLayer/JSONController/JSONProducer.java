@@ -15,12 +15,10 @@ public class JSONProducer implements IProducer {
 
     private int id;
     private String company;
-    private List<IProgramme> programmeList;
 
-    public JSONProducer(int id, String company, List<IProgramme> programmeList) {
+    public JSONProducer(int id, String company) {
         this.id = id;
         this.company = company;
-        this.programmeList = programmeList;
     }
 
     public JSONObject toJSONObject() throws JSONException {
@@ -37,7 +35,7 @@ public class JSONProducer implements IProducer {
         String company = jsonObject.getString("company");
         //  List< > programmeList = jsonObject.getString("programmeList");
 
-        return new JSONProducer(id, company, new ArrayList<IProgramme>());
+        return new JSONProducer(id, company);
     }
 
     @Override
@@ -66,20 +64,5 @@ public class JSONProducer implements IProducer {
     @Override
     public void setCompany(String newCompany) {
         this.company = newCompany;
-    }
-
-    @Override
-    public List<IProgramme> getProgrammes() {
-        return this.programmeList;
-    }
-
-    @Override
-    public void addProgramme(IProgramme program){
-        this.programmeList.add(program);
-    }
-
-    @Override
-    public void removeProgramme(IProgramme program){
-        this.programmeList.remove(program);
     }
 }

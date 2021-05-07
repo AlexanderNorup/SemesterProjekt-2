@@ -21,6 +21,7 @@ public class DatabaseProducer extends DatabaseObject implements IProducer {
     }
 
     public PreparedStatement getStatement(Connection connection) throws SQLException{
+        if(this.getId() < 0){this.state = DatabaseState.BRAND_NEW;}
         switch (this.state) {
             case DIRTY:
                 PreparedStatement updateStmt = connection.prepareStatement("UPDATE producers SET company = ? WHERE id = ?");
@@ -58,21 +59,5 @@ public class DatabaseProducer extends DatabaseObject implements IProducer {
     public void setCompany(String newCompany) {
         this.company = newCompany;
         this.state = DatabaseState.DIRTY;
-
-    }
-
-    @Override
-    public List<IProgramme> getProgrammes() {
-        return null;
-    }
-
-    @Override
-    public void addProgramme(IProgramme programme) {
-        //TODO: Fix producers having lists of programmes.
-    }
-
-    @Override
-    public void removeProgramme(IProgramme programme) {
-
     }
 }

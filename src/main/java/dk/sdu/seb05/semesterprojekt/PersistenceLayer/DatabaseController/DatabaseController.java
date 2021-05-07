@@ -347,6 +347,8 @@ public class DatabaseController implements IDataLayer {
         try {
             int id = resultSet.getInt("id");
             String company = resultSet.getString("company");
+
+
             DatabaseProducer producer = new DatabaseProducer(id, company);
             producer.setState(DatabaseState.CLEAN);
             this.producers.add(new CachedDatabaseObject(producer));
@@ -488,27 +490,46 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public boolean updateProgramme(IProgramme iProgramme) {
-        return false;
+        if(iProgramme instanceof DatabaseObject){
+            ((DatabaseObject) iProgramme).setState(DatabaseState.DIRTY);
+            programmes.add(new CachedDatabaseObject((DatabaseObject) iProgramme));
+        }
+        return true;
     }
 
     @Override
     public boolean updatePerson(IPerson iPerson) {
-        return false;
+        if(iPerson instanceof DatabaseObject){
+            ((DatabaseObject) iPerson).setState(DatabaseState.DIRTY);
+            persons.add(new CachedDatabaseObject((DatabaseObject) iPerson));
+        }
+        return true;
     }
 
     @Override
     public boolean updateProducer(IProducer iProducer) {
-        return false;
+        if(iProducer instanceof DatabaseObject){
+            ((DatabaseObject) iProducer).setState(DatabaseState.DIRTY);
+            producers.add(new CachedDatabaseObject((DatabaseObject) iProducer));
+        }
+        return true;
     }
 
     @Override
     public boolean updateCredit(ICredit iCredit) {
-        return false;
+        if(iCredit instanceof DatabaseObject){
+            ((DatabaseObject) iCredit).setState(DatabaseState.DIRTY);
+            credits.add(new CachedDatabaseObject((DatabaseObject) iCredit));
+        }
+        return true;
     }
 
     @Override
     public IProgramme createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
-        return null;
+        DatabaseProgramme programme = new DatabaseProgramme(tempInsertId--, name, category, channel, airedDate, credits, producers);
+        programme.setState(DatabaseState.BRAND_NEW);
+        this.programmes.add(new CachedDatabaseObject(programme));
+        return programme;
     }
 
     @Override
@@ -520,12 +541,9 @@ public class DatabaseController implements IDataLayer {
     }
 
     @Override
-    public IProducer createProducer(String company, List<IProgramme> programmes) {
+    public IProducer createProducer(String company) {
         DatabaseProducer producer = new DatabaseProducer(tempInsertId--, company);
         producer.setState(DatabaseState.BRAND_NEW);
-        for(IProgramme programme : programmes){
-            programme.addProducer(producer);
-        }
         producers.add(new CachedDatabaseObject(producer));
         return producer;
     }
@@ -575,24 +593,23 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public String exportData() {
-        return null;
+        throw new UnsupportedOperationException("Exporting is not supported");
     }
 
     @Override
     public String exportData(int producerId) {
-        return null;
+        throw new UnsupportedOperationException("Exporting is not supported");
     }
 
     @Override
     public String getStatistics() {
-        return null;
+        throw new UnsupportedOperationException("Statistics is not supported");
     }
 
     @Override
     public String getStatistics(int producerId) {
-        return null;
+        throw new UnsupportedOperationException("Statistics is not supported");
     }
-
 
     @Override
     public List<IProgramme> searchForProgramme(String query) {
@@ -618,7 +635,7 @@ public class DatabaseController implements IDataLayer {
                                                                     "INNER JOIN producer_list pl on PRO.id = pl.programme\n" +
                                                                     "INNER JOIN producers produ on pl.producer = produ.id\n" +
                                                                     "WHERE LOWER(produ.company) LIKE LOWER(?)\n" +
-                                                                    "ORDER BY 1;");
+                                                                    "ORDER BY sorting;");
             stmt.setString(1, query + "%");
             stmt.setString(2, "%" + query + "%");
             stmt.setString(3, "%" + query + "%");
@@ -639,36 +656,172 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public List<IPerson> searchForPerson(String query) {
-        return null;
+        List<IPerson> persons = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement("--Starter med Person navn\n" +
+                                                                    "SELECT 1 as sorting, PERS.* FROM persons PERS\n" +
+                                                                    "WHERE LOWER(PERS.name) LIKE LOWER(?)\n" +
+                                                                    "UNION\n" +
+                                                                    "--Indeholder person navn:\n" +
+                                                                    "SELECT 2 as sorting, PERS.* FROM persons PERS\n" +
+                                                                    "WHERE LOWER(PERS.name) LIKE LOWER(?)\n" +
+                                                                    "UNION\n" +
+                                                                    "-- FIND BY PRORAM NAME\n" +
+                                                                    "SELECT 3 as sorting, PERS.* FROM persons PERS\n" +
+                                                                    "INNER JOIN credits c on PERS.id = c.person\n" +
+                                                                    "INNER JOIN credits_list cl on c.id = cl.credit\n" +
+                                                                    "INNER JOIN programmes p on p.id = cl.programme\n" +
+                                                                    "WHERE LOWER(p.name) LIKE LOWER(?)\n" +
+                                                                    "ORDER BY sorting;");
+            stmt.setString(1, query + "%");
+            stmt.setString(2, "%" + query + "%");
+            stmt.setString(3, "%" + query + "%");
+            ResultSet resultSet = stmt.executeQuery();
+            while(resultSet.next()){
+                IPerson person = getPerson(resultSet);
+                if(!persons.contains(person)) {
+                    persons.add(person);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return persons;
     }
 
     @Override
     public List<IProducer> searchForProducer(String query) {
-        return null;
+        List<IProducer> producers = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement("--Starter med Producer navn\n" +
+                                                                    "SELECT 1 as sorting, PROD.* FROM producers PROD\n" +
+                                                                    "WHERE LOWER(PROD.name) LIKE LOWER(?)\n" +
+                                                                    "UNION\n" +
+                                                                    "--Indeholder producer navn:\n" +
+                                                                    "SELECT 2 as sorting, PROD.* FROM producers PROD\n" +
+                                                                    "WHERE LOWER(PROD.name) LIKE LOWER(?)\n" +
+                                                                    "UNION\n" +
+                                                                    "-- FIND BY PRORAM NAME\n" +
+                                                                    "SELECT 3 as sorting, PROD.* FROM producers PROD\n" +
+                                                                    "INNER JOIN producer_list PROD_LIST ON PROD.id = PROD_LIST.producer\n" +
+                                                                    "INNER JOIN programmes P on PROD_LIST.programme = P.id\n" +
+                                                                    "WHERE LOWER(P.name) LIKE LOWER(?)\n" +
+                                                                    "ORDER BY sorting;");
+            stmt.setString(1, query + "%");
+            stmt.setString(2, "%" + query + "%");
+            stmt.setString(3, "%" + query + "%");
+            ResultSet resultSet = stmt.executeQuery();
+            while(resultSet.next()){
+                IProducer producer = getProducer(resultSet);
+                if(!producers.contains(producer)) {
+                    producers.add(producer);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return producers;
     }
 
     @Override
     public List<IProgramme> getProgrammesForPerson(int personId) {
-        return null;
+        List<IProgramme> programmes = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.* FROM programmes PRO\n" +
+                                                                    "INNER JOIN credits_list cl on PRO.id = cl.programme\n" +
+                                                                    "INNER JOIN credits c on c.id = cl.credit\n" +
+                                                                    "INNER JOIN persons p on p.id = c.person\n" +
+                                                                    "WHERE p.id = ?;");
+            stmt.setInt(1, personId);
+            ResultSet resultSet = stmt.executeQuery();
+            while(resultSet.next()){
+                IProgramme programme = getProgramme(resultSet);
+                programmes.add(programme);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return programmes;
+    }
+
+    @Override
+    public List<IProgramme> getProgrammesForProducer(int producerId) {
+        List<IProgramme> programmes = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.* FROM programmes PRO\n" +
+                                                                    "INNER JOIN producer_list pl on PRO.id = pl.programme\n" +
+                                                                    "INNER JOIN producers p on pl.producer = p.id\n" +
+                                                                    "WHERE p.id = ?;");
+            stmt.setInt(1, producerId);
+            ResultSet resultSet = stmt.executeQuery();
+            while(resultSet.next()){
+                IProgramme programme = getProgramme(resultSet);
+                programmes.add(programme);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return programmes;
     }
 
     @Override
     public List<ICredit> getCreditsForPerson(int personId) {
-        return null;
+        List<ICredit> credits = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT C.id, C.person, C.function_type FROM credits C\n" +
+                    "INNER JOIN persons p on p.id = c.person\n" +
+                    "WHERE p.id = ?;");
+            stmt.setInt(1, personId);
+            ResultSet resultSet = stmt.executeQuery();
+            while(resultSet.next()){
+                ICredit credit = getCredit(resultSet);
+                credits.add(credit);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return credits;
     }
 
     @Override
     public List<IProgramme> getLatestProgrammes() {
-        return new ArrayList<>();
+        List<IProgramme> programmes = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT id, name, category, channel, aireddate FROM programmes ORDER BY aireddate DESC LIMIT 15;");
+            ResultSet resultSet = stmt.executeQuery();
+            while(resultSet.next()){
+                IProgramme programme = getProgramme(resultSet);
+                programmes.add(programme);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return programmes;
     }
 
     @Override
     public List<String> getNotifications(int producerId) {
-        return null;
+        return Arrays.asList("Test notification 1", "Test notification 2");
     }
 
     @Override
     public boolean commit() {
+        try{
+            saveData();
+            return true;
+        }catch (Exception throwables) {
+            System.out.println("An error occoured when saving: " + throwables.getMessage() + "\nTrying to rollback!");
+            try {
+                connection.rollback(); //Undoes any changes that might have occoured
+                System.out.println("Rollback succeded!");
+            } catch (SQLException e) {
+                System.out.println("Rollback failed: " + e.getMessage());
+            }
+        }
         return false;
     }
 

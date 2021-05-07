@@ -26,6 +26,7 @@ public class DatabasePerson extends DatabaseObject implements IPerson {
     }
 
     public PreparedStatement getStatement(Connection connection) throws SQLException {
+        if(this.getId() < 0){this.state = DatabaseState.BRAND_NEW;}
         switch (this.state){
             case DIRTY:
                 PreparedStatement updateStmt = connection.prepareStatement("UPDATE persons SET name = ?, birthdate = ?, description = ? WHERE id = ?");

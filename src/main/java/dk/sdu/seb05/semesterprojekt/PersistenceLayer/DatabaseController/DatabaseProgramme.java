@@ -41,6 +41,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
     }
 
     public PreparedStatement getStatement(Connection connection) throws SQLException {
+        if(this.getId() < 0){this.state = DatabaseState.BRAND_NEW;}
         switch (this.state){
             case DIRTY:
                 PreparedStatement updateStmt = connection.prepareStatement("UPDATE programmes SET name = ?, category = ?, channel = ?, aireddate = ? WHERE id = ?");
@@ -129,42 +130,46 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
 
     @Override
     public String getName() {
-        return null;
+        return this.name;
     }
 
     @Override
     public void setName(String newName) {
-
+        this.name = newName;
+        this.state = DatabaseState.DIRTY;
     }
 
     @Override
     public Category getCategory() {
-        return null;
+        return this.category;
     }
 
     @Override
     public void setCategory(Category newCategory) {
-
+        this.category = newCategory;
+        this.state = DatabaseState.DIRTY;
     }
 
     @Override
     public String getChannel() {
-        return null;
+        return this.channel;
     }
 
     @Override
     public void setChannel(String newChannel) {
-
+        this.channel = newChannel;
+        this.state = DatabaseState.DIRTY;
     }
 
     @Override
     public Date getAiredDate() {
-        return null;
+        return this.airedDate;
     }
 
     @Override
     public void setAiredDate(Date newDate) {
-
+        this.airedDate = newDate;
+        this.state = DatabaseState.DIRTY;
     }
 
     @Override
@@ -179,6 +184,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
         }else{
             credits.put(credit, DatabaseState.BRAND_NEW);
         }
+        this.state = DatabaseState.DIRTY;
     }
 
     @Override
@@ -186,6 +192,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
         if(credits.containsKey(credit)){
             credits.put(credit, DatabaseState.TRASH);
         }
+        this.state = DatabaseState.DIRTY;
     }
 
     @Override
@@ -201,6 +208,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
         }else {
             producers.put(producer, DatabaseState.BRAND_NEW);
         }
+        this.state = DatabaseState.DIRTY;
     }
 
     @Override
@@ -208,10 +216,14 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
         if(producers.containsKey(producer)) {
             producers.put(producer, DatabaseState.TRASH);
         }
+        this.state = DatabaseState.DIRTY;
     }
 
     @Override
     public String toString() {
-        return "DatabaseProgram("+this.name+")";
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+        cal.setTime(airedDate);//cal.get(Calendar.YEAR)
+        String date = cal.get(Calendar.DAY_OF_MONTH) + "/" + (cal.get(Calendar.MONTH)+1) + "-" + cal.get(Calendar.YEAR);
+        return "(" + date + ") " + getName() + " - " + getChannel();
     }
 }
