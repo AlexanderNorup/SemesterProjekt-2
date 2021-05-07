@@ -9,11 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-public class DatabaseProducer implements IProducer, DatabaseObject {
+public class DatabaseProducer extends DatabaseObject implements IProducer {
 
-    private int id;
     private String company;
-    private DatabaseState state;
 
     public DatabaseProducer(int id, String company)
     {
@@ -48,7 +46,7 @@ public class DatabaseProducer implements IProducer, DatabaseObject {
 
     @Override
     public int getId() {
-        return this.id;
+        return super.getId();
     }
 
     @Override
@@ -70,25 +68,11 @@ public class DatabaseProducer implements IProducer, DatabaseObject {
 
     @Override
     public void addProgramme(IProgramme programme) {
-
+        //TODO: Fix producers having lists of programmes.
     }
 
     @Override
     public void removeProgramme(IProgramme programme) {
 
     }
-
-    public DatabaseState getState(){
-        return state;
-    }
-
-    public void setState(DatabaseState newState){
-        this.state = newState;
-    }
-
-    @Override
-    public void setId(int newId) {
-        this.id = newId;
-    }
-
 }

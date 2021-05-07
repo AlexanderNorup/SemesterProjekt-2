@@ -12,16 +12,15 @@ import java.sql.Statement;
 import java.time.ZoneId;
 import java.util.*;
 
-public class DatabaseProgramme implements IProgramme, DatabaseObject {
-    private int id;
+public class DatabaseProgramme extends DatabaseObject implements IProgramme {
+
     private String name;
     private Category category;
     private String channel;
     private Date airedDate;
-    //private List<ICredit> credits;
+
     private HashMap<IProducer, DatabaseState> producers;
     private HashMap<ICredit, DatabaseState> credits;
-    private DatabaseState state;
 
     public DatabaseProgramme(int id, String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
         this.id = id;
@@ -125,7 +124,7 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
 
     @Override
     public int getId() {
-        return 0;
+        return super.getId();
     }
 
     @Override
@@ -211,16 +210,8 @@ public class DatabaseProgramme implements IProgramme, DatabaseObject {
         }
     }
 
-    public DatabaseState getState(){
-        return state;
-    }
-
-    public void setState(DatabaseState newState){
-        this.state = newState;
-    }
-
     @Override
-    public void setId(int newId) {
-        this.id = newId;
+    public String toString() {
+        return "DatabaseProgram("+this.name+")";
     }
 }

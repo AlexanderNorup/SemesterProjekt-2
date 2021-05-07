@@ -11,15 +11,14 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class DatabasePerson implements IPerson, DatabaseObject {
-    private int id;
+public class DatabasePerson extends DatabaseObject implements IPerson {
+
     private String name;
     private Date birthdate;
     private String description;
-    private DatabaseState state;
 
     public DatabasePerson(int id, String name, Date birthdate, String description) {
-        this.id = id;
+        super.id = id;
         this.name = name;
         this.birthdate = birthdate;
         this.description = description;
@@ -60,7 +59,7 @@ public class DatabasePerson implements IPerson, DatabaseObject {
 
     @Override
     public int getId() {
-        return this.id;
+        return super.getId();
     }
 
     @Override
@@ -95,18 +94,4 @@ public class DatabasePerson implements IPerson, DatabaseObject {
         this.description = newDescription;
         this.state = DatabaseState.DIRTY;
     }
-
-    public DatabaseState getState(){
-        return state;
-    }
-
-    public void setState(DatabaseState newState){
-        this.state = newState;
-    }
-
-    @Override
-    public void setId(int newId) {
-        this.id = newId;
-    }
-
 }

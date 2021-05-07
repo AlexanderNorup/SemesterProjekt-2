@@ -11,12 +11,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DatabaseCredit implements ICredit, DatabaseObject {
+public class DatabaseCredit extends DatabaseObject implements ICredit {
 
-    private int id;
     private IPerson person;
     private FunctionType functionType;
-    private DatabaseState state;
 
     public DatabaseCredit(int id, IPerson person, FunctionType functionType) {
         this.id = id;
@@ -55,7 +53,7 @@ public class DatabaseCredit implements ICredit, DatabaseObject {
 
     @Override
     public int getId() {
-        return this.id;
+        return super.getId();
     }
 
     @Override
@@ -80,16 +78,4 @@ public class DatabaseCredit implements ICredit, DatabaseObject {
         this.state = DatabaseState.DIRTY;
     }
 
-    public DatabaseState getState(){
-        return state;
-    }
-
-    public void setState(DatabaseState newState){
-        this.state = newState;
-    }
-
-    @Override
-    public void setId(int newId) {
-        this.id = newId;
-    }
 }
