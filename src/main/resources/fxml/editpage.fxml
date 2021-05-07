@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.EditController">
+<AnchorPane id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.EditController">
    <children>
       <JFXListView fx:id="programsListView" layoutX="84.0" layoutY="55.0" prefHeight="288.0" prefWidth="366.0" />
-      <JFXButton fx:id="addCreditButton" layoutX="452.0" layoutY="55.0" mnemonicParsing="false" onAction="#addCreditHandler" text="Rediger credits">
+      <JFXButton fx:id="addCreditButton" layoutX="456.0" layoutY="55.0" mnemonicParsing="false" onAction="#addCreditHandler" text="Rediger credits">
       </JFXButton>
-      <JFXButton id="deleteButton" fx:id="removeProgramButton" layoutX="452.0" layoutY="92.0" mnemonicParsing="false" onAction="#removeProgramHandler" text="Fjern program">
+      <JFXButton id="deleteButton" fx:id="removeProgramButton" layoutX="456.0" layoutY="92.0" mnemonicParsing="false" onAction="#removeProgramHandler" text="Fjern program">
       </JFXButton>
       <JFXButton fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnHandler" text="Tilbage">
       </JFXButton>
+      <StackPane fx:id="stackPane" layoutX="100.0" layoutY="55.0" prefWidth="400.0" visible="false" />
+      <Label layoutX="229.0" layoutY="26.0" styleClass="bold" text="Vælg program" />
    </children>
 </AnchorPane>

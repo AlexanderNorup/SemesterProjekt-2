@@ -64,13 +64,17 @@ public class CreatePageController {
         createProgramButton.setDisable(true);
         backButton.setDisable(true);
         JFXDialogLayout content = new JFXDialogLayout();
-        content.setHeading(new Text("Der er oprettet et program!"));
+        Text headingText = new Text("Der er oprettet et program!");
         String successString = "Du har oprettet følgende program: \n" +
                 "Program navn: " + programTitleTextField.getText() + "\n" +
                 "Kategori: " + categoryComboBox.getValue() + "\n" +
                 "Valgt kanal: " + channelTextField.getText() + "\n" +
                 "Dato: " + dateLabel.getText() + "\n";
-        content.setBody(new Text(successString));
+        Text bodyText = new Text(successString);
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton confirmButton = new JFXButton("Opret credits");
         JFXButton frontPageButton = new JFXButton("Tilbage til forside");
@@ -102,10 +106,12 @@ public class CreatePageController {
     private void popupError(String errorText){
         stackPane.setVisible(true);
         JFXDialogLayout content = new JFXDialogLayout();
-        Text text = new Text();
-        text.setText(errorText);
-        content.setHeading(new Text("Der skete en fejl!"));
-        content.setBody(text);
+        Text headingText = new Text("Der skete en fejl!");
+        Text bodyText = new Text(errorText);
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
 
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");

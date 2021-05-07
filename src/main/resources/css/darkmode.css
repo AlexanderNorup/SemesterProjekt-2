@@ -14,11 +14,17 @@
     -fx-background-color: #343434;
 }
 
+.bold {
+    -fx-font-weight: 700;
+    -fx-font-size: 16;
+}
+
 .text-field {
     -fx-background-color: #a9a9a9 , #a9a9a9 , #a9a9a9;
     -fx-opacity: 10;
     -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 0 -1;
     -fx-prompt-text-fill: #f6f6f6;
+    -fx-text-fill: white;
 }
 
 .text-field:focused {
@@ -36,6 +42,10 @@
     -fx-text-fill: white;
 }
 
+#datepicker .label{
+    -fx-text-fill: black;
+}
+
 
 .list-cell:filled:selected:focused, .list-cell:filled:selected {
     -fx-background-color: linear-gradient(#ff8c00 0%, #ff981a 25%, #ff981a 75%, #ff8c00 100%);
@@ -44,13 +54,9 @@
 
 .list-cell {
     -fx-text-fill: white;
-}
-.list-cell:odd {
     -fx-background-color: a9a9a9;
 }
-.list-cell:even {
-    -fx-background-color: a9a9a9;
-}
+
 
 .list-cell:filled:hover{
     -fx-background-color: #ff8c00;
@@ -60,8 +66,16 @@
 .list-view{
     -fx-font-family: "Roboto Regular";
     -fx-font-size: 14px;
+    -fx-background-color: #a9a9a9;
 }
 
+.jfx-dialog-layout {
+    -fx-background-color: #4e4e4e;
+}
+
+.popupTextColor{
+    -fx-fill: white;
+}
 
 .jfx-radio-button{
     -fx-font-size: 13;
@@ -89,6 +103,8 @@
     -fx-font-family: "Roboto Medium";
     -fx-text-fill: white;
 }
+
+
 
 .jfx-button:hover{
     -fx-background-color: #ff981a;

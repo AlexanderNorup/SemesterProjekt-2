@@ -17,6 +17,8 @@ public class PresentationSingleton {
     private String searchText;
     private IDomainController domainController;
     private static PresentationSingleton instance;
+    private boolean darkMode = false;
+
 
     private PresentationSingleton(){
         domainController = new DomainController();
@@ -50,6 +52,14 @@ public class PresentationSingleton {
         this.searchTypeId = searchTypeId;
     }
 
+    public boolean isDarkMode() {
+        return darkMode;
+    }
+
+    public void setDarkMode(boolean darkMode) {
+        this.darkMode = darkMode;
+    }
+
     public int getProducerID() {
         return producerID;
     }
@@ -67,10 +77,10 @@ public class PresentationSingleton {
     }
 
     public void goToFrontPage() throws IOException {
-        Parent searchPage = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
-        instance.getPrimaryStage().setScene(new Scene(searchPage));
+        //Parent searchPage = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
+        changeView("frontpage");
         instance.getPrimaryStage().setTitle("Forside");
-        instance.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css"))); //midlertidig fix
+        //instance.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css"))); //midlertidig fix
     }
 
     public void changeView(String view){
@@ -89,7 +99,15 @@ public class PresentationSingleton {
             FXMLLoader loader = new FXMLLoader(PresentationSingleton.class.getResource("/fxml/" + view + ".fxml"));
             targetPage = loader.load();
             getPrimaryStage().setScene(new Scene(targetPage));
-            instance.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css"))); //midlertidig fix
+            //getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
+            if(darkMode){
+                System.out.println("I tried to make it dark");
+                getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
+            }
+            else {
+                System.out.println("I tried to make it light");
+                getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
+            }
             if(loader.getController() instanceof ViewArgumentAdapter){
                 ViewArgumentAdapter adapter = loader.getController();
                 adapter.onLaunch(additionalData);

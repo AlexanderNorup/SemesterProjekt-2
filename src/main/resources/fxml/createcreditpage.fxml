@@ -5,13 +5,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreateCreditsController">
+<AnchorPane id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.CreateCreditsController">
    <children>
       <TextField fx:id="nameField" layoutX="25.0" layoutY="104.0" prefHeight="25.0" prefWidth="129.0" />
       <Label fx:id="nameLabel" layoutX="25.0" layoutY="84.0" text="Navn" />
       <TextField fx:id="descriptionField" layoutX="164.0" layoutY="104.0" prefHeight="25.0" prefWidth="116.0" />
       <Label fx:id="descriptionLabel" layoutX="164.0" layoutY="84.0" text="Beskrivelse" />
-      <DatePicker fx:id="birthdayPicker" layoutX="293.0" layoutY="104.0" prefHeight="25.0" prefWidth="129.0" />
+      <DatePicker id="datepicker" fx:id="birthdayPicker" layoutX="293.0" layoutY="104.0" prefHeight="25.0" prefWidth="129.0" />
       <Label layoutX="25.0" layoutY="55.0" text="Opret credit for ny person">
          <font>
             <Font name="System Bold" size="16.0" />
@@ -39,7 +39,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <JFXButton id="deleteButton" fx:id="deleteCreditButton" layoutX="274.0" layoutY="359.0" onAction="#deleteCredit" text="Slet credit">
+      <JFXButton id="deleteButton" fx:id="deleteCreditButton" layoutX="272.0" layoutY="360.0" onAction="#deleteCredit" text="Slet credit">
          <font>
             <Font size="15.0" />
          </font>

@@ -23,8 +23,9 @@ import java.util.List;
 public class CreateCreditsController implements ViewArgumentAdapter{
 
     public static PresentationSingleton fulcrum;
-    public JFXButton deleteCreditButton;
 
+    @FXML
+    private JFXButton deleteCreditButton;
     @FXML
     private StackPane stackPane;
     @FXML
@@ -52,6 +53,8 @@ public class CreateCreditsController implements ViewArgumentAdapter{
     @FXML
     private DatePicker birthdayPicker;
 
+
+    ICredit credit;
     IProgramme programme;
 
     @Override
@@ -77,10 +80,12 @@ public class CreateCreditsController implements ViewArgumentAdapter{
     private void popupError(String errorText) {
         stackPane.setVisible(true);
         JFXDialogLayout content = new JFXDialogLayout();
-        Text text = new Text();
-        text.setText(errorText);
-        content.setHeading(new Text("Der skete en fejl!"));
-        content.setBody(text);
+        Text headingText = new Text("Der skete en fejl!");
+        Text bodyText = new Text(errorText);
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");
         //makes the button close the dialog
@@ -88,6 +93,51 @@ public class CreateCreditsController implements ViewArgumentAdapter{
         //when the dialog is closed the StackPane get set to invisible
         dialog.setOnDialogClosed(events -> stackPane.setVisible(false));
         content.setActions(button);
+        dialog.show();
+    }
+
+    private void popupDelete(){
+        stackPane.setVisible(true);
+        deleteCreditButton.setDisable(true);
+        addExistingCreditButton.setDisable(true);
+        addNewCreditButton.setDisable(true);
+        creditsListView.setDisable(true);
+        returnButton.setDisable(true);
+        JFXDialogLayout content = new JFXDialogLayout();
+
+        Text headingText = new Text("Ønsker du at slette følgende credit?");
+        String personString = credit.getPerson().toString() + " - " + credit.getFunctionType();
+        Text bodyText = new Text(personString);
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
+        JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton confirmButton = new JFXButton("Slet credit");
+        confirmButton.setStyle("-fx-background-color: #ef0000; -fx-font-family: \"Roboto Bold\"; -fx-font-size: 14;"); //makes button go red
+        JFXButton cancelButton = new JFXButton("Gå tilbage");
+        dialog.setOverlayClose(false);
+        //goes back to edit page
+        cancelButton.setOnAction(event -> {
+            dialog.close();
+        });
+        //goes to edit page after deleting program
+        confirmButton.setOnAction(event -> {
+            fulcrum.getDomainLayer().removeCredit(programme.getId(), credit);
+            fulcrum.getDomainLayer().commit();
+            updateListView();
+            dialog.close();
+        });
+        //goes back to the current page to create a new program
+        dialog.setOnDialogClosed(event -> {
+            stackPane.setVisible(false);
+            deleteCreditButton.setDisable(false);
+            addExistingCreditButton.setDisable(false);
+            addNewCreditButton.setDisable(false);
+            returnButton.setDisable(false);
+            creditsListView.setDisable(false);
+        });
+        content.setActions(cancelButton, confirmButton);
         dialog.show();
     }
 
@@ -168,8 +218,10 @@ public class CreateCreditsController implements ViewArgumentAdapter{
     }
 
     public void deleteCredit() {
-        fulcrum.getDomainLayer().removeCredit(programme.getId(), creditsListView.getSelectionModel().getSelectedItem());
-        fulcrum.getDomainLayer().commit();
-        updateListView();
+        credit = creditsListView.getSelectionModel().getSelectedItem();
+        if(credit == null){
+            return;
+        }
+        popupDelete();
     }
 }

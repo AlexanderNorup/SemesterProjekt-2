@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -63,10 +64,11 @@ public class FrontPageController {
 
     private int searchTypeId = 2;
 
-    private int darkModeCounter = 0;
+    private boolean darkMode = false;
 
     public void initialize(){
         fulcrum = PresentationSingleton.getInstance();
+        darkMode = fulcrum.isDarkMode();
         ObservableList<IProgramme> programs = FXCollections.observableArrayList(fulcrum.getDomainLayer().getLatestProgrammes());
         programListView.setItems(programs);  //gets current programs and sets them to the listview
         searchTextField.setText(""); //makes the search field empty
@@ -80,7 +82,9 @@ public class FrontPageController {
         producerDropdown.getItems().addAll(producers);
         programListView.getStyleClass().add("mylistview"); //adds a user defined style class from the css file, as it's style (makes it pretty)
         setLoggedIn();
+        programListView.getSelectionModel().selectFirst();
         radioHandler();
+        toggleDarkModeButton.setSelected(darkMode);
         //if you double click an item, you will see credits for that item
         programListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -179,8 +183,12 @@ public class FrontPageController {
         createButton.setDisable(true);
         editButton.setDisable(true);
         JFXDialogLayout content = new JFXDialogLayout();
-        content.setHeading(new Text("Der skete en fejl!"));
-        content.setBody(new Text("Du er ikke logget ind!"));
+        Text headingText = new Text("Der skete en fejl!");
+        Text bodyText = new Text("Du er ikke logget ind!");
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
 
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");
@@ -253,13 +261,13 @@ public class FrontPageController {
      * Method to enable darkMode. Still very basic and only for frontpage
      */
     public void darkMode(){
-        darkModeCounter++;
-        System.out.println(darkModeCounter);
-        if(darkModeCounter % 2 != 0){
+        darkMode = !darkMode;
+        fulcrum.setDarkMode(darkMode);
+        if(darkMode){
             System.out.println("I tried to make it dark");
             fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
         }
-        if(darkModeCounter % 2 == 0){
+        else {
             System.out.println("I tried to make it light");
             fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
         }
