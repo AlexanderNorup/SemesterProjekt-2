@@ -82,7 +82,6 @@ public class FrontPageController {
         producerDropdown.getItems().addAll(producers);
         programListView.getStyleClass().add("mylistview"); //adds a user defined style class from the css file, as it's style (makes it pretty)
         setLoggedIn();
-        programListView.getSelectionModel().selectFirst();
         radioHandler();
         toggleDarkModeButton.setSelected(darkMode);
         //if you double click an item, you will see credits for that item
