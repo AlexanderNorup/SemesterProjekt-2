@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class CreatePageController {
+public class CreatePageController implements ViewArgumentAdapter {
     public static PresentationSingleton fulcrum;
 
     @FXML
@@ -36,13 +36,28 @@ public class CreatePageController {
     @FXML
     private JFXButton backButton;
 
+    private boolean isUpdating;
+
     IProgramme programme;
 
-    public void initialize() {
+    public void onLaunch(Object o) {
         fulcrum = PresentationSingleton.getInstance();
         fulcrum.setTitle("Opret nyt program");
+        isUpdating = false;
         Category[] categories = fulcrum.getDomainLayer().getCategories();
         categoryComboBox.getItems().addAll(categories);
+        if(o instanceof IProgramme){
+            programme = (IProgramme) o;
+            programTitleTextField.setText(programme.getName());
+            categoryComboBox.getSelectionModel().select(programme.getCategory());
+            LocalDate programmeLocalDate = programme.getAiredDate().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            sendDate.setValue(programmeLocalDate);
+            channelTextField.setText(programme.getChannel());
+            createProgramButton.setText("Opdater program");
+            isUpdating = true;
+        }
     }
 
     public void returnHandler() throws IOException {
@@ -64,8 +79,17 @@ public class CreatePageController {
         createProgramButton.setDisable(true);
         backButton.setDisable(true);
         JFXDialogLayout content = new JFXDialogLayout();
-        Text headingText = new Text("Der er oprettet et program!");
-        String successString = "Du har oprettet følgende program: \n" +
+        Text headingText;
+        String context;
+        if(isUpdating) {
+            headingText = new Text("Der er opdateret et program!");
+            context = "opdateret";
+        }
+        else{
+            headingText = new Text("Der er oprettet et program!");
+            context = "oprettet";
+        }
+        String successString = "Du har " + context + " følgende program: \n" +
                 "Program navn: " + programTitleTextField.getText() + "\n" +
                 "Kategori: " + categoryComboBox.getValue() + "\n" +
                 "Valgt kanal: " + channelTextField.getText() + "\n" +
@@ -76,7 +100,7 @@ public class CreatePageController {
         content.setHeading(headingText);
         content.setBody(bodyText);
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
-        JFXButton confirmButton = new JFXButton("Opret credits");
+        JFXButton confirmButton = new JFXButton("Tilføj credits");
         JFXButton frontPageButton = new JFXButton("Tilbage til forside");
         JFXButton createPageButton = new JFXButton("Opret nyt program");
         dialog.setOverlayClose(false);
@@ -151,16 +175,24 @@ public class CreatePageController {
             System.out.println("Something needs filling in!");
         }
         else {
-            programme = fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
-                    categoryComboBox.getValue(),
-                    channelTextField.getText(),
-                    datePicker());
-            System.out.println("Du har oprettet følgende program: \n" +
-                    "Program navn: " + programTitleTextField.getText() + "\n" +
-                    "Kategori: " + categoryComboBox.getValue() + "\n" +
-                    "Valgt kanal: " + channelTextField.getText() + "\n" +
-                    "Dato: " + dateLabel.getText() + "\n"
-            );
+            if (isUpdating) {
+                fulcrum.getDomainLayer().updateProgramme(programme.getId(),
+                        datePicker(),
+                        categoryComboBox.getValue(),
+                        channelTextField.getText(),
+                        programTitleTextField.getText());
+            } else {
+                programme = fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
+                        categoryComboBox.getValue(),
+                        channelTextField.getText(),
+                        datePicker());
+                System.out.println("Du har oprettet følgende program: \n" +
+                        "Program navn: " + programTitleTextField.getText() + "\n" +
+                        "Kategori: " + categoryComboBox.getValue() + "\n" +
+                        "Valgt kanal: " + channelTextField.getText() + "\n" +
+                        "Dato: " + dateLabel.getText() + "\n"
+                );
+            }
             fulcrum.getDomainLayer().commit();
             popupSuccess();
         }

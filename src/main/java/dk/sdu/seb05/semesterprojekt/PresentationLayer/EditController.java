@@ -6,12 +6,9 @@ import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXListView;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -21,13 +18,15 @@ public class EditController {
     PresentationSingleton fulcrum;
 
     @FXML
+    private JFXButton editProgramButton;
+    @FXML
     private StackPane stackPane;
     @FXML
     private JFXButton backButton;
     @FXML
     private JFXButton removeProgramButton;
     @FXML
-    private JFXButton addCreditButton;
+    private JFXButton editCreditButton;
     @FXML
     private JFXListView<IProgramme> programsListView;
 
@@ -41,18 +40,12 @@ public class EditController {
                 fulcrum.getDomainLayer().getProgrammes(fulcrum.getDomainLayer().getSession().getProducerID())
         ));
         programsListView.getStyleClass().add("mylistview");
-        //if you double click an item, you will see credits for that item
-        programsListView.setOnMouseClicked(event -> {
-            if(event.getClickCount() == 2){
-                    addCreditHandler();
-            }
-        });
     }
 
     private void popup(){
         stackPane.setVisible(true);
         removeProgramButton.setDisable(true);
-        addCreditButton.setDisable(true);
+        editCreditButton.setDisable(true);
         backButton.setDisable(true);
         JFXDialogLayout content = new JFXDialogLayout();
         Text headingText = new Text("Ønsker du at fjerne følgende program?");
@@ -82,7 +75,7 @@ public class EditController {
         dialog.setOnDialogClosed(event -> {
             stackPane.setVisible(false);
             removeProgramButton.setDisable(false);
-            addCreditButton.setDisable(false);
+            editCreditButton.setDisable(false);
             backButton.setDisable(false);
         });
         content.setActions(cancelButton, confirmButton);
@@ -103,11 +96,19 @@ public class EditController {
         fulcrum.goToFrontPage();
     }
 
-    public void addCreditHandler() {
+    public void editCreditHandler() {
         IProgramme programme = programsListView.getSelectionModel().getSelectedItem();
         if(programme == null){
             return;
         }
         fulcrum.changeView("createcreditpage", programme);
+    }
+
+    public void editProgramHandler() {
+        IProgramme programme = programsListView.getSelectionModel().getSelectedItem();
+        if(programme == null){
+            return;
+        }
+        fulcrum.changeView("createpage", programme);
     }
 }
