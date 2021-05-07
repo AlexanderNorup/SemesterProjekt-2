@@ -67,13 +67,6 @@ public class PresentationSingleton {
         this.searchText = searchText;
     }
 
-    public void goToFrontPage() throws IOException {
-        //Parent searchPage = FXMLLoader.load(getClass().getResource("/fxml/frontpage.fxml"));
-        changeView("frontpage");
-        instance.getPrimaryStage().setTitle("Forside");
-        //instance.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css"))); //midlertidig fix
-    }
-
     public void changeView(String view){
         this.changeView(view, new Object());
     }
@@ -90,7 +83,6 @@ public class PresentationSingleton {
             FXMLLoader loader = new FXMLLoader(PresentationSingleton.class.getResource("/fxml/" + view + ".fxml"));
             targetPage = loader.load();
             getPrimaryStage().setScene(new Scene(targetPage));
-            //getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
             if(darkMode){
                 getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
             }
@@ -105,6 +97,11 @@ public class PresentationSingleton {
             System.out.println("Der skete en fejl med at indlæse view: " + view);
             e.printStackTrace();
         }
+    }
+
+    public void goToFrontPage() throws IOException {
+        changeView("frontpage");
+        instance.getPrimaryStage().setTitle("Forside");
     }
 
 }
