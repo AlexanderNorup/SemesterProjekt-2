@@ -1,12 +1,12 @@
-package dk.sdu.seb05.semesterprojekt.PresentationLayer;
+package dk.sdu.seb05.semesterprojekt.PresentationLayer.Controllers;
 import com.jfoenix.controls.*;
 import dk.sdu.seb05.semesterprojekt.DomainLayer.Session;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
+import dk.sdu.seb05.semesterprojekt.PresentationLayer.PresentationSingleton;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class FrontPageController {
 
-    public static PresentationSingleton presentationSingleton;
+    PresentationSingleton presentationSingleton;
 
     @FXML
     private AnchorPane rootAnchorPane;
@@ -320,7 +320,7 @@ public class FrontPageController {
         }
     }
 
-    public void exportData(ActionEvent event) {
+    public void exportData() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Eksport Data");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
