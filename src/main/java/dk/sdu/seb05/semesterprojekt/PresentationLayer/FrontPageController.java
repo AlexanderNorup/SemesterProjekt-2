@@ -12,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class FrontPageController {
 
-    public static PresentationSingleton fulcrum;
+    public static PresentationSingleton presentationSingleton;
 
     @FXML
     private AnchorPane rootAnchorPane;
@@ -71,9 +70,9 @@ public class FrontPageController {
     private boolean darkMode = false;
 
     public void initialize(){
-        fulcrum = PresentationSingleton.getInstance();
-        darkMode = fulcrum.isDarkMode();
-        ObservableList<IProgramme> programs = FXCollections.observableArrayList(fulcrum.getDomainLayer().getLatestProgrammes());
+        presentationSingleton = PresentationSingleton.getInstance();
+        darkMode = presentationSingleton.isDarkMode();
+        ObservableList<IProgramme> programs = FXCollections.observableArrayList(presentationSingleton.getDomainLayer().getLatestProgrammes());
         programListView.setItems(programs);  //gets current programs and sets them to the listview
         searchTextField.setText(""); //makes the search field empty
         ObservableList<String> notifications = FXCollections.observableArrayList(
@@ -82,7 +81,7 @@ public class FrontPageController {
                 "Der er blevet slettet 5 personer fra dit program \"(2005) Klovn \"",
                 "\n\n\n\n \t\t\t\t\t\t *** WORK IN PROGRESS ***");
         notificationListView.setItems(notifications);
-        ObservableList<IProducer> producers = FXCollections.observableArrayList(fulcrum.getDomainLayer().getProducers());
+        ObservableList<IProducer> producers = FXCollections.observableArrayList(presentationSingleton.getDomainLayer().getProducers());
         producerDropdown.getItems().addAll(producers);
         programListView.getStyleClass().add("mylistview"); //adds a user defined style class from the css file, as it's style (makes it pretty)
         setLoggedIn();
@@ -109,7 +108,7 @@ public class FrontPageController {
     }
 
     private void setLoggedIn(){
-        Session currentSession = fulcrum.getDomainLayer().getSession();
+        Session currentSession = presentationSingleton.getDomainLayer().getSession();
         if(currentSession.isAdmin()) {
             adminButton.setSelected(true);
             return;
@@ -120,7 +119,7 @@ public class FrontPageController {
                 break;
             default:
                 producerButton.setSelected(true);
-                IProducer producer = fulcrum.getDomainLayer().chooseProducer(currentSession.getProducerID());
+                IProducer producer = presentationSingleton.getDomainLayer().chooseProducer(currentSession.getProducerID());
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -136,7 +135,7 @@ public class FrontPageController {
             return;
         }
         System.out.println("Du har valgt følgende program: " + programme.getName());
-        fulcrum.changeView("creditpage", programListView.getSelectionModel().getSelectedItem());
+        presentationSingleton.changeView("creditpage", programListView.getSelectionModel().getSelectedItem());
     }
 
     /**
@@ -157,7 +156,7 @@ public class FrontPageController {
             exportDataButton.setVisible(false);
             producerDropdown.setVisible(false);
             producerDropdown.setValue(null);
-            fulcrum.getDomainLayer().setSession(0, -2); // auth = 0 -> user, id=-2 -> user
+            presentationSingleton.getDomainLayer().setSession(0, -2); // auth = 0 -> user, id=-2 -> user
         }
         if(producerButton.isSelected()){
             notificationButton.setVisible(true);
@@ -174,7 +173,7 @@ public class FrontPageController {
             exportDataButton.setVisible(true);
             producerDropdown.setVisible(false);
             producerDropdown.setValue(null);
-            fulcrum.getDomainLayer().setSession(2, -1); // auth = 2 -> admin, id=-1 -> admin
+            presentationSingleton.getDomainLayer().setSession(2, -1); // auth = 2 -> admin, id=-1 -> admin
         }
     }
 
@@ -271,30 +270,30 @@ public class FrontPageController {
             return;
         }
         System.out.println("Du søgte efter: " + searchText);
-        fulcrum.setSearchText(searchText);
-        fulcrum.setSearchType(searchTypeId);
-        List results = fulcrum.getDomainLayer().search(searchTypeId, searchText);
+        presentationSingleton.setSearchText(searchText);
+        presentationSingleton.setSearchType(searchTypeId);
+        List results = presentationSingleton.getDomainLayer().search(searchTypeId, searchText);
 
-        fulcrum.changeView("searchpage", results);
+        presentationSingleton.changeView("searchpage", results);
     }
 
     public void editHandler() {
-        if(fulcrum.getDomainLayer().getSession().getProducerID() == -2){
+        if(presentationSingleton.getDomainLayer().getSession().getProducerID() == -2){
             popupError();
         }
         else{
-            int producer = fulcrum.getDomainLayer().getSession().getProducerID();
+            int producer = presentationSingleton.getDomainLayer().getSession().getProducerID();
             System.out.println(producer);
-            fulcrum.changeView("editpage");
+            presentationSingleton.changeView("editpage");
         }
     }
 
     public void createHandler() {
-        if(fulcrum.getDomainLayer().getSession().getProducerID() == -2){
+        if(presentationSingleton.getDomainLayer().getSession().getProducerID() == -2){
             popupError();
         }
         else {
-            fulcrum.changeView("createpage");
+            presentationSingleton.changeView("createpage");
         }
     }
 
@@ -304,12 +303,12 @@ public class FrontPageController {
      */
     public void darkMode(){
         darkMode = !darkMode;
-        fulcrum.setDarkMode(darkMode);
+        presentationSingleton.setDarkMode(darkMode);
         if(darkMode){
-            fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
+            presentationSingleton.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/darkmode.css")));
         }
         else {
-            fulcrum.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
+            presentationSingleton.getPrimaryStage().getScene().getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
         }
     }
 
@@ -317,7 +316,7 @@ public class FrontPageController {
         String sessionType = (String) sessionGroup.getSelectedToggle().getUserData();
         int sessionTypeID = Integer.parseInt(sessionType);
         if (producerDropdown.getValue() != null){
-            fulcrum.getDomainLayer().setSession(sessionTypeID, producerDropdown.getValue().getId());
+            presentationSingleton.getDomainLayer().setSession(sessionTypeID, producerDropdown.getValue().getId());
         }
     }
 
@@ -325,6 +324,7 @@ public class FrontPageController {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Eksport Data");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
-        popupExport(fulcrum.getDomainLayer().exportData(chooser.showSaveDialog(exportDataButton.getScene().getWindow())));
+        String fileName = presentationSingleton.getDomainLayer().exportData(chooser.showSaveDialog(exportDataButton.getScene().getWindow()));
+        if(!fileName.equals("Ingen fil gemt.")) popupExport(fileName);
     }
 }

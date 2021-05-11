@@ -278,7 +278,9 @@ public class DomainController implements IDomainController {
 
     @Override
     public String exportData(File file) {
+        if(file == null) return "Ingen fil gemt.";
         StringBuilder str = new StringBuilder();
+        FileWriter fileWriter;
         if(session.getProducerID() == -1){
             str.append("-------------,\n");
             str.append("PRODUCERS,\n");
@@ -317,7 +319,6 @@ public class DomainController implements IDomainController {
                         .append(person.getDescription()).append(",");
                 str.append("\n");
             }
-            FileWriter fileWriter;
             try {
                 fileWriter = new FileWriter(file);
                 fileWriter.append(str);
@@ -357,7 +358,6 @@ public class DomainController implements IDomainController {
                         .append(person.getDescription()).append(",");
                 str.append("\n");
             }
-            FileWriter fileWriter;
             try {
                 fileWriter = new FileWriter(file);
                 fileWriter.append(str);
