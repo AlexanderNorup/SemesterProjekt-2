@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 
 import java.io.IOException;
 import java.util.List;
@@ -61,6 +62,8 @@ public class FrontPageController {
     private JFXButton createButton;
     @FXML
     private JFXButton searchButtonListView;
+    @FXML
+    private JFXButton exportDataButton;
 
     private int searchTypeId = 2;
 
@@ -150,6 +153,7 @@ public class FrontPageController {
             notificationListView.setVisible(false);
             editButton.setVisible(false);
             createButton.setVisible(false);
+            exportDataButton.setVisible(false);
             producerDropdown.setVisible(false);
             producerDropdown.setValue(null);
             presentationSingleton.getDomainLayer().setSession(0, -2); // auth = 0 -> user, id=-2 -> user
@@ -158,6 +162,7 @@ public class FrontPageController {
             notificationButton.setVisible(true);
             editButton.setVisible(true);
             createButton.setVisible(true);
+            exportDataButton.setVisible(true);
             producerDropdown.setVisible(true);
             producerDropdown.setValue(null);
         }
@@ -165,6 +170,7 @@ public class FrontPageController {
             notificationButton.setVisible(true);
             editButton.setVisible(true);
             createButton.setVisible(true);
+            exportDataButton.setVisible(true);
             producerDropdown.setVisible(false);
             producerDropdown.setValue(null);
             presentationSingleton.getDomainLayer().setSession(2, -1); // auth = 2 -> admin, id=-1 -> admin
@@ -181,6 +187,7 @@ public class FrontPageController {
         notificationButton.setDisable(true);
         createButton.setDisable(true);
         editButton.setDisable(true);
+        exportDataButton.setDisable(true);
         JFXDialogLayout content = new JFXDialogLayout();
         Text headingText = new Text("Der skete en fejl!");
         Text bodyText = new Text("Du er ikke logget ind!");
@@ -200,10 +207,46 @@ public class FrontPageController {
             notificationButton.setDisable(false);
             createButton.setDisable(false);
             editButton.setDisable(false);
+            exportDataButton.setDisable(false);
         });
         content.setActions(button);
         dialog.show();
+    }
 
+    /**
+     * Shows a popup to notify the user where the file is saved.
+     */
+    private void popupExport(String fileName){
+        stackPane.setVisible(true);
+        //disabling the three buttons so they can't be spam clicked when popup is shown
+        notificationButton.setDisable(true);
+        createButton.setDisable(true);
+        editButton.setDisable(true);
+        exportDataButton.setDisable(true);
+        JFXDialogLayout content = new JFXDialogLayout();
+        Text headingText = new Text("Data er blevet eksporteret!");
+        Text bodyText = new Text("CSV filen ligger her: " + fileName);
+        bodyText.setWrappingWidth(250);
+        headingText.getStyleClass().add("popupTextColor");
+        bodyText.getStyleClass().add("popupTextColor");
+        content.setHeading(headingText);
+        content.setBody(bodyText);
+
+        JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton button = new JFXButton("Okay");
+        //sets the "Okay" button to close the popup
+        button.setOnAction(event -> dialog.close());
+        //whenever the popup gets closed, the associated StackPane gets set to invisible, so it does not interfere
+        dialog.setOnDialogClosed(event -> {
+            stackPane.setVisible(false);
+            //enabling the buttons again
+            notificationButton.setDisable(false);
+            createButton.setDisable(false);
+            editButton.setDisable(false);
+            exportDataButton.setDisable(false);
+        });
+        content.setActions(button);
+        dialog.show();
     }
 
     public void searchRadioHandler() {
@@ -275,5 +318,13 @@ public class FrontPageController {
         if (producerDropdown.getValue() != null){
             presentationSingleton.getDomainLayer().setSession(sessionTypeID, producerDropdown.getValue().getId());
         }
+    }
+
+    public void exportData() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Eksport Data");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
+        String fileName = presentationSingleton.getDomainLayer().exportData(chooser.showSaveDialog(exportDataButton.getScene().getWindow()));
+        if(!fileName.equals("Ingen fil gemt.")) popupExport(fileName);
     }
 }
