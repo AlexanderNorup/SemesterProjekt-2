@@ -43,12 +43,12 @@ public class MainGUI extends Application {
 
 
     private boolean checkDatabaseAuth(){
-        File auth = new File("auth.json");
+        File auth = new File("auth.txt");
         if(auth.exists()){
             try {
-                JSONObject auth_obj = new JSONObject(Files.readString(Path.of(auth.toURI()), StandardCharsets.UTF_8));
-                return auth_obj.has("password") && !auth_obj.getString("password").isEmpty();
-            } catch (IOException | JSONException e) {
+                String password = Files.readString(Path.of(auth.toURI()), StandardCharsets.UTF_8);
+                return !password.isEmpty();
+            } catch (IOException e) {
                 System.out.println("Failed to load file or JSON object: " + e.getMessage());
                 e.printStackTrace();
                 return false;
@@ -68,11 +68,9 @@ public class MainGUI extends Application {
         if (result.isPresent()){
             try{
                 String auth = result.get();
-                JSONObject json = new JSONObject();
-                json.put("password", auth);
-                File authFile = new File("auth.json");
-                Files.writeString(Path.of(authFile.toURI()), json.toString(2), StandardCharsets.UTF_8);
-            }catch(IOException | JSONException e){
+                File authFile = new File("auth.txt");
+                Files.writeString(Path.of(authFile.toURI()), auth, StandardCharsets.UTF_8);
+            }catch(IOException e){
                 System.out.println("Could not save file: " + e.getMessage());
                 e.printStackTrace();
             }

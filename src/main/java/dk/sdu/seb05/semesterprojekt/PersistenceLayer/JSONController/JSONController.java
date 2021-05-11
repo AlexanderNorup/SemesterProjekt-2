@@ -85,6 +85,7 @@ public class JSONController implements IDataLayer {
             }
         }
         jsonObject.put("persons", personArray);
+
         JSONArray creditArray = new JSONArray();
         for (ICredit credit : credits) {
             if (credit instanceof JSONCredit) {
@@ -191,18 +192,6 @@ public class JSONController implements IDataLayer {
             }
         }
         nextProgrammeId = highestProgrammeId + 1;
-
-
-        // ----
-        // NU er alle dataene læst ind. Nu kan vi oprette referencerne.
-
-
-        for (IProgramme programme : programmes) {
-            for (IProducer producer : programme.getProducers()) {
-                producer.addProgramme(programme);
-            }
-        }
-
     }
 
     public static void main(String[] args) {
@@ -323,43 +312,41 @@ public class JSONController implements IDataLayer {
     }
 
     @Override
-    public int createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
+    public IProgramme createProgramme(String name, Category category, String channel, Date airedDate, List<ICredit> credits, List<IProducer> producers) {
         IProgramme programme = new JSONProgramme(nextProgrammeId, name, category, channel, airedDate, producers, credits);
         this.programmes.add(programme);
-        for(IProducer producer : producers){
-            producer.addProgramme(programme);
-        }
-        return nextProgrammeId++;
+        nextProgrammeId++;
+        return programme;
     }
 
     @Override
-    public int createPerson(String name, Date birthdate, String description) {
+    public IPerson createPerson(String name, Date birthdate, String description) {
         IPerson person = new JSONPerson(nextPersonId, name, birthdate, description);
         this.persons.add(person);
-        return nextPersonId++;
+        nextPersonId++;
+        return person;
     }
 
     @Override
-    public int createProducer(String company, List<IProgramme> programmes) {
-        IProducer producer = new JSONProducer(nextProducerId, company, programmes);
+    public IProducer createProducer(String company) {
+        IProducer producer = new JSONProducer(nextProducerId, company);
         this.producers.add(producer);
-        return nextProducerId++;
+        nextProducerId++;
+        return producer;
     }
 
     @Override
-    public int createCredit(IPerson person, FunctionType functionType) {
+    public ICredit createCredit(IPerson person, FunctionType functionType) {
         ICredit credit = new JSONCredit(nextCreditId, person, functionType);
         this.credits.add(credit);
-        return nextCreditId++;
+        nextCreditId++;
+        return credit;
     }
 
     @Override
     public boolean deleteProgramme(IProgramme iProgramme) {
         IProgramme toRemove = getProgram(iProgramme.getId());
         boolean res = programmes.remove(toRemove);
-        for(IProducer producer : toRemove.getProducers()){
-            producer.removeProgramme(toRemove);
-        }
         return res;
     }
 
@@ -388,6 +375,7 @@ public class JSONController implements IDataLayer {
             if (getPerson(credit.getPerson().getId()) == null) {
                 //This person has been deleted
                 toRemove.add(credit);
+                continue;
             }
         }
         this.credits.removeAll(toRemove);
@@ -504,7 +492,7 @@ public class JSONController implements IDataLayer {
                 producerResults.add(producer);
                 continue;
             }
-            for (IProgramme programme : producer.getProgrammes()) {
+            for (IProgramme programme : getProgrammesForProducer(producer.getId())) {
                 if (programme.getName().toLowerCase().contains(query)) {
                     programmeResults.add(producer);
                     break;
@@ -529,6 +517,20 @@ public class JSONController implements IDataLayer {
             }
         }
 
+        return toReturn;
+    }
+
+    @Override
+    public List<IProgramme> getProgrammesForProducer(int producerId) {
+        List<IProgramme> toReturn = new ArrayList<>();
+        for (IProgramme programme : programmes) {
+            for (IProducer producer : programme.getProducers()) {
+                if (producer.getId() == producerId) {
+                    toReturn.add(programme);
+                    break;
+                }
+            }
+        }
         return toReturn;
     }
 

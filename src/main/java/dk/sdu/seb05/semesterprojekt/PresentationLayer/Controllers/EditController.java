@@ -40,6 +40,12 @@ public class EditController {
                 presentationSingleton.getDomainLayer().getProgrammes(presentationSingleton.getDomainLayer().getSession().getProducerID())
         ));
         programsListView.getStyleClass().add("mylistview");
+
+        programsListView.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                editCreditHandler();
+            }
+        });
     }
 
     private void popup(){
