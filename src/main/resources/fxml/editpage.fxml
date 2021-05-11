@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.EditController">
+<AnchorPane id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.sdu.seb05.semesterprojekt.PresentationLayer.Controllers.EditController">
    <children>
       <JFXListView fx:id="programsListView" layoutX="84.0" layoutY="55.0" prefHeight="288.0" prefWidth="366.0" />
       <JFXButton fx:id="editCreditButton" layoutX="456.0" layoutY="55.0" mnemonicParsing="false" onAction="#editCreditHandler" text="Rediger credits">

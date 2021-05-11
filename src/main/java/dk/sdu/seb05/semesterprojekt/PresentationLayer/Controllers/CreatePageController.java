@@ -1,8 +1,9 @@
-package dk.sdu.seb05.semesterprojekt.PresentationLayer;
+package dk.sdu.seb05.semesterprojekt.PresentationLayer.Controllers;
 
 import com.jfoenix.controls.*;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.Category;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
+import dk.sdu.seb05.semesterprojekt.PresentationLayer.PresentationSingleton;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
@@ -15,7 +16,8 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class CreatePageController implements ViewArgumentAdapter {
-    public static PresentationSingleton fulcrum;
+
+    PresentationSingleton presentationSingleton;
 
     @FXML
     private StackPane stackPane;
@@ -41,10 +43,10 @@ public class CreatePageController implements ViewArgumentAdapter {
     IProgramme programme;
 
     public void onLaunch(Object o) {
-        fulcrum = PresentationSingleton.getInstance();
-        fulcrum.setTitle("Opret nyt program");
+        presentationSingleton = PresentationSingleton.getInstance();
+        presentationSingleton.setTitle("Opret nyt program");
         isUpdating = false;
-        Category[] categories = fulcrum.getDomainLayer().getCategories();
+        Category[] categories = presentationSingleton.getDomainLayer().getCategories();
         categoryComboBox.getItems().addAll(categories);
         if(o instanceof IProgramme){
             programme = (IProgramme) o;
@@ -61,7 +63,7 @@ public class CreatePageController implements ViewArgumentAdapter {
     }
 
     public void returnHandler() throws IOException {
-        fulcrum.goToFrontPage();
+        presentationSingleton.goToFrontPage();
     }
 
     public Date datePicker() {
@@ -107,7 +109,7 @@ public class CreatePageController implements ViewArgumentAdapter {
         //goes to front page
         frontPageButton.setOnAction(event -> {
             try {
-                fulcrum.goToFrontPage();
+                presentationSingleton.goToFrontPage();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -117,10 +119,10 @@ public class CreatePageController implements ViewArgumentAdapter {
             if(programme == null){
                 return;
             }
-            fulcrum.changeView("createcreditpage", programme);
+            presentationSingleton.changeView("createcreditpage", programme);
         });
         //goes back to the current page to create a new program
-        createPageButton.setOnAction(event -> fulcrum.changeView("createpage"));
+        createPageButton.setOnAction(event -> presentationSingleton.changeView("createpage"));
         dialog.setOnDialogClosed(event -> stackPane.setVisible(false));
         content.setActions(frontPageButton, createPageButton ,confirmButton);
         dialog.show();
@@ -176,13 +178,13 @@ public class CreatePageController implements ViewArgumentAdapter {
         }
         else {
             if (isUpdating) {
-                fulcrum.getDomainLayer().updateProgramme(programme.getId(),
+                presentationSingleton.getDomainLayer().updateProgramme(programme.getId(),
                         datePicker(),
                         categoryComboBox.getValue(),
                         channelTextField.getText(),
                         programTitleTextField.getText());
             } else {
-                programme = fulcrum.getDomainLayer().createProgramme(programTitleTextField.getText(),
+                programme = presentationSingleton.getDomainLayer().createProgramme(programTitleTextField.getText(),
                         categoryComboBox.getValue(),
                         channelTextField.getText(),
                         datePicker());
@@ -193,7 +195,7 @@ public class CreatePageController implements ViewArgumentAdapter {
                         "Dato: " + dateLabel.getText() + "\n"
                 );
             }
-            fulcrum.getDomainLayer().commit();
+            presentationSingleton.getDomainLayer().commit();
             popupSuccess();
         }
     }

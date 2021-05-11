@@ -2,6 +2,7 @@ package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
 import dk.sdu.seb05.semesterprojekt.DomainLayer.DomainController;
 import dk.sdu.seb05.semesterprojekt.DomainLayer.IDomainController;
+import dk.sdu.seb05.semesterprojekt.PresentationLayer.Controllers.ViewArgumentAdapter;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
