@@ -29,7 +29,6 @@ public class DatabaseController implements IDataLayer {
     private Set<CachedDatabaseObject> credits;
     private Connection connection;
 
-
     public DatabaseController() {
         persons = new TreeSet<>();
         programmes = new TreeSet<>();
@@ -205,7 +204,7 @@ public class DatabaseController implements IDataLayer {
             }
             return personsList;
         }
-
+        //We could not find the persons in the cache. So we just download them all again
         try (PreparedStatement stmt = connection.prepareStatement("SELECT id, name, birthdate, description FROM persons;")) {
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
@@ -396,7 +395,7 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public IProgramme getProgram(int programId) {
-        DatabaseObject databaseObject = findInCache(persons, programId);
+        DatabaseObject databaseObject = findInCache(programmes, programId);
         if (databaseObject instanceof IProgramme) {
             return (IProgramme) databaseObject;
         }
@@ -417,7 +416,7 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public IProducer getProducer(int producerId) {
-        DatabaseObject databaseObject = findInCache(persons, producerId);
+        DatabaseObject databaseObject = findInCache(producers, producerId);
         if (databaseObject instanceof IProducer) {
             return (IProducer) databaseObject;
         }
@@ -462,7 +461,7 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public ICredit getCredit(int creditId) {
-        DatabaseObject databaseObject = findInCache(persons, creditId);
+        DatabaseObject databaseObject = findInCache(credits, creditId);
         if (databaseObject instanceof ICredit) {
             return (ICredit) databaseObject;
         }
@@ -704,11 +703,11 @@ public class DatabaseController implements IDataLayer {
         try {
             PreparedStatement stmt = connection.prepareStatement("--Starter med Producer navn\n" +
                                                                     "SELECT 1 as sorting, PROD.* FROM producers PROD\n" +
-                                                                    "WHERE LOWER(PROD.name) LIKE LOWER(?)\n" +
+                                                                    "WHERE LOWER(PROD.company) LIKE LOWER(?)\n" +
                                                                     "UNION\n" +
                                                                     "--Indeholder producer navn:\n" +
                                                                     "SELECT 2 as sorting, PROD.* FROM producers PROD\n" +
-                                                                    "WHERE LOWER(PROD.name) LIKE LOWER(?)\n" +
+                                                                    "WHERE LOWER(PROD.company) LIKE LOWER(?)\n" +
                                                                     "UNION\n" +
                                                                     "-- FIND BY PRORAM NAME\n" +
                                                                     "SELECT 3 as sorting, PROD.* FROM producers PROD\n" +

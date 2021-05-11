@@ -59,7 +59,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
                 insertStatement.setDate(4, new java.sql.Date(airedDate.getTime()));
                 return insertStatement;
             case TRASH:
-                PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM programmes WHERE id = ?");
+                PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM programmes WHERE id = ? ");
                 deleteStatement.setInt(1, id);
                 return deleteStatement;
         }
@@ -128,7 +128,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
             if(keyValueSet.getValue() == DatabaseState.TRASH){
                 System.out.println("Marking credit '" + keyValueSet.getKey().toString() + "' on " + this.getName() + " for deletion.");
                 creditsToDelete.add(keyValueSet.getKey());
-                return;
+                continue;
             }
             this.credits.put(keyValueSet.getKey(), DatabaseState.CLEAN);
         }
@@ -136,7 +136,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
             if(keyValueSet.getValue() == DatabaseState.TRASH){
                 System.out.println("Deleted " + keyValueSet.getKey().getCompany() + " on " + this.getName());
                 this.producers.remove(keyValueSet.getKey());
-                return;
+                continue;
             }
             this.producers.put(keyValueSet.getKey(), DatabaseState.CLEAN);
         }

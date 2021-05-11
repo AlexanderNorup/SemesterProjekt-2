@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public class DomainController implements IDomainController {
-    private final int PERSISTENCE_TYPE = 0; //0 = JSON, 1 = RDBMS
+    private final int PERSISTENCE_TYPE = 1; //0 = JSON, 1 = RDBMS
     IDataLayer dataLayer = PersistenceFactory.getDataLayer(PERSISTENCE_TYPE);
     Session session = new Session();
     Category[] categories = Category.values();

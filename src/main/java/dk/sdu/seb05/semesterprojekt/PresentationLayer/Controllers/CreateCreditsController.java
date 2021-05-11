@@ -1,4 +1,4 @@
-package dk.sdu.seb05.semesterprojekt.PresentationLayer;
+package dk.sdu.seb05.semesterprojekt.PresentationLayer.Controllers;
 
 import com.jfoenix.controls.*;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.FunctionType;
@@ -182,6 +182,7 @@ public class CreateCreditsController implements ViewArgumentAdapter {
     }
 
     private void updateListView(){
+        programme = presentationSingleton.getDomainLayer().chooseProgramme(programme.getId());
         ObservableList<ICredit> credits = FXCollections.observableArrayList(programme.getCredits());
         creditsListView.setItems(credits);
     }
