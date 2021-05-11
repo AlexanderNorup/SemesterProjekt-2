@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public class MainGUI extends Application {
 
-    public static PresentationSingleton instance;
+    PresentationSingleton presentationSingleton;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -34,9 +34,9 @@ public class MainGUI extends Application {
         primaryStage.setResizable(false);
         primaryStage.setScene(s);
         primaryStage.getIcons().add(new Image(String.valueOf(getClass().getResource("/pictures/TV_2_RGB.png"))));
-        instance = PresentationSingleton.getInstance();
+        presentationSingleton = PresentationSingleton.getInstance();
         s.getStylesheets().setAll(String.valueOf(getClass().getResource("/css/style.css")));
-        instance.setPrimaryStage(primaryStage);
+        presentationSingleton.setPrimaryStage(primaryStage);
         primaryStage.show();
     }
 

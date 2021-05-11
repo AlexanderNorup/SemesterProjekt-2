@@ -5,13 +5,12 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.FunctionType;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.ICredit;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IPerson;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
+import dk.sdu.seb05.semesterprojekt.PresentationLayer.PresentationSingleton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
@@ -22,9 +21,9 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
-public class CreateCreditsController implements ViewArgumentAdapter{
+public class CreateCreditsController implements ViewArgumentAdapter {
 
-    public static PresentationSingleton fulcrum;
+    PresentationSingleton presentationSingleton;
 
     @FXML
     private JFXButton deleteCreditButton;
@@ -61,22 +60,21 @@ public class CreateCreditsController implements ViewArgumentAdapter{
 
     @Override
     public void onLaunch(Object o) {
-        fulcrum = PresentationSingleton.getInstance();
-        fulcrum.setTitle("Tilføj credits");
+        presentationSingleton = PresentationSingleton.getInstance();
+        presentationSingleton.setTitle("Tilføj credits");
         if(o instanceof IProgramme){
             programme = (IProgramme) o;
             updateListView();
         }
         updateComboBox();
-        List<FunctionType> functionTypes = fulcrum.getDomainLayer().getFunctionTypes();
+        List<FunctionType> functionTypes = presentationSingleton.getDomainLayer().getFunctionTypes();
         functionTypeExistComboBox.getItems().addAll(functionTypes);
         functionTypeNewComboBox.getItems().addAll(functionTypes);
         creditsListView.getStyleClass().add("mylistview");
     }
 
-
     public void returnHandler() throws IOException {
-        fulcrum.goToFrontPage();
+        presentationSingleton.goToFrontPage();
     }
 
     private void popupError(String errorText) {
@@ -125,8 +123,8 @@ public class CreateCreditsController implements ViewArgumentAdapter{
         });
         //goes to edit page after deleting program
         confirmButton.setOnAction(event -> {
-            fulcrum.getDomainLayer().removeCredit(programme.getId(), credit);
-            fulcrum.getDomainLayer().commit();
+            presentationSingleton.getDomainLayer().removeCredit(programme.getId(), credit);
+            presentationSingleton.getDomainLayer().commit();
             updateListView();
             dialog.close();
         });
@@ -189,7 +187,7 @@ public class CreateCreditsController implements ViewArgumentAdapter{
     }
 
     private void updateComboBox(){
-        ObservableList<IPerson> persons = FXCollections.observableArrayList(fulcrum.getDomainLayer().getPersons());
+        ObservableList<IPerson> persons = FXCollections.observableArrayList(presentationSingleton.getDomainLayer().getPersons());
         personComboBox.setItems(persons);
     }
 
@@ -199,10 +197,10 @@ public class CreateCreditsController implements ViewArgumentAdapter{
             System.out.println("Something needs filling in!");
         } else {
             if(actionEvent.getSource() == addNewCreditButton) {
-                ICredit credit = fulcrum.getDomainLayer().createCredit(nameField.getText(), datePicker(), descriptionField.getText(), functionTypeNewComboBox.getValue());
+                ICredit credit = presentationSingleton.getDomainLayer().createCredit(nameField.getText(), datePicker(), descriptionField.getText(), functionTypeNewComboBox.getValue());
                 programme.addCredit(credit);
-                fulcrum.getDomainLayer().updateProgramme(programme);
-                fulcrum.getDomainLayer().commit();
+                presentationSingleton.getDomainLayer().updateProgramme(programme);
+                presentationSingleton.getDomainLayer().commit();
                 updateComboBox();
                 nameField.setText(null); // resetting the fields to normal
                 descriptionField.setText(null); // resetting the fields to normal
@@ -210,10 +208,10 @@ public class CreateCreditsController implements ViewArgumentAdapter{
                 functionTypeNewComboBox.setValue(null); // resetting the fields to normal
             }
             if(actionEvent.getSource() == addExistingCreditButton){
-                ICredit credit = fulcrum.getDomainLayer().createCredit(personComboBox.getValue(), functionTypeExistComboBox.getValue());
+                ICredit credit = presentationSingleton.getDomainLayer().createCredit(personComboBox.getValue(), functionTypeExistComboBox.getValue());
                 programme.addCredit(credit);
-                fulcrum.getDomainLayer().updateProgramme(programme);
-                fulcrum.getDomainLayer().commit();
+                presentationSingleton.getDomainLayer().updateProgramme(programme);
+                presentationSingleton.getDomainLayer().commit();
                 personComboBox.setValue(null); // resetting the fields to normal
                 functionTypeExistComboBox.setValue(null); // resetting the fields to normal
             }

@@ -1,12 +1,12 @@
-package dk.sdu.seb05.semesterprojekt.PresentationLayer;
+package dk.sdu.seb05.semesterprojekt.PresentationLayer.Controllers;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXListView;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProgramme;
+import dk.sdu.seb05.semesterprojekt.PresentationLayer.PresentationSingleton;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class EditController {
 
-    PresentationSingleton fulcrum;
+    PresentationSingleton presentationSingleton;
 
     @FXML
     private JFXButton editProgramButton;
@@ -33,11 +33,11 @@ public class EditController {
     IProgramme programme;
 
     public void initialize(){
-        fulcrum = PresentationSingleton.getInstance();
-        fulcrum.setTitle("Rediger programmer");
+        presentationSingleton = PresentationSingleton.getInstance();
+        presentationSingleton.setTitle("Rediger programmer");
 
         programsListView.setItems(FXCollections.observableArrayList(
-                fulcrum.getDomainLayer().getProgrammes(fulcrum.getDomainLayer().getSession().getProducerID())
+                presentationSingleton.getDomainLayer().getProgrammes(presentationSingleton.getDomainLayer().getSession().getProducerID())
         ));
         programsListView.getStyleClass().add("mylistview");
     }
@@ -68,8 +68,8 @@ public class EditController {
         //goes to edit page after deleting program
         confirmButton.setOnAction(event -> {
             programsListView.getItems().remove(programme);
-            fulcrum.getDomainLayer().deleteProgramme(programme.getId());
-            fulcrum.getDomainLayer().commit();
+            presentationSingleton.getDomainLayer().deleteProgramme(programme.getId());
+            presentationSingleton.getDomainLayer().commit();
             dialog.close();
         });
         //goes back to the current page to create a new program
@@ -94,7 +94,7 @@ public class EditController {
 
 
     public void returnHandler() throws IOException {
-        fulcrum.goToFrontPage();
+        presentationSingleton.goToFrontPage();
     }
 
     public void editCreditHandler() {
@@ -102,7 +102,7 @@ public class EditController {
         if(programme == null){
             return;
         }
-        fulcrum.changeView("createcreditpage", programme);
+        presentationSingleton.changeView("createcreditpage", programme);
     }
 
     public void editProgramHandler() {
@@ -110,6 +110,6 @@ public class EditController {
         if(programme == null){
             return;
         }
-        fulcrum.changeView("createpage", programme);
+        presentationSingleton.changeView("createpage", programme);
     }
 }
