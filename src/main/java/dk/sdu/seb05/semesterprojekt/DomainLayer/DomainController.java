@@ -283,7 +283,7 @@ public class DomainController implements IDomainController {
             for (IProducer producer: getProducers()) {
                 str.append(producer.getCompany())
                         .append(",");
-                for (IProgramme programme : producer.getProgrammes()) {
+                for (IProgramme programme : getProgrammes(producer.getId())) {
                     str.append(programme.getName())
                             .append(",");
                 }
