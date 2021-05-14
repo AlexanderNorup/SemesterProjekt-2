@@ -11,8 +11,7 @@ import java.time.ZoneId;
 import java.util.*;
 
 public class DomainController implements IDomainController {
-    private final int PERSISTENCE_TYPE = 1; //0 = JSON, 1 = RDBMS
-    IDataLayer dataLayer = PersistenceFactory.getDataLayer(PERSISTENCE_TYPE);
+    IDataLayer dataLayer = PersistenceFactory.getDataLayer();
     Session session = new Session();
     Category[] categories = Category.values();
     List<FunctionType> functionTypes = FunctionType.getAllFunctionTypes();

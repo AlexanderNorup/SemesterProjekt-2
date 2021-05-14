@@ -1,6 +1,8 @@
 package dk.sdu.seb05.semesterprojekt.PersistenceLayer.DatabaseController;
 
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.postgresql.util.PSQLException;
 
 import javax.xml.transform.Result;
@@ -35,15 +37,18 @@ public class DatabaseController implements IDataLayer {
         producers = new TreeSet<>();
         credits = new TreeSet<>();
 
-        //TODO: Læs ind fra fil
         //the path to database
-        String url = "jdbc:postgresql://hosting.alexandernorup.com:5432/tv2"; //Connection Url
-        String user = "java";
-        String password = null;
+        String url = ""; //Connection Url
+        String user = "";
+        String password = "";
         try {
-            File passwordFile = new File("auth.txt");
-            password = Files.readString(Path.of(passwordFile.toURI()), StandardCharsets.UTF_8).trim();
-        } catch (IOException e) {
+            File passwordFile = new File("auth.json");
+            String json = Files.readString(Path.of(passwordFile.toURI()), StandardCharsets.UTF_8).trim();
+            JSONObject jsonObject = new JSONObject(json);
+            url = jsonObject.getString("connectionString");
+            user = jsonObject.getString("username");
+            password = jsonObject.getString("password");
+        } catch (IOException | JSONException e) {
             System.out.println("Kunne ikke indlæse adgangskoden.");
             e.printStackTrace();
         }
@@ -52,15 +57,14 @@ public class DatabaseController implements IDataLayer {
         try {
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException throwables) {
-            System.out.println("Kunne ikke forbinde til databasen.");
-            throwables.printStackTrace();
+            System.out.println("Kunne ikke forbinde til databasen. Invalid url, user eller password. Tjek auth.json.");
         }
     }
 
 
     public boolean checkConnection() {
         if (connection == null) return false;
-        try (Statement statement = connection.createStatement();) {
+        try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT VERSION()");
             // Closes resorces after the statement
             if (resultSet.next()) {
