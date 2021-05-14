@@ -7,8 +7,4 @@ public interface IProducer {
 
     String getCompany();
     void setCompany(String newCompany);
-
-    List<IProgramme> getProgrammes();
-    void addProgramme(IProgramme programme);
-    void removeProgramme(IProgramme programme);
 }

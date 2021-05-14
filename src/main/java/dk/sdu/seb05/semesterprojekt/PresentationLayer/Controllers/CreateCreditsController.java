@@ -54,6 +54,7 @@ public class CreateCreditsController implements ViewArgumentAdapter {
     @FXML
     private DatePicker birthdayPicker;
 
+
     ICredit credit;
     IProgramme programme;
 
@@ -181,6 +182,7 @@ public class CreateCreditsController implements ViewArgumentAdapter {
     }
 
     private void updateListView(){
+        programme = presentationSingleton.getDomainLayer().chooseProgramme(programme.getId());
         ObservableList<ICredit> credits = FXCollections.observableArrayList(programme.getCredits());
         creditsListView.setItems(credits);
     }
@@ -190,6 +192,7 @@ public class CreateCreditsController implements ViewArgumentAdapter {
         personComboBox.setItems(persons);
     }
 
+
     public void addCredit(ActionEvent actionEvent) {
         if (errorHandler(actionEvent)) {
             System.out.println("Something needs filling in!");
@@ -197,6 +200,7 @@ public class CreateCreditsController implements ViewArgumentAdapter {
             if(actionEvent.getSource() == addNewCreditButton) {
                 ICredit credit = presentationSingleton.getDomainLayer().createCredit(nameField.getText(), datePicker(), descriptionField.getText(), functionTypeNewComboBox.getValue());
                 programme.addCredit(credit);
+                presentationSingleton.getDomainLayer().updateProgramme(programme);
                 presentationSingleton.getDomainLayer().commit();
                 updateComboBox();
                 nameField.setText(null); // resetting the fields to normal
@@ -207,6 +211,7 @@ public class CreateCreditsController implements ViewArgumentAdapter {
             if(actionEvent.getSource() == addExistingCreditButton){
                 ICredit credit = presentationSingleton.getDomainLayer().createCredit(personComboBox.getValue(), functionTypeExistComboBox.getValue());
                 programme.addCredit(credit);
+                presentationSingleton.getDomainLayer().updateProgramme(programme);
                 presentationSingleton.getDomainLayer().commit();
                 personComboBox.setValue(null); // resetting the fields to normal
                 functionTypeExistComboBox.setValue(null); // resetting the fields to normal

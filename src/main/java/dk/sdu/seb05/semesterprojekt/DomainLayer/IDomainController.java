@@ -1,6 +1,8 @@
 package dk.sdu.seb05.semesterprojekt.DomainLayer;
 
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.*;
+
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -16,9 +18,9 @@ public interface IDomainController {
     Category[] getCategories();
     List<FunctionType> getFunctionTypes();
 
-    boolean updateProducer(int producerID, String name);
-    boolean updateProgramme(int programmeID, Date airedDate, Category category, String channel, String name);
-    boolean updatePerson(int personID, Date birthdate, String description, String name);
+    boolean updateProducer(IProducer iProducer);
+    boolean updateProgramme(IProgramme iProgramme);
+    boolean updatePerson(IPerson iPerson);
 
     boolean deleteProducer(int producerID);
     boolean deleteProgramme(int programmeID);
@@ -47,4 +49,6 @@ public interface IDomainController {
     void removeProducer(int programmeID, IProducer producer);
 
     boolean commit();
+
+    String exportData(File file);
 }
