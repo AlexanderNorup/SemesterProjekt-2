@@ -15,7 +15,15 @@ import java.util.Optional;
 
 public class PersistenceFactory {
 
+    private static Settings settings;
+
     public static IDataLayer getDataLayer(){
+        File settingsFile = new File("auth.json");
+        if(settingsFile.exists()) {
+            settings = Settings.loadSettings(settingsFile);
+        }else{
+            settings = Settings.getDefaultSettings(settingsFile);
+        }
 
         while(!checkDatabaseAuth()){
             askForAuth();
@@ -27,6 +35,7 @@ public class PersistenceFactory {
             default -> throw new IllegalStateException("Unexpected value: " + getDataLayerType());
         };
     }
+
 
     private static int getDataLayerType(){
         try {
@@ -44,26 +53,16 @@ public class PersistenceFactory {
     }
 
     private static boolean checkDatabaseAuth(){
-        File auth = new File("auth.json");
-        if(auth.exists()){
-            try {
-                String jsonFile = Files.readString(Path.of(auth.toURI()), StandardCharsets.UTF_8);
-                JSONObject object = new JSONObject(jsonFile);
-                if(object.has("useJSONDataLayer") && object.getBoolean("useJSONDataLayer")){
-                    return true; //Accept the auth, since we use JSON.
-                }
 
-                if(!object.has("password")) {
-                    return false;
-                }
-                return new DatabaseController().checkConnection();
-            } catch (IOException | JSONException e) {
-                System.out.println("Failed to load file or JSON object: " + e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
+        if(settings.useJSON()){
+            return true; //Accept the auth, since we use JSON.
         }
-        return false;
+
+        if(!settings.hasPassword()) {
+            return false;
+        }
+
+        return new DatabaseController().checkConnection();
     }
 
     private static void askForAuth(){
@@ -75,19 +74,9 @@ public class PersistenceFactory {
         // Traditional way to get the response value.
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()){
-            try{
-                String auth = result.get();
-                File authFile = new File("auth.json");
-                JSONObject jsonObject = new JSONObject();
-                if (!jsonObject.has("connectionString")) jsonObject.put("connectionString", "jdbc:postgresql://hosting.alexandernorup.com:5432/tv2");
-                if (!jsonObject.has("username")) jsonObject.put("username", "java");
-                if (!jsonObject.has("useJSONDataLayer")) jsonObject.put("useJSONDataLayer", false);
-                jsonObject.put("password", auth);
-                Files.writeString(Path.of(authFile.toURI()), jsonObject.toString(2), StandardCharsets.UTF_8);
-            }catch(IOException | JSONException e){
-                System.out.println("Could not save file: " + e.getMessage());
-                e.printStackTrace();
-            }
+            String auth = result.get();
+            settings.setPassword(auth);
+            settings.saveSettings();
         }else{
             System.exit(1);
         }
