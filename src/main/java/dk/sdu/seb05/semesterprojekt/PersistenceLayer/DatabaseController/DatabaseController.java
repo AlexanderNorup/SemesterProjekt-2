@@ -37,27 +37,13 @@ public class DatabaseController implements IDataLayer {
         producers = new TreeSet<>();
         credits = new TreeSet<>();
 
-        //the path to database
-        String url = ""; //Connection Url
-        String user = "";
-        String password = "";
-        try {
-            File passwordFile = new File("auth.json");
-            String json = Files.readString(Path.of(passwordFile.toURI()), StandardCharsets.UTF_8).trim();
-            JSONObject jsonObject = new JSONObject(json);
-            url = jsonObject.getString("connectionString");
-            user = jsonObject.getString("username");
-            password = jsonObject.getString("password");
-        } catch (IOException | JSONException e) {
-            System.out.println("Kunne ikke indlæse adgangskoden.");
-            e.printStackTrace();
-        }
+        Settings settings = Settings.loadSettings(new File("auth.json"));
 
-        //Connects and makes a Statement Object to send SQL Statements to the database
+        //Connects to the database.
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(settings.getUrl(), settings.getUsername(), settings.getPassword());
         } catch (SQLException throwables) {
-            System.out.println("Kunne ikke forbinde til databasen. Invalid url, user eller password. Tjek auth.json.");
+            System.out.println("Kunne ikke forbinde til databasen. Invalid connectionString, user eller password. Tjek auth.json.");
         }
     }
 
