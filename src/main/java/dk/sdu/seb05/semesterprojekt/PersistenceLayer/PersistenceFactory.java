@@ -38,18 +38,7 @@ public class PersistenceFactory {
 
 
     private static int getDataLayerType(){
-        try {
-            File passwordFile = new File("auth.json");
-            String json = Files.readString(Path.of(passwordFile.toURI()), StandardCharsets.UTF_8).trim();
-            JSONObject jsonObject = new JSONObject(json);
-            if(jsonObject.has("useJSONDataLayer") && !jsonObject.getBoolean("useJSONDataLayer")){
-                return 1; //Database
-            }
-        } catch (IOException | JSONException e) {
-            System.out.println("Could not read auth.json to determine persistence-layer type. Defaults to JSON. ");
-            e.printStackTrace();
-        }
-        return 0; //JSON
+        return settings.useJSON() ? 0 : 1;
     }
 
     private static boolean checkDatabaseAuth(){
