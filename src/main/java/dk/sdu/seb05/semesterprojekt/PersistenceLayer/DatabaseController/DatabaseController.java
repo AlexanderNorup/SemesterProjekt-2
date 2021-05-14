@@ -1,6 +1,8 @@
 package dk.sdu.seb05.semesterprojekt.PersistenceLayer.DatabaseController;
 
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.postgresql.util.PSQLException;
 
 import javax.xml.transform.Result;
@@ -35,32 +37,20 @@ public class DatabaseController implements IDataLayer {
         producers = new TreeSet<>();
         credits = new TreeSet<>();
 
-        //TODO: Læs ind fra fil
-        //the path to database
-        String url = "jdbc:postgresql://hosting.alexandernorup.com:5432/tv2"; //Connection Url
-        String user = "java";
-        String password = null;
-        try {
-            File passwordFile = new File("auth.txt");
-            password = Files.readString(Path.of(passwordFile.toURI()), StandardCharsets.UTF_8).trim();
-        } catch (IOException e) {
-            System.out.println("Kunne ikke indlæse adgangskoden.");
-            e.printStackTrace();
-        }
+        Settings settings = Settings.loadSettings(new File("auth.json"));
 
-        //Connects and makes a Statement Object to send SQL Statements to the database
+        //Connects to the database.
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(settings.getUrl(), settings.getUsername(), settings.getPassword());
         } catch (SQLException throwables) {
-            System.out.println("Kunne ikke forbinde til databasen.");
-            throwables.printStackTrace();
+            System.out.println("Kunne ikke forbinde til databasen. Invalid connectionString, user eller password. Tjek auth.json.");
         }
     }
 
 
     public boolean checkConnection() {
         if (connection == null) return false;
-        try (Statement statement = connection.createStatement();) {
+        try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT VERSION()");
             // Closes resorces after the statement
             if (resultSet.next()) {
