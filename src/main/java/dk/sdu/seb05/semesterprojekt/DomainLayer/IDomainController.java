@@ -1,6 +1,8 @@
 package dk.sdu.seb05.semesterprojekt.DomainLayer;
 
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.*;
+
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -47,4 +49,6 @@ public interface IDomainController {
     void removeProducer(int programmeID, IProducer producer);
 
     boolean commit();
+
+    String exportData(File file);
 }

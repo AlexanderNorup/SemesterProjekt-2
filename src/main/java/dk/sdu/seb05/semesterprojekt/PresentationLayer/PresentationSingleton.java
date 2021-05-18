@@ -1,6 +1,6 @@
 package dk.sdu.seb05.semesterprojekt.PresentationLayer;
 
-import dk.sdu.seb05.semesterprojekt.DomainLayer.DomainController;
+import dk.sdu.seb05.semesterprojekt.DomainLayer.DomainFactory;
 import dk.sdu.seb05.semesterprojekt.DomainLayer.IDomainController;
 import dk.sdu.seb05.semesterprojekt.PresentationLayer.Controllers.ViewArgumentAdapter;
 import javafx.fxml.FXMLLoader;
@@ -15,13 +15,12 @@ public class PresentationSingleton {
     private Stage primaryStage;
     private int searchTypeId;
     private String searchText;
-    private IDomainController domainController;
+    private IDomainController domainController = DomainFactory.getDomainLayer();
     private static PresentationSingleton instance;
     private boolean darkMode = false;
 
 
     private PresentationSingleton(){
-        domainController = new DomainController();
     }
 
     public static PresentationSingleton getInstance(){

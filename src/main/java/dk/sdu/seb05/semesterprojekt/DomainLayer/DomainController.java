@@ -3,13 +3,15 @@ package dk.sdu.seb05.semesterprojekt.DomainLayer;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.*;
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.JSONController.JSONController;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 public class DomainController implements IDomainController {
-    private final int PERSISTENCE_TYPE = 1; //0 = JSON, 1 = RDBMS
-    IDataLayer dataLayer = PersistenceFactory.getDataLayer(PERSISTENCE_TYPE);
+    IDataLayer dataLayer = PersistenceFactory.getDataLayer();
     Session session = new Session();
     Category[] categories = Category.values();
     List<FunctionType> functionTypes = FunctionType.getAllFunctionTypes();
@@ -272,5 +274,99 @@ public class DomainController implements IDomainController {
     @Override
     public boolean commit(){
         return dataLayer.commit();
+    }
+
+    @Override
+    public String exportData(File file) {
+        if(file == null) return "Ingen fil gemt.";
+        StringBuilder str = new StringBuilder();
+        FileWriter fileWriter;
+        if(session.getProducerID() == -1){
+            str.append("-------------,\n");
+            str.append("PRODUCERS,\n");
+            str.append("-------------,\n");
+            for (IProducer producer: getProducers()) {
+                str.append(producer.getCompany())
+                        .append(",");
+                for (IProgramme programme : getProgrammes(producer.getId())) {
+                    str.append(programme.getName())
+                            .append(",");
+                }
+                str.append("\n");
+            }
+            str.append("-------------,\n");
+            str.append("PROGRAMMES,\n");
+            str.append("-------------,\n");
+            for(IProgramme programme: getProgrammes()){
+                LocalDate date = programme.getAiredDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                str.append(programme.getName()).append(",")
+                        .append(programme.getCategory()).append(",")
+                        .append(programme.getChannel()).append(",")
+                        .append(date.getDayOfMonth() + "/" + date.getMonthValue() + "-" + date.getYear()).append(",");
+                for (ICredit credit : programme.getCredits()) {
+                    str.append(credit.getPerson().getName()).append(" - ")
+                            .append(credit.getFunctionType()).append(",");
+                }
+                str.append("\n");
+            }
+            str.append("-------------,\n");
+            str.append("PEOPLE,\n");
+            str.append("-------------,\n");
+            for(IPerson person: getPersons()){
+                LocalDate date = person.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                str.append(person.getName()).append(",")
+                        .append(date.getDayOfMonth() + "/" + date.getMonthValue() + "-" + date.getYear()).append(",")
+                        .append(person.getDescription()).append(",");
+                str.append("\n");
+            }
+            try {
+                fileWriter = new FileWriter(file);
+                fileWriter.append(str);
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            LinkedHashSet<IPerson> people = new LinkedHashSet<>();
+            str.append("-------------,\n");
+            str.append("PRODUCER:," ).append(dataLayer.getProducer(session.getProducerID()).getCompany()).append(", \n");
+            str.append("-------------,\n");
+            str.append("-------------,\n");
+            str.append("PROGRAMMES,\n");
+            str.append("-------------,\n");
+            for(IProgramme programme: getProgrammes(session.getProducerID())){
+                LocalDate date = programme.getAiredDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                str.append(programme.getName()).append(",")
+                        .append(programme.getCategory()).append(",")
+                        .append(programme.getChannel()).append(",")
+                        .append(date.getDayOfMonth() + "/" + date.getMonthValue() + "-" + date.getYear()).append(",");
+                for (ICredit credit : programme.getCredits()) {
+                    people.add(credit.getPerson());
+                    str.append(credit.getPerson().getName()).append(" - ")
+                            .append(credit.getFunctionType()).append(",");
+                }
+                str.append("\n");
+            }
+            str.append("-------------,\n");
+            str.append("PEOPLE,\n");
+            str.append("-------------,\n");
+            for(IPerson person: people){
+                LocalDate date = person.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                str.append(person.getName()).append(",")
+                        .append(date.getDayOfMonth() + "/" + date.getMonthValue() + "-" + date.getYear()).append(",")
+                        .append(person.getDescription()).append(",");
+                str.append("\n");
+            }
+            try {
+                fileWriter = new FileWriter(file);
+                fileWriter.append(str);
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file.getAbsolutePath();
     }
 }
