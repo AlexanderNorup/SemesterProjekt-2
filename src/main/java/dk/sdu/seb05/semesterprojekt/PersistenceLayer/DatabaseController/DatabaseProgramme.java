@@ -44,7 +44,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
         if(this.getId() < 0){this.state = DatabaseState.BRAND_NEW;}
         switch (this.state){
             case DIRTY:
-                PreparedStatement updateStmt = connection.prepareStatement("UPDATE programmes SET name = ?, category = ?, channel = ?, aireddate = ? WHERE id = ?");
+                PreparedStatement updateStmt = connection.prepareStatement("UPDATE programmes SET name = ?, category = categoryByName(?), channel = ?, aireddate = ? WHERE id = ?");
                 updateStmt.setString(1, name);
                 updateStmt.setString(2, category.name());
                 updateStmt.setString(3, channel);
@@ -52,7 +52,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
                 updateStmt.setInt(5, id);
                 return updateStmt;
             case BRAND_NEW:
-                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO programmes (name, category, channel, airedDate) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO programmes (name, category, channel, airedDate) VALUES (?,categoryByName(?),?,?)", Statement.RETURN_GENERATED_KEYS);
                 insertStatement.setString(1, name);
                 insertStatement.setString(2, category.name());
                 insertStatement.setString(3, channel);
@@ -69,7 +69,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
     public PreparedStatement[] getProducerBatchStatements(Connection connection) throws SQLException{
         PreparedStatement updateStatement = connection.prepareStatement("UPDATE producer_list SET programme = ? WHERE producer = ?");
         PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO producer_list (programme, producer) VALUES  (?,?)", Statement.RETURN_GENERATED_KEYS);
-        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM producer_list WHERE programme = ? AND producer = ?");
+        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM producers WHERE id = ?");
 
         for(Map.Entry<IProducer, DatabaseState> keyValueSet : this.producers.entrySet()){
             //Løber igennem alle producers
@@ -85,8 +85,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
                 insertStatement.addBatch();
             }else if(keyValueSet.getValue() == DatabaseState.TRASH){
                 //Produceren skal smides ud.
-                deleteStatement.setInt(1, this.id);
-                deleteStatement.setInt(2, keyValueSet.getKey().getId());
+                deleteStatement.setInt(1, keyValueSet.getKey().getId());
                 deleteStatement.addBatch();
             }
         }
@@ -97,7 +96,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
     public PreparedStatement[] getCreditBatchStatements(Connection connection) throws SQLException{
         PreparedStatement updateStatement = connection.prepareStatement("UPDATE credits_list SET programme = ? WHERE credit = ?");
         PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO credits_list (programme, credit) VALUES  (?,?)", Statement.RETURN_GENERATED_KEYS);
-        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM credits_list WHERE programme = ? AND credit = ?");
+        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM credits WHERE id = ?");
 
         for(Map.Entry<ICredit, DatabaseState> keyValueSet : this.credits.entrySet()){
             //Løber igennem alle credits
@@ -113,8 +112,7 @@ public class DatabaseProgramme extends DatabaseObject implements IProgramme {
                 insertStatement.addBatch();
             }else if(keyValueSet.getValue() == DatabaseState.TRASH){
                 //credits skal smides ud.
-                deleteStatement.setInt(1, this.id);
-                deleteStatement.setInt(2, keyValueSet.getKey().getId());
+                deleteStatement.setInt(1, keyValueSet.getKey().getId());
                 deleteStatement.addBatch();
             }
         }
