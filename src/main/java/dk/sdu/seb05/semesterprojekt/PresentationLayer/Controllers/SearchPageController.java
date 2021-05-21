@@ -71,7 +71,7 @@ public class SearchPageController implements ViewArgumentAdapter {
                 searchHandler();
             }
         });
-
+        searchTextField.setText(presentationSingleton.getSearchText());
     }
 
     public void chooseHandler() {
