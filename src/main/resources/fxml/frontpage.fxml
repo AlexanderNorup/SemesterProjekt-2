@@ -83,7 +83,6 @@
             </JFXButton>
          </children>
       </HBox>
-      <ListView fx:id="notificationListView" layoutX="20.0" layoutY="47.0" prefHeight="343.0" prefWidth="557.0" visible="false" />
       <StackPane fx:id="stackPane" layoutX="199.0" layoutY="125.0" prefHeight="150.0" prefWidth="200.0" visible="false">
          <opaqueInsets>
             <Insets />
@@ -94,5 +93,6 @@
             <Font size="14.0" />
          </font>
       </JFXButton>
+      <ListView fx:id="notificationListView" layoutX="20.0" layoutY="47.0" prefHeight="343.0" prefWidth="557.0" visible="false" />
    </children>
 </AnchorPane>
