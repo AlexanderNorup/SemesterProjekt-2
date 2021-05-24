@@ -44,7 +44,7 @@ public class CreditPageController implements ViewArgumentAdapter {
         if(o instanceof IProgramme){
             programme = (IProgramme) o;
             presentationSingleton.setTitle("Credits for: " + programme.getName());
-            contentLabel.setText(programme.getName());
+            contentLabel.setText(programme.getName() + " - " + programme.getCategory());
             listDescriptionLabel.setText("Rolleliste: ");
             ObservableList<Object> persons = FXCollections.observableArrayList((programme.getCredits()));
             creditListView.setItems(persons);

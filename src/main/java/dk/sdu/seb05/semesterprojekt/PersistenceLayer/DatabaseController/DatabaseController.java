@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.Date;
 import java.util.logging.Level;
@@ -29,6 +30,7 @@ public class DatabaseController implements IDataLayer {
     private Set<CachedDatabaseObject> programmes;
     private Set<CachedDatabaseObject> producers;
     private Set<CachedDatabaseObject> credits;
+    private List<LogEntry> logFile;
     private Connection connection;
 
     public DatabaseController() {
@@ -36,6 +38,7 @@ public class DatabaseController implements IDataLayer {
         programmes = new TreeSet<>();
         producers = new TreeSet<>();
         credits = new TreeSet<>();
+        logFile = new ArrayList<>();
 
         Settings settings = Settings.loadSettings(new File("auth.json"));
 
@@ -65,6 +68,16 @@ public class DatabaseController implements IDataLayer {
     }
 
     public static void main(String[] args) {
+        for (FunctionType type: FunctionType.values()) {
+            System.out.println(type.name());
+        }
+        System.out.println("--");
+        for (Category type: Category.values()) {
+            System.out.println(type.name());
+        }
+        System.out.println(Arrays.toString(Category.values()));
+
+
         DatabaseController dataLayer = new DatabaseController();
         if (dataLayer.checkConnection()) {
             System.out.println("Vi er klar til at bruge databasen!");
@@ -132,6 +145,18 @@ public class DatabaseController implements IDataLayer {
         }
 
 
+        //Log file
+        if(!logFile.isEmpty()){
+            PreparedStatement logStmt = connection.prepareStatement("INSERT INTO log (timestamp, message) VALUES (?,?)");
+            for(LogEntry entry : logFile){
+                logStmt.setTimestamp(1, entry.getTimestamp());
+                logStmt.setString(2, entry.getMessage());
+                logStmt.addBatch();
+            }
+            logStmt.executeBatch();
+            System.out.println("Updated log on server!");
+        }
+
 
         connection.commit(); //Fires all commands.
         long end_time = System.currentTimeMillis();
@@ -141,6 +166,8 @@ public class DatabaseController implements IDataLayer {
         resetStates(credits);
         resetStates(producers);
         resetStates(programmes);
+
+        logFile.clear();
 
         for(CachedDatabaseObject programme : programmes){
             if(programme.getObject() instanceof DatabaseProgramme){
@@ -238,7 +265,8 @@ public class DatabaseController implements IDataLayer {
             return programmeList;
         }
 
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT id, name, category, channel, aireddate FROM programmes;")) {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT p.id, p.name, c.name as category, p.channel, p.aireddate FROM programmes p\n" +
+                                                                        "INNER JOIN categories c on c.id = p.category;")) {
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 DatabaseProgramme programmes = getProgramme(resultSet);
@@ -392,7 +420,9 @@ public class DatabaseController implements IDataLayer {
         //The object is not in the cache, therefore we try to ask the database.
 
         IProgramme programme = null;
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT id, name, category, channel, aireddate FROM programmes WHERE id = ?")) {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT p.id, p.name, c.name as category, p.channel, p.aireddate FROM programmes p\n" +
+                                                                    "INNER JOIN categories c on c.id = p.category\n" +
+                                                                    "WHERE id = ?")) {
             stmt.setInt(1, programId);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
@@ -459,7 +489,9 @@ public class DatabaseController implements IDataLayer {
 
         ICredit credit = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT id, person, function_type FROM credits where id = ?")) {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT C.id, C.person, FT.name as function_type FROM credits C\n" +
+                                                                        "INNER JOIN function_types FT on FT.id = C.function_type\n" +
+                                                                        "where C.id = ?\n")) {
             stmt.setInt(1, creditId);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
@@ -614,22 +646,26 @@ public class DatabaseController implements IDataLayer {
         List<IProgramme> programmes = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement("--Starter med programnavn\n" +
-                                                                    "SELECT 1 as sorting, PRO.* FROM programmes PRO\n" +
+                                                                    "SELECT 1 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "WHERE LOWER(PRO.name) LIKE LOWER(?)\n" +
                                                                     "UNION\n" +
                                                                     "--Indeholder programnavn:\n" +
-                                                                    "SELECT 2 as sorting, PRO.* FROM programmes PRO\n" +
+                                                                    "SELECT 2 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "WHERE LOWER(PRO.name) LIKE LOWER(?)\n" +
                                                                     "UNION\n" +
                                                                     "-- FIND BY PERSON\n" +
-                                                                    "SELECT 3 as sorting, PRO.* FROM programmes PRO\n" +
+                                                                    "SELECT 3 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN credits_list cl on PRO.id = cl.programme\n" +
                                                                     "INNER JOIN credits c on cl.credit = c.id\n" +
                                                                     "INNER JOIN persons pers on c.person = pers.id\n" +
                                                                     "WHERE LOWER(pers.name) LIKE LOWER(?)\n" +
                                                                     "UNION\n" +
                                                                     "-- FIND BY PRODUCER\n" +
-                                                                    "SELECT 4 as sorting, PRO.* FROM programmes PRO\n" +
+                                                                    "SELECT 4 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN producer_list pl on PRO.id = pl.programme\n" +
                                                                     "INNER JOIN producers produ on pl.producer = produ.id\n" +
                                                                     "WHERE LOWER(produ.company) LIKE LOWER(?)\n" +
@@ -725,7 +761,8 @@ public class DatabaseController implements IDataLayer {
     public List<IProgramme> getProgrammesForPerson(int personId) {
         List<IProgramme> programmes = new ArrayList<>();
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.* FROM programmes PRO\n" +
+            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN credits_list cl on PRO.id = cl.programme\n" +
                                                                     "INNER JOIN credits c on c.id = cl.credit\n" +
                                                                     "INNER JOIN persons p on p.id = c.person\n" +
@@ -747,7 +784,8 @@ public class DatabaseController implements IDataLayer {
     public List<IProgramme> getProgrammesForProducer(int producerId) {
         List<IProgramme> programmes = new ArrayList<>();
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.* FROM programmes PRO\n" +
+            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN producer_list pl on PRO.id = pl.programme\n" +
                                                                     "INNER JOIN producers p on pl.producer = p.id\n" +
                                                                     "WHERE p.id = ?;");
@@ -788,7 +826,9 @@ public class DatabaseController implements IDataLayer {
     public List<IProgramme> getLatestProgrammes() {
         List<IProgramme> programmes = new ArrayList<>();
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT id, name, category, channel, aireddate FROM programmes ORDER BY aireddate DESC LIMIT 15;");
+            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
+                                                                    "ORDER BY aireddate DESC LIMIT 15;");
             ResultSet resultSet = stmt.executeQuery();
             while(resultSet.next()){
                 IProgramme programme = getProgramme(resultSet);
@@ -825,6 +865,24 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public void logMessage(String message) {
-        System.out.println("[Temp-Log-Database] " + message);
+        logFile.add(new LogEntry(new Timestamp(Instant.now().toEpochMilli()), message));
+    }
+
+    private class LogEntry{
+        private Timestamp timestamp;
+        private String message;
+
+        public LogEntry(Timestamp timestamp, String message) {
+            this.timestamp = timestamp;
+            this.message = message;
+        }
+
+        public Timestamp getTimestamp() {
+            return timestamp;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

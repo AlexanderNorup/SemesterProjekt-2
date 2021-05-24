@@ -7,6 +7,7 @@ import dk.sdu.seb05.semesterprojekt.PersistenceLayer.IProducer;
 
 import java.sql.*;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,13 +28,13 @@ public class DatabaseCredit extends DatabaseObject implements ICredit {
         if(this.getId() < 0){this.state = DatabaseState.BRAND_NEW;}
         switch (this.state){
             case DIRTY:
-                PreparedStatement updateStmt = connection.prepareStatement("UPDATE credits SET person = ?, function_type = ? WHERE id = ?");
+                PreparedStatement updateStmt = connection.prepareStatement("UPDATE credits SET person = ?, function_type = functionTypeByName(?) WHERE id = ?");
                 updateStmt.setInt(1, person.getId());
                 updateStmt.setString(2, functionType.name());
                 updateStmt.setInt(3, id);
                 return updateStmt;
             case BRAND_NEW:
-                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO credits (person, function_type) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO credits (person, function_type) VALUES (?,functionTypeByName(?))", Statement.RETURN_GENERATED_KEYS);
                 insertStatement.setInt(1, person.getId());
                 insertStatement.setString(2, functionType.name());
                 return insertStatement;
