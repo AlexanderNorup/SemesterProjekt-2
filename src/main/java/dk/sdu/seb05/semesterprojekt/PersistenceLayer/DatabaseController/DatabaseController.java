@@ -1,22 +1,12 @@
 package dk.sdu.seb05.semesterprojekt.PersistenceLayer.DatabaseController;
 
 import dk.sdu.seb05.semesterprojekt.PersistenceLayer.*;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.postgresql.util.PSQLException;
 
-import javax.xml.transform.Result;
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DatabaseController implements IDataLayer {
     public static final long DEFAULT_CACHE_INVALIDATION_TIME = (60 * 10 * 1000); //10 minutes.
@@ -30,7 +20,7 @@ public class DatabaseController implements IDataLayer {
     private Set<CachedDatabaseObject> programmes;
     private Set<CachedDatabaseObject> producers;
     private Set<CachedDatabaseObject> credits;
-    private List<LogEntry> logFile;
+    private List<LogEntry> logEntries;
     private Connection connection;
 
     public DatabaseController() {
@@ -38,7 +28,7 @@ public class DatabaseController implements IDataLayer {
         programmes = new TreeSet<>();
         producers = new TreeSet<>();
         credits = new TreeSet<>();
-        logFile = new ArrayList<>();
+        logEntries = new ArrayList<>();
 
         Settings settings = Settings.loadSettings(new File("auth.json"));
 
@@ -146,9 +136,9 @@ public class DatabaseController implements IDataLayer {
 
 
         //Log file
-        if(!logFile.isEmpty()){
+        if(!logEntries.isEmpty()){
             PreparedStatement logStmt = connection.prepareStatement("INSERT INTO log (timestamp, message) VALUES (?,?)");
-            for(LogEntry entry : logFile){
+            for(LogEntry entry : logEntries){
                 logStmt.setTimestamp(1, entry.getTimestamp());
                 logStmt.setString(2, entry.getMessage());
                 logStmt.addBatch();
@@ -167,7 +157,7 @@ public class DatabaseController implements IDataLayer {
         resetStates(producers);
         resetStates(programmes);
 
-        logFile.clear();
+        logEntries.clear();
 
         for(CachedDatabaseObject programme : programmes){
             if(programme.getObject() instanceof DatabaseProgramme){
@@ -865,7 +855,7 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public void logMessage(String message) {
-        logFile.add(new LogEntry(new Timestamp(Instant.now().toEpochMilli()), message));
+        logEntries.add(new LogEntry(new Timestamp(Instant.now().toEpochMilli()), message));
     }
 
     private class LogEntry{
