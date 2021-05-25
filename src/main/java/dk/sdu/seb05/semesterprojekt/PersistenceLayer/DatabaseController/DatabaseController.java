@@ -152,10 +152,10 @@ public class DatabaseController implements IDataLayer {
         long end_time = System.currentTimeMillis();
         System.out.println("Committed all edits. Took " + (end_time - start_time) + "ms");
 
-        resetStates(persons);
-        resetStates(credits);
-        resetStates(producers);
-        resetStates(programmes);
+        persons = resetStates(persons);
+        credits = resetStates(credits);
+        producers = resetStates(producers);
+        programmes = resetStates(programmes);
 
         logEntries.clear();
 
@@ -168,11 +168,14 @@ public class DatabaseController implements IDataLayer {
         //TODO: Lav JavaDoc
     }
 
-    private void resetStates(Set<CachedDatabaseObject> objects) {
+    private Set<CachedDatabaseObject> resetStates(Set<CachedDatabaseObject> objects) {
+        TreeSet<CachedDatabaseObject> reSorted = new TreeSet<>();
         for (CachedDatabaseObject object : objects) {
             DatabaseObject databaseObject = object.getObject();
             databaseObject.setState(DatabaseState.CLEAN);
+            reSorted.add(object);
         }
+        return reSorted;
     }
 
     private void commitObjects(Set<CachedDatabaseObject> objects) throws SQLException {
