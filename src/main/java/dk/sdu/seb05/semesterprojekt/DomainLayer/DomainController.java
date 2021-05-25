@@ -280,8 +280,9 @@ public class DomainController implements IDomainController {
     public String exportData(File file) {
         if(file == null) return "Ingen fil gemt.";
         StringBuilder str = new StringBuilder();
+        str.append("sep=,\n");
         FileWriter fileWriter;
-        if(session.getProducerID() == -1){
+        if(session.isAdmin()){
             str.append("-------------,\n");
             str.append("PRODUCERS,\n");
             str.append("-------------,\n");
@@ -312,6 +313,7 @@ public class DomainController implements IDomainController {
             str.append("-------------,\n");
             str.append("PEOPLE,\n");
             str.append("-------------,\n");
+            str.append("Name,Birthdate,Description\n");
             for(IPerson person: getPersons()){
                 LocalDate date = person.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 str.append(person.getName()).append(",")
@@ -351,6 +353,7 @@ public class DomainController implements IDomainController {
             str.append("-------------,\n");
             str.append("PEOPLE,\n");
             str.append("-------------,\n");
+            str.append("Name,Birthdate,Description\n");
             for(IPerson person: people){
                 LocalDate date = person.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 str.append(person.getName()).append(",")

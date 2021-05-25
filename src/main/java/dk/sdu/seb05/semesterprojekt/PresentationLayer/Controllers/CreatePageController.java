@@ -58,6 +58,7 @@ public class CreatePageController implements ViewArgumentAdapter {
             sendDate.setValue(programmeLocalDate);
             channelTextField.setText(programme.getChannel());
             createProgramButton.setText("Opdater program");
+            presentationSingleton.setTitle("Opdater program");
             isUpdating = true;
         }
     }

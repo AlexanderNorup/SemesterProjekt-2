@@ -192,6 +192,12 @@ public class JSONController implements IDataLayer {
             }
         }
         nextProgrammeId = highestProgrammeId + 1;
+
+        if(this.producers.isEmpty()){
+            createProducer("TV 2");
+            createProducer("Nordisk Film");
+            createProducer("Metronome");
+        }
     }
 
     public static void main(String[] args) {
