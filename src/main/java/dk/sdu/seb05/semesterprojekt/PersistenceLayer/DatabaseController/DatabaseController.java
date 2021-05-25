@@ -258,8 +258,11 @@ public class DatabaseController implements IDataLayer {
             return programmeList;
         }
 
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT p.id, p.name, c.name as category, p.channel, p.aireddate FROM programmes p\n" +
-                                                                        "INNER JOIN categories c on c.id = p.category;")) {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT p.id, p.name, c.name as category, p.channel, p.aireddate, array_agg(CL.credit) as credits, array_agg(PL.producer) as producers FROM programmes p\n" +
+                                                                        "INNER JOIN categories c on c.id = p.category\n" +
+                                                                        "INNER JOIN credits_list CL on p.id = CL.programme\n" +
+                                                                        "INNER JOIN producer_list PL on p.id = PL.programme\n" +
+                                                                        "GROUP BY p.id, c.name;")) {
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 DatabaseProgramme programmes = getProgramme(resultSet);
@@ -286,30 +289,23 @@ public class DatabaseController implements IDataLayer {
             String channel = resultSet.getString("channel");
             java.util.Date airedDate = new Date(resultSet.getDate("aireddate").getTime());
 
+            Object credits_ = resultSet.getArray("credits").getArray();
+            Object producers_ = resultSet.getArray("producers").getArray();
 
-            //Fetch all credits for this programme.
-            PreparedStatement creditStmt = connection.prepareStatement("SELECT C.id, C.function_type FROM credits C " +
-                    "INNER JOIN credits_list cl on C.id = cl.credit " +
-                    "WHERE cl.programme = ?;");
-            creditStmt.setInt(1, id);
-            ResultSet creditResults = creditStmt.executeQuery();
             ArrayList<ICredit> credits = new ArrayList<>();
-            while (creditResults.next()) {
-                credits.add(getCredit(creditResults.getInt("id")));
-            }
-            creditStmt.close();
-
-            //Fetch all producers for this programme.
-            PreparedStatement producerStmt = connection.prepareStatement("SELECT PR.id FROM  producers PR " +
-                    "INNER JOIN producer_list pl on PR.id = pl.producer " +
-                    "WHERE pl.programme = ?;");
-            producerStmt.setInt(1, id);
-            ResultSet producerResults = producerStmt.executeQuery();
             ArrayList<IProducer> producers = new ArrayList<>();
-            while (producerResults.next()) {
-                producers.add(getProducer(producerResults.getInt("id")));
+
+            if(credits_ instanceof Integer[]){
+                for(int creditId : (Integer[]) credits_){
+                    credits.add(getCredit(creditId));
+                }
             }
-            producerStmt.close();
+
+            if(producers_ instanceof Integer[]){
+                for(int producerId : (Integer[]) producers_){
+                    producers.add(getProducer(producerId));
+                }
+            }
 
             DatabaseProgramme programme = new DatabaseProgramme(id, name, category, channel, airedDate, credits, producers);
             programme.setState(DatabaseState.CLEAN);
@@ -413,9 +409,12 @@ public class DatabaseController implements IDataLayer {
         //The object is not in the cache, therefore we try to ask the database.
 
         IProgramme programme = null;
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT p.id, p.name, c.name as category, p.channel, p.aireddate FROM programmes p\n" +
-                                                                    "INNER JOIN categories c on c.id = p.category\n" +
-                                                                    "WHERE id = ?")) {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
+                                                                        "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                        "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
+                                                                        "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
+                                                                        "WHERE PRO.id = ?\n" +
+                                                                        "GROUP BY PRO.id, PRO.aireddate, CAT.name")) {
             stmt.setInt(1, programId);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
@@ -639,29 +638,40 @@ public class DatabaseController implements IDataLayer {
         List<IProgramme> programmes = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement("--Starter med programnavn\n" +
-                                                                    "SELECT 1 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "SELECT 1 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate , array_agg(C.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
+                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                    "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "WHERE LOWER(PRO.name) LIKE LOWER(?)\n" +
+                                                                    "GROUP BY PRO.id, CAT.name\n" +
                                                                     "UNION\n" +
                                                                     "--Indeholder programnavn:\n" +
-                                                                    "SELECT 2 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "SELECT 2 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(PL.producer) as producers  FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
+                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                    "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "WHERE LOWER(PRO.name) LIKE LOWER(?)\n" +
+                                                                    "GROUP BY PRO.id, CAT.name\n" +
                                                                     "UNION\n" +
                                                                     "-- FIND BY PERSON\n" +
-                                                                    "SELECT 3 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "SELECT 3 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(cl2.credit) as credits, array_agg(PL.producer) as producers  FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN credits_list cl on PRO.id = cl.programme\n" +
+                                                                    "INNER JOIN credits_list cl2 on PRO.id = cl2.programme\n" +
+                                                                    "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "INNER JOIN credits c on cl.credit = c.id\n" +
                                                                     "INNER JOIN persons pers on c.person = pers.id\n" +
                                                                     "WHERE LOWER(pers.name) LIKE LOWER(?)\n" +
+                                                                    "GROUP BY PRO.id, CAT.name\n" +
                                                                     "UNION\n" +
                                                                     "-- FIND BY PRODUCER\n" +
-                                                                    "SELECT 4 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+                                                                    "SELECT 4 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(pl.producer) as producers  FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN producer_list pl on PRO.id = pl.programme\n" +
+                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
                                                                     "INNER JOIN producers produ on pl.producer = produ.id\n" +
                                                                     "WHERE LOWER(produ.company) LIKE LOWER(?)\n" +
+                                                                    "GROUP BY PRO.id, CAT.name\n" +
                                                                     "ORDER BY sorting;");
             stmt.setString(1, query + "%");
             stmt.setString(2, "%" + query + "%");
@@ -754,12 +764,15 @@ public class DatabaseController implements IDataLayer {
     public List<IProgramme> getProgrammesForPerson(int personId) {
         List<IProgramme> programmes = new ArrayList<>();
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate , array_agg(cl2.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN credits_list cl on PRO.id = cl.programme\n" +
+                                                                    "INNER JOIN credits_list cl2 on PRO.id = cl2.programme\n" +
+                                                                    "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "INNER JOIN credits c on c.id = cl.credit\n" +
                                                                     "INNER JOIN persons p on p.id = c.person\n" +
-                                                                    "WHERE p.id = ?;");
+                                                                    "WHERE p.id = ?\n" +
+                                                                    "GROUP BY PRO.id, CAT.name;");
             stmt.setInt(1, personId);
             ResultSet resultSet = stmt.executeQuery();
             while(resultSet.next()){
@@ -777,11 +790,13 @@ public class DatabaseController implements IDataLayer {
     public List<IProgramme> getProgrammesForProducer(int producerId) {
         List<IProgramme> programmes = new ArrayList<>();
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN producer_list pl on PRO.id = pl.programme\n" +
+                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
                                                                     "INNER JOIN producers p on pl.producer = p.id\n" +
-                                                                    "WHERE p.id = ?;");
+                                                                    "WHERE p.id = ?\n" +
+                                                                    "GROUP BY PRO.id, CAT.name;");
             stmt.setInt(1, producerId);
             ResultSet resultSet = stmt.executeQuery();
             while(resultSet.next()){
@@ -817,11 +832,15 @@ public class DatabaseController implements IDataLayer {
 
     @Override
     public List<IProgramme> getLatestProgrammes() {
+        long start_time = System.currentTimeMillis();
         List<IProgramme> programmes = new ArrayList<>();
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate  FROM programmes PRO\n" +
+            PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
+                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                    "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
-                                                                    "ORDER BY aireddate DESC LIMIT 15;");
+                                                                    "GROUP BY PRO.id, PRO.aireddate, CAT.name\n" +
+                                                                    "ORDER BY PRO.aireddate DESC LIMIT 15;");
             ResultSet resultSet = stmt.executeQuery();
             while(resultSet.next()){
                 IProgramme programme = getProgramme(resultSet);
@@ -830,7 +849,8 @@ public class DatabaseController implements IDataLayer {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
+        long end_time = System.currentTimeMillis();
+        System.out.println("Fetching newest programmes: " + (end_time-start_time) + "ms");
         return programmes;
     }
 
