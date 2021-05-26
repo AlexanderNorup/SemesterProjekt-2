@@ -236,7 +236,9 @@ public class DatabaseController implements IDataLayer {
             String description = resultSet.getString("description");
             DatabasePerson person = new DatabasePerson(id, name, birthdate, description);
             person.setState(DatabaseState.CLEAN);
-            this.persons.add(new CachedDatabaseObject(person));
+            CachedDatabaseObject newCacheObject = new CachedDatabaseObject(person);
+            this.persons.remove(newCacheObject);
+            this.persons.add(newCacheObject);
             return person;
         } catch (SQLException e) {
             System.out.println("Could not parse ResultSet as an DatabasePerson: " + e.getMessage());
@@ -309,7 +311,9 @@ public class DatabaseController implements IDataLayer {
 
             DatabaseProgramme programme = new DatabaseProgramme(id, name, category, channel, airedDate, credits, producers);
             programme.setState(DatabaseState.CLEAN);
-            this.programmes.add(new CachedDatabaseObject(programme));
+            CachedDatabaseObject newCacheObject = new CachedDatabaseObject(programme);
+            this.programmes.remove(newCacheObject);
+            this.programmes.add(newCacheObject);
             return programme;
         } catch (SQLException e) {
             System.out.println("Could not parse ResultSet as an DatabaseProgramme: " + e.getMessage());
@@ -352,7 +356,9 @@ public class DatabaseController implements IDataLayer {
 
             DatabaseProducer producer = new DatabaseProducer(id, company);
             producer.setState(DatabaseState.CLEAN);
-            this.producers.add(new CachedDatabaseObject(producer));
+            CachedDatabaseObject newCacheObject = new CachedDatabaseObject(producer);
+            this.producers.remove(newCacheObject);
+            this.producers.add(newCacheObject);
             return producer;
         } catch (SQLException e) {
             System.out.println("Could not parse ResultSet as an DatabaseProducer: " + e.getMessage());
@@ -376,7 +382,9 @@ public class DatabaseController implements IDataLayer {
 
             DatabaseCredit credit = new DatabaseCredit(id, person, functionType);
             credit.setState(DatabaseState.CLEAN);
-            this.credits.add(new CachedDatabaseObject(credit));
+            CachedDatabaseObject newCacheObject = new CachedDatabaseObject(credit);
+            this.credits.remove(newCacheObject);
+            this.credits.add(newCacheObject);
             return credit;
         } catch (SQLException e) {
             System.out.println("Could not parse ResultSet as an DatabasePerson: " + e.getMessage());
