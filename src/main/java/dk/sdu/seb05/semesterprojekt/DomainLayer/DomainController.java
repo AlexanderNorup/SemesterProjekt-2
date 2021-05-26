@@ -29,6 +29,9 @@ public class DomainController implements IDomainController {
 
     @Override
     public List<IProgramme> getProgrammes(int producerID) {
+        if(session.isAdmin()){
+            return dataLayer.getProgrammes();
+        }
         return dataLayer.getProgrammesForProducer(producerID);
     }
 
