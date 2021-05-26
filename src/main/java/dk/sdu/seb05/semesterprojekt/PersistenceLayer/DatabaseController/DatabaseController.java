@@ -262,7 +262,7 @@ public class DatabaseController implements IDataLayer {
 
         try (PreparedStatement stmt = connection.prepareStatement("SELECT p.id, p.name, c.name as category, p.channel, p.aireddate, array_agg(CL.credit) as credits, array_agg(PL.producer) as producers FROM programmes p\n" +
                                                                         "INNER JOIN categories c on c.id = p.category\n" +
-                                                                        "INNER JOIN credits_list CL on p.id = CL.programme\n" +
+                                                                        "LEFT JOIN credits_list CL on p.id = CL.programme\n" +
                                                                         "INNER JOIN producer_list PL on p.id = PL.programme\n" +
                                                                         "GROUP BY p.id, c.name;")) {
             ResultSet resultSet = stmt.executeQuery();
@@ -298,13 +298,15 @@ public class DatabaseController implements IDataLayer {
             ArrayList<IProducer> producers = new ArrayList<>();
 
             if(credits_ instanceof Integer[]){
-                for(int creditId : (Integer[]) credits_){
+                for(Integer creditId : (Integer[]) credits_){
+                    if(creditId == null) continue;
                     credits.add(getCredit(creditId));
                 }
             }
 
             if(producers_ instanceof Integer[]){
-                for(int producerId : (Integer[]) producers_){
+                for(Integer producerId : (Integer[]) producers_){
+                    if(producerId == null) continue;
                     producers.add(getProducer(producerId));
                 }
             }
@@ -418,7 +420,7 @@ public class DatabaseController implements IDataLayer {
 
         IProgramme programme = null;
         try (PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
-                                                                        "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                        "LEFT JOIN credits_list C on PRO.id = C.programme\n" +
                                                                         "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                         "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                         "WHERE PRO.id = ?\n" +
@@ -648,7 +650,7 @@ public class DatabaseController implements IDataLayer {
             PreparedStatement stmt = connection.prepareStatement("--Starter med programnavn\n" +
                                                                     "SELECT 1 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate , array_agg(C.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
-                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                    "LEFT JOIN credits_list C on PRO.id = C.programme\n" +
                                                                     "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "WHERE LOWER(PRO.name) LIKE LOWER(?)\n" +
                                                                     "GROUP BY PRO.id, CAT.name\n" +
@@ -656,7 +658,7 @@ public class DatabaseController implements IDataLayer {
                                                                     "--Indeholder programnavn:\n" +
                                                                     "SELECT 2 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(PL.producer) as producers  FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
-                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                    "LEFT JOIN credits_list C on PRO.id = C.programme\n" +
                                                                     "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "WHERE LOWER(PRO.name) LIKE LOWER(?)\n" +
                                                                     "GROUP BY PRO.id, CAT.name\n" +
@@ -665,7 +667,7 @@ public class DatabaseController implements IDataLayer {
                                                                     "SELECT 3 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(cl2.credit) as credits, array_agg(PL.producer) as producers  FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN credits_list cl on PRO.id = cl.programme\n" +
-                                                                    "INNER JOIN credits_list cl2 on PRO.id = cl2.programme\n" +
+                                                                    "LEFT JOIN credits_list cl2 on PRO.id = cl2.programme\n" +
                                                                     "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "INNER JOIN credits c on cl.credit = c.id\n" +
                                                                     "INNER JOIN persons pers on c.person = pers.id\n" +
@@ -676,7 +678,7 @@ public class DatabaseController implements IDataLayer {
                                                                     "SELECT 4 as sorting, PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(pl.producer) as producers  FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN producer_list pl on PRO.id = pl.programme\n" +
-                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                    "LEFT JOIN credits_list C on PRO.id = C.programme\n" +
                                                                     "INNER JOIN producers produ on pl.producer = produ.id\n" +
                                                                     "WHERE LOWER(produ.company) LIKE LOWER(?)\n" +
                                                                     "GROUP BY PRO.id, CAT.name\n" +
@@ -775,7 +777,7 @@ public class DatabaseController implements IDataLayer {
             PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate , array_agg(cl2.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN credits_list cl on PRO.id = cl.programme\n" +
-                                                                    "INNER JOIN credits_list cl2 on PRO.id = cl2.programme\n" +
+                                                                    "LEFT JOIN credits_list cl2 on PRO.id = cl2.programme\n" +
                                                                     "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "INNER JOIN credits c on c.id = cl.credit\n" +
                                                                     "INNER JOIN persons p on p.id = c.person\n" +
@@ -801,7 +803,7 @@ public class DatabaseController implements IDataLayer {
             PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "INNER JOIN producer_list pl on PRO.id = pl.programme\n" +
-                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                    "LEFT JOIN credits_list C on PRO.id = C.programme\n" +
                                                                     "INNER JOIN producers p on pl.producer = p.id\n" +
                                                                     "WHERE p.id = ?\n" +
                                                                     "GROUP BY PRO.id, CAT.name;");
@@ -844,7 +846,7 @@ public class DatabaseController implements IDataLayer {
         List<IProgramme> programmes = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement("SELECT PRO.id, PRO.name, CAT.name as category, PRO.channel, PRO.aireddate, array_agg(C.credit) as credits, array_agg(PL.producer) as producers FROM programmes PRO\n" +
-                                                                    "INNER JOIN credits_list C on PRO.id = C.programme\n" +
+                                                                    "LEFT JOIN credits_list C on PRO.id = C.programme\n" +
                                                                     "INNER JOIN producer_list PL on PRO.id = PL.programme\n" +
                                                                     "INNER JOIN categories CAT on PRO.category = CAT.id\n" +
                                                                     "GROUP BY PRO.id, PRO.aireddate, CAT.name\n" +
