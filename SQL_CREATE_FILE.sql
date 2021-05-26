@@ -392,11 +392,7 @@ CREATE OR REPLACE FUNCTION functionTypeByName(nameToFind varchar)
     RETURNS integer
 AS $$
 DECLARE
-<<<<<<< HEAD
     functionTypeId integer := 42; -- Unknown
-=======
-    functionTypeId integer := 42; -- Uknown
->>>>>>> Jonas
     BEGIN
         SELECT FT.id INTO functionTypeId FROM function_types FT WHERE FT.name = nameToFind;
         RETURN functionTypeId;
@@ -410,11 +406,7 @@ CREATE OR REPLACE FUNCTION categoryByName(nameToFind varchar)
     RETURNS integer
 AS $$
 DECLARE
-<<<<<<< HEAD
     categoryId integer := 1; -- Unknown
-=======
-    categoryId integer := 1; -- Uknown
->>>>>>> Jonas
     BEGIN
         SELECT CA.id INTO categoryId FROM categories CA WHERE CA.name = nameToFind;
         RETURN categoryId;
